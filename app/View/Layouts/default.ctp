@@ -133,7 +133,7 @@
                 <div class="pull-right hidden-xs">
                     Footer stuff here
                 </div>
-                <strong>Copyright Stuff Here!! All rights reserved.-->
+                <strong>Copyright Stuff Here!! All rights reserved.
             </footer>
             <?php echo $this->element('sidebar'); ?>
         </div>
