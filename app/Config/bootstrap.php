@@ -72,7 +72,7 @@ Cache::config('default', array('engine' => 'File'));
  //CakePlugin::load('Report', array('bootstrap' => false ) );
 
  Configure::write('App.Name', 'Portal');
- Configure::write('App.SiteName', 'iWorkZone');
+ Configure::write('App.SiteName', 'Vanguard Resources');
 
  defined('PRO_AUDITLOG_BIND_USER') or define('PRO_AUDITLOG_BIND_USER', true );
  defined('PRO_AUDITLOG_USER_MODEL') or define('PRO_AUDITLOG_USER_MODEL', 'User');
