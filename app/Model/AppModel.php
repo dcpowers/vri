@@ -30,4 +30,13 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
+    protected function currentUser() {
+        $user = $this->Auth->user();
+        
+        return $user[$this->Auth->userModel]; # Return the complete user array
+    }
+    
+    function statusInt() {  
+        return array(1 => 'Active', 2 => 'Inactive');  
+    }
 }

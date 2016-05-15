@@ -31,59 +31,97 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-    
     public $components = array(
         #'Security',
-        #'Session',
-        #'Cookie',
-        #'RequestHandler', 
-        'DebugKit.Toolbar',
+        #'DebugKit.Toolbar',
+        'Session',
         'Flash',
         'Auth' => array(
-            'loginRedirect' => array(
-                'plugin'=> false,
-                'controller' => 'Dashboard',
-                'action' => 'index'
-            ),
-            'logoutRedirect' => array(
-                'plugin'=> false,
-                'controller' => 'users',
-                'action' => 'login',
-            ),
-            'authenticate' => array(
-                'Form' => array(
-                    'passwordHasher' => 'Blowfish'
-                )
-            ),
+            'loginRedirect' => array('controller' => 'dashboard', 'action' => 'index'),
+            'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
+            'authError' => 'You must be logged in to view this page.',
+            'loginError' => 'Invalid Username or Password entered, please try again.',
+            'authenticate' => array( 'Form' => array('passwordHasher' => 'Blowfish')),
             'authError' => 'You must sign in to access this page.',
-            'authorize' => array('Controller')
-        ),
-        
+            'authorize' => array('Actions' => array('actionPath' => 'controllers')),
+        )
     );
-
+ 
+    // only allow the login controllers only
     public function beforeFilter() {
-        $this->Auth->allow('index', 'view');
+        #$this->Security->validatePost=false;
+        #$this->Security->csrfCheck=false;
+        #$this->Security->csrfUseOnce=false;
+        $sslnotallowed_url  = array('beta_user','terms','privacy','security');
+        
+        if (env('SERVER_NAME') != 'vri') {
+            #$this->Security->blackHoleCallback = 'forceSSL';
+        }
+        
+        if(!in_array($this->params['action'],$sslnotallowed_url) && ( env('SERVER_NAME') != 'iwz-3.0' && env('SERVER_NAME') != 'iworkzone.biz')){
+            #$this->Security->requireSecure('*');
+        }
+        
+        if (isset($this->params['requested'])) $this->Auth->allow($this->action);
+        
+        $this->Auth->authorize = array('Controller');
+        
+        $this->Auth->allow('login');
+        
+        $this->set('logged_in', $this->Auth->loggedin());
+        $this->loggedIn = $this->Auth->loggedin();
+        $this->set('current_user', $this->Auth->user());
+        
+        $this->disableCache();
+        
+        $url = Router::url(NULL, false); //complete url
+        
+        if (!preg_match('/login/i', $url) && !preg_match('//i', $url)){
+            $this->Session->write('lastUrl', $url);
+        }
+        
     }
-    
+ 
     function beforeRender() {
-        #pr($this->Auth->User());
-        #exit;
         $this->set('current_user', $this->Auth->User());
+        $this->set('logged_in', $this->Auth->loggedin());
     }
     
     //controller authorization callback
     public function isAuthorized($user = null) {
  
+        if (empty($this->request->params['admin'])) {
+            return true;
+        }
+
+        // Only admins can access admin functions
+        if (isset($this->request->params['admin'])) {
+            return (bool)($user['role'] === 'admin');
+        }
+
+        // Default deny
+        return false;
+    }
+    
+    public function forceSSL() {
+        return $this->redirect('https://' . env('SERVER_NAME') . $this->here);
+    }
+    
+    protected function pluginSetup() {
         if (isset($this->request->params['admin']) ) {
-            foreach( $user['AuthRole'] as $role ) {
-                if ( $role['name'] == 'SuperAdmin' ) { 
-                    return true; 
-                }
-            }
-            $this->Session->setFlash(__('You are not authorized to access this resource.'));
-            return false;
+            Configure::write('App.Name', __('Portal Admin'));
+            Configure::write('App.Interface', __('Admin')); 
         }
         
-        return true;
+        try { 
+            //load navmenu config
+            Configure::load('app_navmenu'); 
+        } catch (ConfigureException $e) { } //suppress exception
+    }
+    
+    protected function currentUser() {
+        $user = $this->Auth->user();
+
+        return $user; # Return the complete user array
     }
 }

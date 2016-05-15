@@ -7,109 +7,164 @@ class User extends AppModel {
     public $displayField = 'first_name';
 
     public $virtualFields = array(
-        'fullname' => 'CONCAT(User.first_name, " ", User.last_name)'
+        #'fullname' => 'CONCAT(User.first_name, " ", User.last_name)',
+        #'manager_name' => 'CONCAT(Supervisor.first_name, " ",Supervisor.last_name)',
+        #'regional_admin_name' => 'CONCAT(RegionalAdmin.first_name, " ",RegionalAdmin.last_name)',
+        #'coordinator_name' => 'CONCAT(Coordinator.first_name, " ",Coordinator.last_name)',
     );
 
     public $actsAs = array('Containable', 'Multivalidatable');
     
     public $components = array('Auth');
     
+    public $profileUploadDir = 'img/profiles';
+    
+    public $belongsTo = array(
+        'Account' => array(
+            'className' => 'Account',
+            'foreignKey' => 'account_id',
+            'conditions' => '',
+            'fields' => array('Account.id', 'Account.name', 'Account.abr'),
+            'order' => ''
+        ),
+        'Department' => array(
+            'className' => 'Department',
+            'foreignKey' => 'department_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'Role' => array(
+            'className' => 'AuthRole',
+            'foreignKey' => 'auth_role_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'Supervisor' => array(
+            'className' => 'User',
+            'foreignKey' => 'supervisor_id',
+            'conditions' => '',
+            'fields' => array('Supervisor.id', 'Supervisor.first_name', 'Supervisor.last_name', 'Supervisor.is_active'),
+            'order' => ''
+        ),
+        'Status' => array(
+            'className' => 'Setting',
+            'foreignKey' => 'is_active',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+    );
+     
     public $validate = array(
         'username' => array(
-            'required' => array(
-                'rule' => 'notBlank',
-                'message' => 'A username is required'
-            )
+            'nonEmpty' => array(
+                'rule' => array('notEmpty'),
+                'message' => 'A username is required',
+                'allowEmpty' => false
+            ),
+            'between' => array( 
+                'rule' => array('between', 5, 15), 
+                'required' => true, 
+                'message' => 'Usernames must be between 5 to 15 characters'
+            ),
+             'unique' => array(
+                'rule'    => array('isUniqueUsername'),
+                'message' => 'This username is already in use'
+            ),
+            'alphaNumericDashUnderscore' => array(
+                'rule'    => array('alphaNumericDashUnderscore'),
+                'message' => 'Username can only be letters, numbers and underscores'
+            ),
         ),
         'password' => array(
             'required' => array(
-                'rule' => 'notBlank',
+                'rule' => array('notEmpty'),
                 'message' => 'A password is required'
+            ),
+            'min_length' => array(
+                'rule' => array('minLength', '6'),  
+                'message' => 'Password must have a mimimum of 6 characters'
+            )
+        ),
+         
+        'password_confirm' => array(
+            'required' => array(
+                'rule' => array('notEmpty'),
+                'message' => 'Please confirm your password'
+            ),
+             'equaltofield' => array(
+                'rule' => array('equaltofield','password'),
+                'message' => 'Both passwords must match.'
+            )
+        ),
+         
+        'email' => array(
+            'required' => array(
+                'rule' => array('email', true),    
+                'message' => 'Please provide a valid email address.'   
+            ),
+             'unique' => array(
+                'rule'    => array('isUniqueEmail'),
+                'message' => 'This email is already in use',
+            ),
+            'between' => array( 
+                'rule' => array('between', 6, 60), 
+                'message' => 'Usernames must be between 6 to 60 characters'
             )
         ),
         'role' => array(
             'valid' => array(
-                'rule' => array('inList', array('admin', 'author')),
+                'rule' => array('inList', array('king', 'queen', 'bishop', 'rook', 'knight', 'pawn')),
                 'message' => 'Please enter a valid role',
                 'allowEmpty' => false
             )
+        ),
+         
+         
+        'password_update' => array(
+            'min_length' => array(
+                'rule' => array('minLength', '6'),   
+                'message' => 'Password must have a mimimum of 6 characters',
+                'allowEmpty' => true,
+                'required' => false
+            )
+        ),
+        'password_confirm_update' => array(
+             'equaltofield' => array(
+                'rule' => array('equaltofield','password_update'),
+                'message' => 'Both passwords must match.',
+                'required' => false,
+            )
         )
+ 
+         
     );
-    
-    public $validationSets = array( 
-        'signUp' => array(
-            'first_name' => array(
-                'rule' => 'notEmpty',
-                'message' => 'Please Fill In Your Firstname'
-            ),
-            'last_name' => array(
-                'rule' => 'notEmpty',
-                'message' => 'Please Fill In Your Lastname'
-            ),
-            'username' => array(
-                'required' => array(
-                    'rule' => array('email', true),    
-                    'message' => 'Please provide a valid email address/ Username.'    
-                ),
-                'unique' => array(
-                    'rule'    => array('isUniqueUsername'),
-                    'message' => 'This email/Username is already in use',
-                ),
-                'between' => array( 
-                    'rule' => array('between', 6, 60), 
-                    'message' => 'Usernames must be between 6 to 60 characters'
-                )
-            ),
-            'password' => array(
-                'min_length' => array(
-                    'rule' => array('minLength', '6'),   
-                    'message' => 'Password must have a mimimum of 6 characters',
-                    'allowEmpty' => false,
-                    'required' => true,
-                    'last'=>false
-                )
-            ),
-            'password_confirm' => array(
-                 'equaltofield' => array(
-                    'rule' => array('equaltofield','password'),
-                    'message' => 'Both passwords must match.',
-                    'required' => true,
-                    'allowEmpty' => false
-                )
-            ),
-        ), 
-        
-        
-    );
-    
-    public function matchPasswords($data){
-        if($data['password'] == $this->data['User']['password_confirm']){
-            return true;
-        }
-        $this->invalidate('password_confirm', 'Your Passwords Do Not Match');
-        return false;
-    }
-    
+     
         /**
      * Before isUniqueUsername
      * @param array $options
      * @return boolean
      */
     function isUniqueUsername($check) {
-        $username = $this->find('first',array(
-            'conditions' => array(
-                'User.username' => $check['username'],
-            ),
-            'contain'=>array(),
-            'fields' => array('User.id'),
-        ));
+ 
+        $username = $this->find(
+            'first',
+            array(
+                'fields' => array(
+                    'User.id',
+                    'User.username'
+                ),
+                'conditions' => array(
+                    'User.username' => $check['username']
+                )
+            )
+        );
+ 
         if(!empty($username)){
-            if(!empty($this->data[$this->alias]['id'])){
-                if($this->data[$this->alias]['id'] == $username['User']['id']){
-                    return true; 
-                }else{
-                    return false; 
-                }
+            if($this->data[$this->alias]['id'] == $username['User']['id']){
+                return true; 
             }else{
                 return false; 
             }
@@ -117,14 +172,14 @@ class User extends AppModel {
             return true; 
         }
     }
-    
+ 
     /**
      * Before isUniqueEmail
      * @param array $options
      * @return boolean
      */
     function isUniqueEmail($check) {
-
+ 
         $email = $this->find(
             'first',
             array(
@@ -132,33 +187,33 @@ class User extends AppModel {
                     'User.id'
                 ),
                 'conditions' => array(
-                    'User.username' => $check['username'],
-                    'User.id !=' => AuthComponent::user('id'),
+                    'User.email' => $check['email']
                 )
             )
         );
-
+ 
         if(!empty($email)){
-            #if($this->data[$this->alias]['id'] == $email['User']['id']){
-            #    return true; 
-            #}else{
+            if($this->data[$this->alias]['id'] == $email['User']['id']){
+                return true; 
+            }else{
                 return false; 
-            #}
+            }
         }else{
             return true; 
         }
     }
-    
+     
     public function alphaNumericDashUnderscore($check) {
         // $data array is passed using the form field name as the key
         // have to extract the value to make the function generic
         $value = array_values($check);
         $value = $value[0];
-
+ 
         return preg_match('/^[a-zA-Z0-9_ \-]*$/', $value);
     }
-    
-    public function equaltofield($check,$otherfield){ 
+     
+    public function equaltofield($check,$otherfield) 
+    { 
         //get name of field 
         $fname = ''; 
         foreach ($check as $key => $value){ 
@@ -166,8 +221,13 @@ class User extends AppModel {
             break; 
         } 
         return $this->data[$this->name][$otherfield] === $this->data[$this->name][$fname]; 
-    }
-    
+    } 
+ 
+    /**
+     * Before Save
+     * @param array $options
+     * @return boolean
+     */
     public function beforeSave($options = array()) {
         if (isset($this->data[$this->alias]['password'])) {
             $passwordHasher = new BlowfishPasswordHasher();
@@ -180,21 +240,14 @@ class User extends AppModel {
         return true;
     }
 
-    public function pickList( $first_choice='- Select your UserID -', $show='', $find_options=array() ) {
-        if ( $first_choice !== false ) {
-            $dataArr = array(0=>$first_choice);
-        } else {
-            $dataArr = array();
-        }
-
-        $find_options = array_merge_recursive(
-            array(
-                'conditions'=>array(
-                    $this->alias.'.is_active'=>1
-                ),
-                'order'=>$this->alias.'.first_name asc'
+    public function pickList( ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.is_active'=>1
             ),
-            $find_options
+            'order'=>$this->alias.'.first_name asc'
         );
 
         //pr($find_options);
@@ -202,27 +255,19 @@ class User extends AppModel {
         $recs = $this->find('all', $find_options );
 
         foreach ( $recs as $key=>$rec ) {
-            if ( $show == 'full_name') {
-                $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name']));
-            } else {
-                $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] )). ' ('.$rec[$this->alias]['userid'].')';
-            }
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
         }
         return $dataArr;
     }
 
-    public function pickList_all( $first_choice='- Select your UserID -', $show='', $find_options=array() ) {
-        if ( $first_choice !== false ) {
-            $dataArr = array(0=>$first_choice);
-        } else {
-            $dataArr = array();
-        }
-
-        $find_options = array_merge_recursive(
-            array(
-                'order'=>$this->alias.'.first_name asc'
+    public function pickListByRole( $role_ids = null ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.auth_role_id'=>$role_ids
             ),
-            $find_options
+            'order'=>$this->alias.'.first_name asc'
         );
 
         //pr($find_options);
@@ -230,11 +275,46 @@ class User extends AppModel {
         $recs = $this->find('all', $find_options );
 
         foreach ( $recs as $key=>$rec ) {
-            if ( $show == 'full_name') {
-                $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name']));
-            } else {
-                $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] )). ' ('.$rec[$this->alias]['userid'].')';
-            }
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
+        }
+        return $dataArr;
+    }
+    
+    public function pickListByAccount( $account_id = null ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.account_id'=>$account_id
+            ),
+            'order'=>$this->alias.'.first_name asc'
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('all', $find_options );
+
+        foreach ( $recs as $key=>$rec ) {
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
+        }
+        return $dataArr;
+    }
+    
+    public function pickList_all() {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+            ),
+            'order'=>$this->alias.'.first_name asc'
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('all', $find_options );
+
+        foreach ( $recs as $key=>$rec ) {
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
         }
         return $dataArr;
     }

@@ -43,6 +43,8 @@
         <?php $this->start('scriptsBottom'); ?>
             <?php echo $this->Html->script('../bootstrap/js/bootstrap.min'); ?>
             <?php echo $this->Html->script('../plugins/iCheck/icheck.min'); ?>
+            <?php echo $this->Html->script('chosen.jquery.min'); ?>
+            <?php echo $this->Html->script('bootstrap-editable.min'); ?>
             
             <!-- Morris.js charts -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
@@ -76,7 +78,10 @@
         <?php $this->start('csslib'); ?>
             <!-- The styles -->
             <?php echo $this->Html->css('bootstrap.min.css'); ?>
-            <?php echo $this->Html->css('AdminLTE.min.css'); ?>
+            <?php echo $this->Html->css('AdminLTE.css'); ?>
+            <?php echo $this->Html->css('bootstrap-chosen.css'); ?>
+            <?php echo $this->Html->css('app.css'); ?>
+            <?php echo $this->Html->css('bootstrap-editable.css'); ?>
             <?php echo $this->Html->css('../plugins/iCheck/square/blue.css'); ?>
             <?php echo $this->Html->css('../dist/css/skins/_all-skins.min.css'); ?>
             
@@ -115,17 +120,17 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body class="hold-transition skin-red-light sidebar-mini wysihtml5-supported">
+    <body class="hold-transition skin-purple sidebar-mini wysihtml5-supported">
         <div class="wrapper">
             <?php echo $this->element('header'); ?>
             <?php echo $this->element('menu-left'); ?>
             
             <div class="content-wrapper">
-                <?php echo $this->Flash->render(); ?>
                 <section class="content-header">
                     <?php echo $this->element('breadcrumbs'); ?>        
                 </section>
                 <section class="content">
+                    <?php echo $this->Flash->render(); ?>
                     <?php echo $this->fetch('content'); ?>
                 </section>
             </div>

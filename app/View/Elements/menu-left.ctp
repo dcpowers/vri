@@ -1,3 +1,6 @@
+<?php
+    $apps = $this->requestAction('Applications/getLeftMenu/'); 
+?>
 <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
@@ -28,21 +31,54 @@
         
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-dashboard"></i> <span>Dropdown example</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li class="active"><a href="index.html"><i class="fa fa-circle-o"></i> Example 1</a></li>
-                    <li><a href="index2.html"><i class="fa fa-circle-o"></i> Example 2</a></li>
-                </ul>
-            </li>
-            
-            <li>
-                <a href="pages/widgets.html">
-                    <i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
-                </a>
-            </li>
+            <?php
+            foreach($apps as $menu_item){
+                if(!empty($menu_item['children'])){
+                    ?>
+                    <li class="treeview">
+                        <?php
+                        echo $this->Html->link(
+                            '<i class="'. $menu_item['Application']['iconCls'] .'"></i> <span>'. $menu_item['Application']['name'] . '</span><i class="fa fa-angle-left pull-right"></i>',
+                            '#',
+                            array('escape'=>false)
+                        );
+                        ?>
+                        <ul class="treeview-menu">
+                            <?php
+                            foreach($menu_item['children'] as $child){
+                                $subClass = ($this->request->params['controller'] == $child['Application']['controller']) ? 'active' : null ;
+                                ?>
+                                <li class="<?=$subClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        '<i class="'. $child['Application']['iconCls'] .'"></i> <span>'. $child['Application']['name'] . '</span>',
+                                        array('controller'=>$child['Application']['controller'], 'action'=>$child['Application']['action']),
+                                        array('escape'=>false)
+                                    );
+                                    ?>
+                                </li>
+                                <?php      
+                            }
+                            ?>
+                        </ul>
+                    </li>
+                    <?php
+                }else{
+                    $class = ($this->request->params['controller'] == $menu_item['Application']['controller']) ? 'active' : null ;
+                    ?>
+                    <li class="<?=$class?>">
+                        <?php
+                        echo $this->Html->link(
+                            '<i class="'. $menu_item['Application']['iconCls'] .'"></i> <span>'. $menu_item['Application']['name'] . '</span>',
+                            array('controller'=>$menu_item['Application']['controller'], 'action'=>$menu_item['Application']['action']),
+                            array('escape'=>false)
+                        );
+                        ?>
+                    </li>
+                    <?php
+                }
+            }
+            ?>
         </ul>
     </section>
     <!-- /.sidebar -->
