@@ -43,8 +43,7 @@
                 }
                 ?>
             </ul>
-        </div>
-        <div class="flextable-item">
+        
             <ul class="pagination pagination-sm">
                 <?php
                 $activeclass = ($status == 1) ? 'active' : null ;

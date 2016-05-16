@@ -20,7 +20,7 @@
     <table class="table table-striped" id="accountsTable">
         <thead>
             <tr class="tr-heading">
-                <th>
+                <th class="col-sm-2">
                             <?php echo $this->Paginator->sort('Account.name', 'Account Name');?>  
                             <?php if ($this->Paginator->sortKey() == 'Account.name'): ?>
                                 <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -29,7 +29,7 @@
                             <?php endif; ?>
                 </th>
                 
-                <th>
+                <th class="col-sm-2">
                             <?php echo $this->Paginator->sort('Manager.first_name', 'General Manager');?>  
                             <?php if ($this->Paginator->sortKey() == 'Manager.first_name'): ?>
                                 <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -38,7 +38,7 @@
                             <?php endif; ?>
                 </th>
                 
-                <th>
+                <th class="col-sm-2">
                             <?php echo $this->Paginator->sort('Coordinator.first_name', 'Systems Coordinator');?>  
                             <?php if ($this->Paginator->sortKey() == 'Coordinator.first_name'): ?>
                                 <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -47,7 +47,7 @@
                            <?php endif; ?>
                 </th>
                         
-                <th>
+                <th class="col-sm-2">
                             <?php echo $this->Paginator->sort('RegionalAdmin.first_name', 'Regional Administrator');?>  
                             <?php if ($this->Paginator->sortKey() == 'RegionalAdmin.first_name'): ?>
                                 <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -57,7 +57,7 @@
                 </th>
                 
                 <th>
-                            <?php echo $this->Paginator->sort('Account.is_active', 'Account Status');?>  
+                            <?php echo $this->Paginator->sort('Account.is_active', 'Status');?>  
                             <?php if ($this->Paginator->sortKey() == 'Account.is_active'): ?>
                                 <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
                             <?php else: ?>
