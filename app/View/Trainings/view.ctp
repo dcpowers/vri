@@ -2,7 +2,7 @@
     #pr($settings);
     #exit; 
 ?>
-<div class="account view bg-white">
+<div class="account view">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">View/Edit Account: <?=$account['Account']['name']?></h6>

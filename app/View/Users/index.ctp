@@ -2,7 +2,7 @@
     #pr($users);
     #exit; 
 ?>
-<div class="account index">
+<div class="account index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">List Of Employees</h6>
@@ -159,7 +159,7 @@
                             echo $this->Html->link(
                                 '<i class="fa fa-eye fa-fw"></i> <span> View</span>',
                                 array('controller'=>'Users', 'action'=>'view', $user['User']['id']),
-                                array('escape'=>false, 'class'=>'btn btn-info btn-xs')
+                                array('escape'=>false, 'class'=>'btn btn-primary btn-sm')
                             );
                             ?>
                         </td>

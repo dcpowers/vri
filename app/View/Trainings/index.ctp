@@ -5,8 +5,8 @@
 <div class="account index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">List Of Accounts</h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
+            <h6 class="dashhead-subtitle">List Of Trainings</h6>
+            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> All Training</h3>
         </div>
         <div class="dashhead-toolbar">
             <?php #echo $this->element( 'accounts/dashhead_toolbar' );?>
