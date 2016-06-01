@@ -5,18 +5,15 @@ App::uses('AppController', 'Controller');
  *
  * @property Associate $Associate
  */
-class AccountsController extends AppController {
+class ImprovementsController extends AppController {
 
     //public $components = array('Search.Prg');
     #public $helpers = array( 'Tree' );
     //Search Plugin
     
     var $uses = array(
-        'User', 
-        'Account', 
+        'Improvement', 
         'Setting',
-        'Department',
-        'AuthRole'
     );
     
     public $components = array( 'RequestHandler', 'Paginator');
@@ -27,7 +24,7 @@ class AccountsController extends AppController {
     
     public $paginate = array(
         'order' => array(
-            'Account.name' => 'asc'
+            'Improvement.name' => 'asc'
         ),
         'limit'=>50
     );
@@ -37,59 +34,78 @@ class AccountsController extends AppController {
         
         //These Two Lines are Required
         parent::pluginSetup();
-        Configure::write('App.Name', 'Accounts');
+        Configure::write('App.Name', 'Improvements');
     }
     
     public function beforeFilter() {
         parent::beforeFilter();
         
-        $this->set('title_for_layout', 'Accounts');
+        $this->set('title_for_layout', 'Improvements');
         
         $this->set('breadcrumbs', array(
-            array('title'=>'Accounts', 'link'=>array('controller'=>'Accounts', 'action'=>'index')),
+            array('title'=>'Improvements', 'link'=>array('controller'=>'Improvements', 'action'=>'index')),
         ));
     }
     
     public function index() {
-        $options = array();
-        
-        if($this->Auth->user('Role.permission_level') == 50){
-            $options = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
-        }
-        
-        #$this->User->virtualFields['Manager.manager_name'] = 'CONCAT(Manager.first_name, " " , Manager.last_name)';
-        
-        $this->Paginator->settings = array(
-            'conditions' => array(     
-                #'Account.id' => $search_ids,
+        $improvements['new'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active'=>1,
+                'Improvement.accepted_date'=> null
             ),
             'contain'=>array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
-                ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
-                ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
                 ),
                 'Status'=>array(),
-                'User'=>array(
-                    'conditions'=>array('User.is_active' => 1),
-                    'fields'=>array('User.id')
-                )
             ),
-            'limit' => 50,
-            'order'=>array('Account.name'=> 'asc'),
-        );
-        $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
-        #pr($this->Paginator->settings);
-        #exit;
-        #$accounts = $this->Paginator->paginate('Account');
-        #pr($accounts);
-        #exit;
+            'order'=>array('Improvement.priority'=> 'asc'),
+        ));
         
-        $this->set('accounts', $this->Paginator->paginate('Account'));
+        $improvements['accepted'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active'=>1,
+                'Improvement.accepted_date !='=> null,
+                'Improvement.completed_date'=> null
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.priority'=> 'asc'),
+        ));
+        
+        $improvements['completed'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active' => 1,
+                'Improvement.accepted_date !=' => null,
+                'Improvement.completed_date !=' => null
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.completed_date'=> 'DESC'),
+        ));
+        
+        $improvements['not accepted'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active'=>2,
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.priority'=> 'asc'),
+        ));
+        
+        $this->set('improvements', $improvements);
         
     }
     
@@ -256,6 +272,55 @@ class AccountsController extends AppController {
             array('title'=>'Accounts', 'link'=>array('controller'=>'Accounts', 'action'=>'index')),
             array('title'=>'View/Edit: '.$account['Account']['name'], 'link'=>array('controller'=>'Accounts', 'action'=>'view', $id)),
         ));
+    }
+    
+    public function getDashboard() {
+        $improvements['new'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active'=>1,
+                'Improvement.accepted_date'=> null
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.priority'=> 'asc'),
+        ));
+        
+        $improvements['accepted'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active'=>1,
+                'Improvement.accepted_date !='=> null,
+                'Improvement.completed_date'=> null
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.priority'=> 'asc'),
+        ));
+        
+        $improvements['completed'] = $this->Improvement->find('all', array(
+            'conditions' => array(
+                'Improvement.is_active' => 1,
+                'Improvement.accepted_date !=' => null,
+                'Improvement.completed_date !=' => null
+            ),
+            'contain'=>array(
+                'CreatedBy'=>array(
+                    'fields'=>array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name')
+                ),
+                'Status'=>array(),
+            ),
+            'order'=>array('Improvement.completed_date'=> 'DESC'),
+        ));
+        
+        return $improvements;
+        
     }
     
     public function edit(){

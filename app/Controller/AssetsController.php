@@ -5,18 +5,21 @@ App::uses('AppController', 'Controller');
  *
  * @property Associate $Associate
  */
-class AccountsController extends AppController {
+class AssetsController extends AppController {
 
     //public $components = array('Search.Prg');
     #public $helpers = array( 'Tree' );
     //Search Plugin
     
     var $uses = array(
-        'User', 
+        'Asset', 
         'Account', 
         'Setting',
         'Department',
-        'AuthRole'
+        'User',
+        'Manufacturer',
+        'AssetType',
+        'AssignedTo'
     );
     
     public $components = array( 'RequestHandler', 'Paginator');
@@ -25,72 +28,141 @@ class AccountsController extends AppController {
         array('field' => 'q', 'type' => 'value')
     );
     
-    public $paginate = array(
-        'order' => array(
-            'Account.name' => 'asc'
-        ),
-        'limit'=>50
-    );
-    
     public function pluginSetup() {
         $user = AuthComponent::user();
         
         //These Two Lines are Required
         parent::pluginSetup();
-        Configure::write('App.Name', 'Accounts');
+        Configure::write('App.Name', 'Assets');
     }
     
     public function beforeFilter() {
         parent::beforeFilter();
         
-        $this->set('title_for_layout', 'Accounts');
+        $this->set('title_for_layout', 'Assets');
         
         $this->set('breadcrumbs', array(
-            array('title'=>'Accounts', 'link'=>array('controller'=>'Accounts', 'action'=>'index')),
+            array('title'=>'Assets', 'link'=>array('controller'=>'Assets', 'action'=>'index')),
         ));
     }
     
-    public function index() {
+    public function index($letter = null, $status = null, $viewBy = null) {
         $options = array();
         
-        if($this->Auth->user('Role.permission_level') == 50){
-            $options = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
+        if(!empty($this->data)){
+            foreach ($this->data as $k=>$v){
+                foreach ($v as $kk=>$vv){
+                    if(!empty($vv) && $k != 'Search'){
+                        $url[$k.'.'.$kk]=$vv;
+                        $cond = array('conditions'=>array($k.'.'.$kk=> $vv ));
+                        
+                        $options = array_merge_recursive($options,$cond);
+                    }
+                }
+            }
         }
         
-        #$this->User->virtualFields['Manager.manager_name'] = 'CONCAT(Manager.first_name, " " , Manager.last_name)';
-        
+        if(is_null($status) || $status == 'All'){
+            $option = array('conditions'=>array('Asset.is_active' => array(1,2)));
+            $options = array_merge_recursive($options,$option);
+            $this->set('status', 'All');
+        }else{
+            $option = array('conditions'=>array('Asset.is_active' => $status));
+            $options = array_merge_recursive($options,$option);
+            $this->set('status', $status);
+        }
+        #pr($options);
+        #exit;
         $this->Paginator->settings = array(
             'conditions' => array(     
                 #'Account.id' => $search_ids,
             ),
             'contain'=>array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
+                'Manufacturer'=>array(
+                    'fields'=>array('Manufacturer.id', 'Manufacturer.name')
                 ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
+                'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name')
                 ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
+                'Vendor'=>array(
+                    'fields'=>array('Vendor.id', 'Vendor.name')
+                ),
+                'AssignedTo'=>array(
+                    'fields'=>array('AssignedTo.id', 'AssignedTo.first_name', 'AssignedTo.last_name')
+                ),
+                'AssetType'=>array(
+                    'fields'=>array('AssetType.id', 'AssetType.name')
                 ),
                 'Status'=>array(),
-                'User'=>array(
-                    'conditions'=>array('User.is_active' => 1),
-                    'fields'=>array('User.id')
-                )
             ),
-            'limit' => 50,
-            'order'=>array('Account.name'=> 'asc'),
+            'limit' => 200,
+            'maxLimit' => 200,
+            'order'=>array('Asset.asset_type_id'=> 'asc'),
         );
+        
         $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
-        #pr($this->Paginator->settings);
-        #exit;
-        #$accounts = $this->Paginator->paginate('Account');
-        #pr($accounts);
-        #exit;
         
-        $this->set('accounts', $this->Paginator->paginate('Account'));
+        $result = $this->Paginator->paginate('Asset');
         
+        $assets = array();
+        
+        $this->request->data['Search']['orderBy'] = (array_key_exists('Search', $this->request->data)) ? $this->request->data['Search']['orderBy'] : 'type';
+        
+        foreach($result as $data){
+            switch($this->request->data['Search']['orderBy']){
+                case 'manufacturer':
+                    if(array_key_exists('name', $data['Manufacturer'])){
+                        $indexName = $data['Manufacturer']['name'];
+                        $keysort[$indexName] = $data['Manufacturer']['name'];
+                    }else{
+                        $indexName = '--';
+                        $keysort[$indexName] = '--';
+                    }
+                    
+                    break;
+                
+                case 'account':
+                    if(array_key_exists('name', $data['Account'])){
+                        $indexName = $data['Account']['name'];
+                        $keysort[$indexName] = $data['Account']['name'];
+                    }else{
+                        $indexName = '--';
+                        $keysort[$indexName] = '--';
+                    }
+                    break;
+                
+                case 'assignedTo':
+                    if(array_key_exists('first_name', $data['AssignedTo'])){
+                        $indexName = $data['AssignedTo']['first_name'].' '. $data['AssignedTo']['last_name'];
+                        $keysort[$indexName] = $data['AssignedTo']['first_name'];
+                    }else{
+                        $indexName = '--';
+                        $keysort[$indexName] = '--';
+                    }
+                    break;
+                
+                case 'type':
+                default:
+                    if(array_key_exists('name', $data['AssetType'])){
+                        $indexName = $data['AssetType']['name'];
+                        $keysort[$indexName] = $data['AssetType']['name'];
+                    }else{
+                        $indexName = '--';
+                        $keysort[$indexName] = '--';
+                    }
+                    break;
+                
+            }
+            
+            $value[$indexName][] = $data;
+            
+            $assets = array_merge($assets,$value);
+        }
+        
+        array_multisort($keysort, SORT_ASC, $assets);
+        
+        $this->set('assets', $assets);
+        $this->setLists();
     }
     
     public function view($id=null, $pageStatus = null, $viewBy = null){
@@ -455,5 +527,62 @@ class AccountsController extends AppController {
         }
         
         return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
+    }
+    
+    public function setLists(){
+        $types = $this->AssetType->find('list', array(
+            'conditions' => array(
+                'AssetType.is_active'=>1
+            ),
+            'contain' => array(
+            ),
+            'fields'=>array('AssetType.id', 'AssetType.name')
+        ));
+        
+        $manufactures = $this->Manufacturer->find('list', array(
+            'conditions' => array(
+                'Manufacturer.is_active'=>1
+            ),
+            'contain' => array(
+            ),
+            'fields'=>array('Manufacturer.id', 'Manufacturer.name'),
+            'order'=>array('Manufacturer.name' => 'asc')
+        ));
+        
+        $accounts = $this->Asset->find('list', array(
+            'conditions' => array(
+                #'Asset.is_active'=>1
+            ),
+            'contain' => array(
+                'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name'),
+                    'order'=>array('Account.name'=>'asc')
+                )
+            ),
+            'group'=>array('Asset.account_id'),
+            'fields'=>array('Account.id', 'Account.name'),
+            
+        ));
+        
+        $assignedToData = $this->Asset->find('all', array(
+            'conditions' => array(
+                #'Asset.is_active'=>1
+            ),
+            'contain' => array(
+                'AssignedTo'=>array(
+                    'fields'=>array('AssignedTo.id', 'AssignedTo.first_name'),
+                    'order'=>array('AssignedTo.first_name'=>'asc')
+                )
+            ),
+            'group'=>array('Asset.user_id'),
+            'fields'=>array('AssignedTo.id', 'AssignedTo.first_name', 'AssignedTo.last_name'),
+            
+        ));
+        
+        foreach($assignedToData as $item){
+            $assignedTo[$item['AssignedTo']['id']] = $item['AssignedTo']['first_name'].' '.$item['AssignedTo']['last_name'];
+        }
+        
+        $this->set(compact('types', 'manufactures', 'accounts', 'assignedTo'));
     }
 }

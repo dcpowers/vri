@@ -22,8 +22,42 @@ class ApplicationsController extends AppController {
                 'Application.is_active' => 1,
                 'Application.min_permission_level <=' => $this->Auth->user('Role.permission_level')
             ),
-            'fields'=>array('Application.lft', 'Application.rght')
+            'fields'=>array('Application.lft', 'Application.rght'),
+            'order'=>array('Application.order' => 'ASC')
         ));
+        foreach($parent as $item){
+            $value = $this->Application->find('threaded', array(
+                'conditions' => array(
+                    'Application.lft >=' => $item['Application']['lft'], 
+                    'Application.rght <=' => $item['Application']['rght']
+                ),
+                'fields'=>array(
+                    'Application.name',
+                    'Application.controller',
+                    'Application.action',
+                    'Application.iconCls',
+                )
+            ));
+            
+            $apps = array_merge($apps, $value);
+        }
+        
+        return $apps;
+    }
+    
+    public function getDashboard() {
+        $apps = array();
+        
+        $parent = $this->Application->find('all', array(
+            'conditions' => array(
+                'Application.show_dashboard' => 1,
+                'Application.is_active' => 1,
+                'Application.min_permission_level <=' => $this->Auth->user('Role.permission_level')
+            ),
+            'fields'=>array('Application.lft', 'Application.rght'),
+            'order'=>array('Application.order' => 'ASC')
+        ));
+        
         foreach($parent as $item){
             $value = $this->Application->find('threaded', array(
                 'conditions' => array(
