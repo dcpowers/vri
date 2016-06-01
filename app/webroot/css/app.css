@@ -321,3 +321,7 @@
 .btn-breadcrumb .btn.btn-info:hover:not(:last-child):before {
     border-left: 10px solid #269abc;
 }
+
+.label-as-badge {
+    border-radius: 1em;
+}

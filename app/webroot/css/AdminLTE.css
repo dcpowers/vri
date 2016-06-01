@@ -96,7 +96,7 @@ body {
 .content-wrapper,
 .right-side {
   min-height: 100%;
-  background-color: #ffffff;
+  background-color: #ecf0f5;
   z-index: 800;
 }
 .main-footer {
@@ -4223,6 +4223,9 @@ table.text-center th {
 }
 .bg-blue {
   background-color: #0073b7 !important;
+}
+.bg-white {
+  background-color: #ffffff !important;
 }
 .bg-light-blue,
 .label-primary,
