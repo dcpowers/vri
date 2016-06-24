@@ -10,3 +10,11 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    jQuery(document).ready( function($) {
+        $("#myModal").on('hidden.bs.modal', function () {
+            $(this).data('bs.modal', null);
+        });
+    });
+</script>

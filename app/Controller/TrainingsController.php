@@ -12,7 +12,9 @@ class TrainingsController extends AppController {
     //Search Plugin
     
     var $uses = array(
-        'Training', 
+        'Training',
+        'Setting',
+        'TrainingCategory' 
     );
     
     public $components = array( 'RequestHandler', 'Paginator');
@@ -47,29 +49,73 @@ class TrainingsController extends AppController {
     }
     
     public function index() {
+        
         $this->Paginator->settings = array(
             'conditions' => array(     
                 #'Account.id' => $search_ids,
             ),
             'contain'=>array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
-                ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
-                ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
+                'User'=>array(
+                    'fields'=>array('User.id', 'User.first_name', 'User.last_name')
                 ),
                 'Status'=>array(),
-                'User'=>array(
-                    'conditions'=>array('User.is_active' => 1),
-                    'fields'=>array('User.id')
-                )
+                'Account'=>array(),
+                'Department'=>array(),
+                'TrainingMembership'=>array(
+                    'Account'=>array(
+                        'fields'=>array(
+                            'Account.id',
+                            'Account.name'
+                        )
+                    ),
+                    'Department'=>array(
+                        'fields'=>array(
+                            'Department.id',
+                            'Department.name'
+                        )
+                    )
+                ),
             ),
-            'limit' => 50,
-            'order'=>array('Account.name'=> 'asc'),
+            'limit' => 100,
+            'order'=>array('Training.name'=> 'asc'),
         );    
         
+        $trainings = $this->Paginator->paginate('Training');
+        #pr($trainings);
+        #exit;
+        $this->set('trainings', $trainings);
+    }
+    
+    public function view($id=null){
+        $training = $this->request->data = $this->Training->find('first', array(
+            'conditions' => array(     
+                'Training.id' => $id,
+            ),
+            'contain'=>array(
+                'User'=>array(
+                    'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+                ),
+                'Status'=>array(),
+                'Account'=>array(),
+                'Department'=>array(),
+                'TrainingMembership'=>array(
+                    'Account'=>array(
+                        'fields'=>array(
+                            'Account.id',
+                            'Account.name'
+                        )
+                    ),
+                    'Department'=>array(
+                        'fields'=>array(
+                            'Department.id',
+                            'Department.name'
+                        )
+                    )
+                ),
+            ),
+        ));
+        $this->set('training', $training);
+        $this->set('status', $this->Setting->pickList('status'));
+        $this->set('trnCat', $this->TrainingCategory->pickList());
     }
 }

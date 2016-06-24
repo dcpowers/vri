@@ -375,150 +375,160 @@ class ImprovementsController extends AppController {
         }
     }
     
-    public function add($id=null){
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-        $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
-        
+    public function add(){
         if ($this->request->is('post') || $this->request->is('put')) {
             $error = false;
-            $validationErrors = array();
             
-            $this->Group->validate = $this->Group->validationSets['subGroup']; 
-            $this->Group->set($this->request->data['Group']);
+            $this->request->data['Improvement']['created_by'] = AuthComponent::user('id');
+            $this->request->data['Improvement']['created_date'] = date('Y-m-d', strtotime('now'));
+            $this->request->data['Improvement']['is_active'] = 1;
             
-            if(!$this->Group->validates()){
-                $validationErrors['Group'] = $this->Group->validationErrors;
+            if(empty($this->request->data['Improvement']['idea'])){
                 $error = true;
             }
-            
             if($error == false){
-                if ($this->Group->saveall($this->request->data)) {
+                if ($this->Improvement->saveAll($this->request->data)) {
                     #Audit::log('Group record added', $this->request->data );
                     //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
-                    $this->Session->setFlash(__('The Group: "'.$this->request->data['Group']['name'].'" has been saved'), 'alert-box', array('class'=>'alert-success'));
-                    
-                    $this->redirect(array('controller'=>'groups', 'action'=>'orgLayout', 'member'=>true));
-                } else {
-                    $this->Session->setFlash(__('The Group could not be saved. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
+                    $this->Flash->alertBox(
+                        'Your Idea/Suggestion/Improvement has been submitted',
+                        array(
+                            'params' => array(
+                                'class'=>'alert-success'
+                            )
+                        )
+                    );
+                }else{
+                    $this->Flash->alertBox(
+                        'Information not save! Please, try again.',
+                        array(
+                            'params' => array(
+                                'class'=>'alert-danger'
+                            )
+                        )
+                    );
                 }
             }else{
-                $this->Session->setFlash(
-                    __('Information not save! Please see errors below'), 
-                    'alert-box', 
-                    array('class'=>'alert-danger')
+                $this->Flash->alertBox(
+                    'Information not save! Please, try again.',
+                    array(
+                        'params' => array(
+                            'class'=>'alert-danger'
+                        )
+                    )
                 );
-                $this->set( compact( 'validationErrors' ) );
-                
-                $id =  $this->request->data['Group']['parent_id'];
             }
+            
+            $this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
         }
         
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids) ){
-            //get children ids of the super id
-            $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
-            $group_ids = $this->Group->getChildren($group_id);
-            //get all users in those groups
-            $active_user_ids = $this->User->activeUserList($group_ids);
-            
-            $search_ids = array();
-            foreach($active_user_ids as $key=>$activeId){
-                $search_ids[$key] = $activeId['pro_users']['id'];
-            }
-            
-            $users = $this->User->find('list', array(
-                'conditions' => array(
-                    'User.id'=>$search_ids, 
-                ),
-                'contain' => array(
-                    
-                ),
-                'fields'=>array('User.id', 'User.fullname')
-            ));
-            
-            //if they are already a supervisor, remove them from user list
-            foreach($users as $key=>$user){
-               $group = $this->Group->find('first', array(
-                    'conditions' => array(
-                        'Group.supervisor_id'=>$key
-                    ),
-                    'contain' => array(
-                        
-                    ),
-                    'fields'=>array('Group.id')
-                )); 
-                if(!empty($group)){
-                    unset($users[$key]);
-                }
-                
-            }
-            
-            if(empty($users)){ $users = "No Users Found"; }
-            
-            $this->set( 'userList', $users );
-            $this->set( 'id', $id );
-            
-            //grab list of states for form
-            $states = $this->State->getListState();
-            $this->set('states', $states);
-    
-            $this->set('breadcrumbs', array(
-                array('title'=>'Account Settings', 'link'=>array('controller'=>'groups', 'action'=>'index', 'member'=>true ) ),
-                array('title'=>'Organizational Layout', 'link'=>array('controller'=>'groups', 'action'=>'orgLayout', 'member'=>true ) ),
-                array('title'=>'New Group', 'link'=>array('controller'=>'groups', 'action'=>'group_add', 'member'=>true, $id ) ),
-            ));    
-            //$this->layout = 'blank_nojs';
-        }
+        
     }
     
     public function delete($id = null, $empDelete = null) {
-        $this->Group->id = $id;
-        $empDelete = (is_null($empDelete)) ? 'No' : $empDelete;
-        
-        $parent = $this->Group->getPath($this->Group->id);
-        
-        //Check for top level. If is main account/iworkzone only can delete
-        $parent_count = count($parent);
-        if($parent_count >= 3){
-            //Grap all children ids/group id
-            $allChildren = $this->Group->children($id);
-            $all_ids = set::extract($allChildren, '{n}.Group.id');
-            $all_ids[] = $id;
-            
-            $parent_id = $parent[1]['Group']['id'];
-            
-            if($empDelete == 'No'){
-                //Grab all users in group and children, update to parent id;
-                $this->GroupMembership->updateAll(
-                    array('GroupMembership.group_id' => $parent_id),
-                    array('GroupMembership.group_id' => $all_ids)
-                );            
-            }else{
-                //Grap all children ids/group id and delete
-                
-            }
-            
-            if($this->Group->delete()){
-                $this->Session->setFlash(
-                    __('Deletetion Successful'), 
-                    'alert-box', 
-                    array('class'=>'alert-success')
-                );
-            } else {
-                $this->Session->setFlash(
-                    __('There Was An Error! Please Try Again'), 
-                    'alert-box', 
-                    array('class'=>'alert-danger')
-                );
-            }
-        }else{
-            $this->Session->setFlash(
-                __('You cannot delete this level of account'), 
-                'alert-box', 
-                array('class'=>'alert-danger')
-            );
-            
+        $this->Improvement->id = $id;
+
+        if (!$this->Improvement->exists()) {
+            throw new NotFoundException(__('Invalid record'));
         }
         
-        return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
+        $this->request->data['Improvement']['id'] = $id;
+        
+        if ($this->Improvement->delete()) {
+            #Audit::log('Group record added', $this->request->data );
+            //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
+            $this->Flash->alertBox(
+                'Record Deleted',
+                array(
+                    'params' => array(
+                        'class'=>'alert-success'
+                    )
+                )
+            );
+        }else{
+            $this->Flash->alertBox(
+                'Record not Deleted! Please, try again.',
+                array(
+                    'params' => array(
+                        'class'=>'alert-danger'
+                    )
+                )
+            );
+        }
+        
+        $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
+    }
+    
+    public function accept($id=null, $priority=null){
+        $this->Improvement->id = $id;
+
+        if (!$this->Improvement->exists()) {
+            throw new NotFoundException(__('Invalid record'));
+        }
+        
+        $this->request->data['Improvement']['id'] = $id;
+        $this->request->data['Improvement']['priority'] = $priority;
+        $this->request->data['Improvement']['accepted_date'] = date('Y-m-d', strtotime('now'));
+        
+        if ($this->Improvement->saveAll($this->request->data)) {
+            #Audit::log('Group record added', $this->request->data );
+            //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
+            $this->Flash->alertBox(
+                'Record Saved',
+                array(
+                    'params' => array(
+                        'class'=>'alert-success'
+                    )
+                )
+            );
+        }else{
+            $this->Flash->alertBox(
+                'Record not save! Please, try again.',
+                array(
+                    'params' => array(
+                        'class'=>'alert-danger'
+                    )
+                )
+            );
+        }
+        
+        $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
+        
+    }
+    
+    public function reject($id=null){
+        $this->Improvement->id = $id;
+
+        if (!$this->Improvement->exists()) {
+            throw new NotFoundException(__('Invalid record'));
+        }
+        
+        $this->request->data['Improvement']['id'] = $id;
+        $this->request->data['Improvement']['is_active'] = 2;
+        
+        if ($this->Improvement->saveAll($this->request->data)) {
+            #Audit::log('Group record added', $this->request->data );
+            //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
+            $this->Flash->alertBox(
+                'Record Saved',
+                array(
+                    'params' => array(
+                        'class'=>'alert-success'
+                    )
+                )
+            );
+        }else{
+            $this->Flash->alertBox(
+                'Record not save! Please, try again.',
+                array(
+                    'params' => array(
+                        'class'=>'alert-danger'
+                    )
+                )
+            );
+        }
+        
+        $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
+        
     }
 }

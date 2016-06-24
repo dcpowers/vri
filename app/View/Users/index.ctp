@@ -25,7 +25,7 @@
                             <?php
                             echo $this->Html->link(
                                 $letter, 
-                                array('controller'=>'users','action'=>'index', $letter, $status, $viewBy),
+                                array('controller'=>'Users','action'=>'index', $letter, $status, $viewBy),
                                 array( 'escape'=>false) 
                             );
                             ?>

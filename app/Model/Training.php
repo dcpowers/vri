@@ -29,23 +29,9 @@ class Training extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'Manager' => array(
+        'User' => array(
             'className' => 'User',
-            'foreignKey' => 'manager_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
-        'Coordinator' => array(
-            'className' => 'User',
-            'foreignKey' => 'coordinator_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
-        'RegionalAdmin' => array(
-            'className' => 'User',
-            'foreignKey' => 'regional_admin_id',
+            'foreignKey' => 'updated_by_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
@@ -57,12 +43,27 @@ class Training extends AppModel {
             'fields' => '',
             'order' => ''
         ),
+        'Account' => array(
+            'className' => 'Account',
+            'foreignKey' => 'account_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'Department' => array(
+            'className' => 'Department',
+            'foreignKey' => 'department_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        
+        
     );
     
     public $hasMany = array(
-        'AccountDepartment',
-        'DepartmentUser',
-        'User'
+        'TrainingMembership',
+        'TrainingUser',
     );
     
     

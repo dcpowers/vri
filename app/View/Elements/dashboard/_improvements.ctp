@@ -21,7 +21,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
                 array('controller'=>'Improvements', 'action'=>'add'),
-                array('escape'=>false)
+                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
             );
             
             if(AuthComponent::user('Role.permission_level') >= 60){
@@ -109,3 +109,4 @@
     </div>
     <div class="box-footer"></div>
 </div>
+

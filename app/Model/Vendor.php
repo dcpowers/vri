@@ -31,4 +31,24 @@ class Vendor extends AppModel {
     public $hasMany = array(
         'Asset'
     );
+    
+    public function pickList( ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.is_active'=>1
+            ),
+            'order'=>$this->alias.'.name asc'
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('all', $find_options );
+
+        foreach ( $recs as $key=>$rec ) {
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['name']));
+        }
+        return $dataArr;
+    }
 }

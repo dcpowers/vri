@@ -73,7 +73,7 @@
             <div class="input-group">
                 <?php
                 echo $this->Form->input( 'Search.q', array(
-                    'placeholder'=>'TestCode,TestRequest,etc..',
+                    'placeholder'=>'Search,etc..',
                 ));
                 ?>
                 <div class="input-group-btn">

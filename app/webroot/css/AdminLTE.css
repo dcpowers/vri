@@ -2627,7 +2627,7 @@ a:focus {
 .table-bordered > thead > tr > td,
 .table-bordered > tbody > tr > td,
 .table-bordered > tfoot > tr > td {
-  border: 1px solid #f4f4f4;
+  border: 1px solid #dddddd;
 }
 .table-bordered > thead > tr > th,
 .table-bordered > thead > tr > td {
@@ -2931,7 +2931,7 @@ table.text-center th {
   background: rgba(0, 0, 0, 0.3);
 }
 .modal-content {
-  border-radius: 0;
+  /*border-radius: 0;*/
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.125);
   border: 0;
@@ -2946,7 +2946,7 @@ table.text-center th {
   border-bottom-color: #f4f4f4;
 }
 .modal-footer {
-  border-top-color: #f4f4f4;
+  /*border-top-color: #f4f4f4;*/
 }
 .modal-primary .modal-header,
 .modal-primary .modal-footer {
@@ -4225,7 +4225,8 @@ table.text-center th {
   background-color: #0073b7 !important;
 }
 .bg-white {
-  background-color: #ffffff !important;
+    background-color: #ffffff !important;
+    padding: 20px;
 }
 .bg-light-blue,
 .label-primary,

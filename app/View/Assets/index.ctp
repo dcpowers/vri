@@ -32,7 +32,7 @@
         <table class="table table-striped" id="assetsTable">
             <thead>
                 <tr class="tr-heading">
-                    <th>
+                    <th class="col-md-2">
                         <?php echo $this->Paginator->sort('Asset.asset', 'Asset');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.asset_type_id'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -41,7 +41,7 @@
                         <?php endif; ?>
                     </th>
                     
-                    <th>
+                    <th class="col-md-1">
                         <?php echo $this->Paginator->sort('Asset.tag_number', 'Tag');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.tag_number'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -50,7 +50,7 @@
                         <?php endif; ?>
                     </th>
                     
-                    <th>
+                    <th class="col-md-2">
                         <?php echo $this->Paginator->sort('Asset.manufacturer_id', 'Manufacturer');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.manufacturer_id'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -59,7 +59,7 @@
                         <?php endif; ?>
                     </th>
                             
-                    <th>
+                    <th class="col-md-2">
                         <?php echo $this->Paginator->sort('Asset.model', 'Model');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.model'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -68,16 +68,16 @@
                         <?php endif; ?>
                     </th>
                     
-                    <th>
+                    <!--<th>
                         <?php echo $this->Paginator->sort('Asset.serial_number', 'Serial');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.serial_number'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
                         <?php else: ?>
                             <i class='fa fa-sort'></i>
                         <?php endif; ?>
-                    </th>
+                    </th>-->
                     
-                    <th>
+                    <th class="col-md-3">
                         <?php echo $this->Paginator->sort('Asset.account_id', 'Account');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.account_id'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -86,7 +86,7 @@
                         <?php endif; ?>
                     </th>
                     
-                    <th>
+                    <th class="col-md-2">
                         <?php echo $this->Paginator->sort('Asset.user_id', 'Assigned To');?>  
                         <?php if ($this->Paginator->sortKey() == 'Asset.user_id'): ?>
                             <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -94,17 +94,12 @@
                             <i class='fa fa-sort'></i>
                         <?php endif; ?>
                     </th>
-                    
-                    <th>&nbsp;</th>
                 </tr>
             </thead>
             
             <tbody>
                 <?php
                 foreach($data as $asset){
-                    #$manager_name = $account['Manager']['first_name'] .' '. $account['Manager']['last_name'];
-                    #$coordinator_name = $account['Coordinator']['first_name'] .' '. $account['Coordinator']['last_name'];
-                    #$regional_admin_name = $account['RegionalAdmin']['first_name'] .' '. $account['RegionalAdmin']['last_name'];
                     ?>
                     <tr>
                         <td>
@@ -123,21 +118,11 @@
                                 
                         <td><?=$asset['Asset']['model']?></td>
                                 
-                        <td><?=$asset['Asset']['serial_number']?></td>
+                        <!--<td><?=$asset['Asset']['serial_number']?></td>-->
                         
                         <td><?=$asset['Account']['name']?></td>
                         
                         <td><?=$asset['AssignedTo']['first_name']?> <?=$asset['AssignedTo']['last_name']?></td>
-                        
-                        <td>
-                            <?php
-                            echo $this->Html->link(
-                                '<i class="fa fa-eye fa-fw"></i> <span> View</span>',
-                                array('controller'=>'Assets', 'action'=>'view', $asset['Asset']['id']),
-                                array('escape'=>false, 'class'=>'btn btn-info btn-xs')
-                            );
-                            ?>
-                        </td>
                     </tr>
                     <?php
                 }

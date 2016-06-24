@@ -74,7 +74,7 @@ class Asset extends AppModel {
     );
     
     public $validationSets = array( 
-        'name' => array(
+        'asset' => array(
             'rule' => 'notEmpty',
             'message' => 'This field cannot be left blank'
         )

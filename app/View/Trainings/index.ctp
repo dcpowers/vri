@@ -1,5 +1,5 @@
 <?php
-    #pr($settings);
+    #pr($trainings);
     #exit; 
 ?>
 <div class="account index bg-white">
@@ -9,103 +9,116 @@
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> All Training</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php #echo $this->element( 'accounts/dashhead_toolbar' );?>
+            <?php echo $this->element( 'accounts/dashhead_toolbar' );?>
         </div>
     </div>
     <div class="flextable">
-        <div class="flextable-item flextable-primary">
+        <div class="flextable-item">
+            <ul class="pagination pagination-sm">
+                <li>
+                    <?php
+                    echo $this->Html->link(
+                        'View By File Type',
+                        array('controller'=>'Trainings', 'action'=>'index', 'fileType'),
+                        array('escape'=>false)
+                    );
+                    ?>
+                </li>
+                
+                <li>
+                    <?php
+                    echo $this->Html->link(
+                        'View Required',
+                        array('controller'=>'Trainings', 'action'=>'index', 'required'),
+                        array('escape'=>false)
+                    );
+                    ?>
+                </li>
+                
+                <li>
+                    <?php
+                    echo $this->Html->link(
+                        'View By Account',
+                        array('controller'=>'Trainings', 'action'=>'index', 'account'),
+                        array('escape'=>false)
+                    );
+                    ?>
+                </li>
+                
+                <li>
+                    <?php
+                    echo $this->Html->link(
+                        'View By Departments',
+                        array('controller'=>'Trainings', 'action'=>'index', 'department'),
+                        array('escape'=>false)
+                    );
+                    ?>
+                </li>
+                
+            </ul>
         </div>
     </div>
 
     <table class="table table-striped" id="accountsTable">
         <thead>
             <tr class="tr-heading">
-                <th>
-                            <?php echo $this->Paginator->sort('Account.name', 'Account Name');?>  
-                            <?php if ($this->Paginator->sortKey() == 'Account.name'): ?>
-                                <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
-                            <?php else: ?>
-                                <i class='fa fa-sort'></i>
-                            <?php endif; ?>
+                <th class="col-md-3">
+                    <?php echo $this->Paginator->sort('name', 'Name');?>  
+                    <?php if ($this->Paginator->sortKey() == 'name'): ?>
+                        <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
+                    <?php else: ?>
+                        <i class='fa fa-sort'></i>
+                    <?php endif; ?>
                 </th>
                 
-                <th>
-                            <?php echo $this->Paginator->sort('Manager.first_name', 'General Manager');?>  
-                            <?php if ($this->Paginator->sortKey() == 'Manager.first_name'): ?>
-                                <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
-                            <?php else: ?>
-                                <i class='fa fa-sort'></i>
-                            <?php endif; ?>
+                <th class="col-md-5">Description</th>
+                
+                <th class="col-md-1 text-center">
+                    <?php echo $this->Paginator->sort('is_active', 'Status');?>  
+                    <?php if ($this->Paginator->sortKey() == 'is_active'): ?>
+                        <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
+                    <?php else: ?>
+                        <i class='fa fa-sort'></i>
+                    <?php endif; ?>
                 </th>
                 
-                <th>
-                            <?php echo $this->Paginator->sort('Coordinator.first_name', 'Systems Coordinator');?>  
-                            <?php if ($this->Paginator->sortKey() == 'Coordinator.first_name'): ?>
-                                <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
-                            <?php else: ?>
-                                <i class='fa fa-sort'></i>
-                           <?php endif; ?>
-                </th>
-                        
-                <th>
-                            <?php echo $this->Paginator->sort('RegionalAdmin.first_name', 'Regional Administrator');?>  
-                            <?php if ($this->Paginator->sortKey() == 'RegionalAdmin.first_name'): ?>
-                                <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
-                            <?php else: ?>
-                                <i class='fa fa-sort'></i>
-                            <?php endif; ?>
-                </th>
-                
-                <th>
-                            <?php echo $this->Paginator->sort('Account.is_active', 'Account Status');?>  
-                            <?php if ($this->Paginator->sortKey() == 'Account.is_active'): ?>
-                                <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
-                            <?php else: ?>
-                                <i class='fa fa-sort'></i>
-                            <?php endif; ?>
-                </th>
-                
-                <th class="text-center">Active Employee Count</th>
-                
-                <th>&nbsp;</th>
+                <th class="col-md-3 text-center">Files</th>
             </tr>
         </thead>
         
         <tbody>
             <?php
-            foreach($accounts as $account){
-                $manager_name = $account['Manager']['first_name'] .' '. $account['Manager']['last_name'];
-                $coordinator_name = $account['Coordinator']['first_name'] .' '. $account['Coordinator']['last_name'];
-                $regional_admin_name = $account['RegionalAdmin']['first_name'] .' '. $account['RegionalAdmin']['last_name'];
+            #pr($trainings);
+            foreach($trainings as $trn){
+                $video = (!empty($trn['Training']['video'])) ? '<i class="fa fa-file-video-o fa-stack-1x"></i>' : '<i class="fa fa-file-video-o fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i>' ;
+                $power_point = (!empty($trn['Training']['power_point'])) ? '<i class="fa fa-file-powerpoint-o fa-stack-1x"></i>' : '<i class="fa fa-file-powerpoint-o fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i>' ;
+                $leader = (!empty($trn['Training']['leader_files'])) ? '<i class="fa fa-file-pdf-o fa-stack-1x"></i>' : '<i class="fa fa-file-pdf-o fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i>' ;
+                
+                $videoText = (!empty($trn['Training']['video'])) ? 'Has Video' : 'No Video' ;
+                $powerText = (!empty($trn['Training']['power_point'])) ? 'Has Power Point' : 'No Power Point' ;
+                $leaderText = (!empty($trn['Training']['leader_files'])) ? 'Has Leader Guide' : 'No Leader Guide' ;
                 ?>
                 <tr>
                     <td>
                         <?php 
                         echo $this->Html->link(
-                            $account['Account']['name'].' ( '.$account['Account']['abr'].' )',
-                            array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id']),
+                            $trn['Training']['name'],
+                            array('controller'=>'Trainings', 'action'=>'view', $trn['Training']['id']),
                             array('escape'=>false)
                         );
                         ?> 
                     </td>
                             
-                    <td><?=$manager_name?></td>
+                    <td><?=$trn['Training']['description']?></td>
                             
-                    <td><?=$coordinator_name?></td>
-                            
-                    <td><?=$regional_admin_name?></td>
-                            
-                    <td><span class="<?=$account['Status']['color']?>"><?=$account['Status']['name']?></span></td>
+                    <td class="text-center"><span class="<?=$trn['Status']['color']?>"><?=$trn['Status']['name']?></span></td>
                     
-                    <td class="text-center"><?php echo count($account['User']); ?></td>
-                    <td>
-                        <?php
-                        echo $this->Html->link(
-                            '<i class="fa fa-eye fa-fw"></i> <span> View</span>',
-                            array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id']),
-                            array('escape'=>false, 'class'=>'btn btn-info btn-xs')
-                        );
-                        ?>
+                    <td class="text-center">
+                        <ul class="list-inline">
+                            <li><span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="<?=$videoText?>"><?=$video?></span></li>
+                            <li><span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="<?=$powerText?>"><?=$power_point?></span></li>
+                            <li><span class="fa-stack fa-lg" data-toggle="tooltip" data-placement="top" title="<?=$leaderText?>"><?=$leader?></span></li>
+                        </ul>
                     </td>
                 </tr>
                 <?php

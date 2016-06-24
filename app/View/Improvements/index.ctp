@@ -2,7 +2,7 @@
     #pr($improvements);
     #exit; 
 ?>
-<div class="improvement index">
+<div class="improvement index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">Suggestions Manager</h6>
@@ -17,6 +17,8 @@
         </div>
     </div>
     <?php
+    $nextPriority = count($improvements['accepted']) + 1;
+    
     foreach($improvements as $title=>$improvementType){
         ?>
         <div class="hr-divider">
@@ -39,7 +41,6 @@
             <tbody>
                 <?php
                 $currentCount = count($improvementType);
-                
                 foreach($improvementType as $data){
                     #pr($data);
                     #exit;
@@ -59,7 +60,7 @@
                     if($showApproveButton == true && $data['Improvement']['is_active'] != 2){
                         $buttons[] = $this->Html->link(
                             '<i class="fa fa-thumbs-up fa-fw"></i>',
-                            array('controller'=>'Improvements', 'action'=>'accept', $data['Improvement']['id']),
+                            array('controller'=>'Improvements', 'action'=>'accept', $data['Improvement']['id'], $nextPriority),
                             array('escape'=>false, 'class'=>'btn btn-primary btn-xs')
                         );
                         
@@ -82,7 +83,8 @@
                     $buttons[] = $this->Html->link(
                         '<i class="fa fa-trash fa-fw"></i>',
                         array('controller'=>'Improvements', 'action'=>'delete', $data['Improvement']['id']),
-                        array('escape'=>false, 'class'=>'btn btn-danger btn-xs')
+                        array('escape'=>false, 'class'=>'btn btn-danger btn-xs'),
+                        'Are You Sure You Want To Delete This?'
                     );
                     ?>
                     <tr>
@@ -111,6 +113,7 @@
                         </td>
                     </tr>
                     <?php
+                    $nextPriority++;
                 }
                 ?>
             </tbody>

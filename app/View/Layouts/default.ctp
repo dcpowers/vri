@@ -62,6 +62,8 @@
             <?php echo $this->Html->script('../plugins/daterangepicker/daterangepicker'); ?>
             <!-- datepicker -->
             <?php echo $this->Html->script('../plugins/datepicker/bootstrap-datepicker'); ?>
+            <!-- datepicker -->
+            <?php echo $this->Html->script('bootstrap-datetimepicker.min'); ?>
             <!-- Bootstrap WYSIHTML5 -->
             <?php echo $this->Html->script('../plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min'); ?>
             <!-- Slimscroll -->
@@ -81,6 +83,7 @@
             <?php echo $this->Html->css('AdminLTE.css'); ?>
             <?php echo $this->Html->css('bootstrap-chosen.css'); ?>
             <?php echo $this->Html->css('app.css'); ?>
+            <?php echo $this->Html->css('bootstrap-datetimepicker.css'); ?>
             <?php echo $this->Html->css('bootstrap-editable.css'); ?>
             <?php echo $this->Html->css('../plugins/iCheck/square/blue.css'); ?>
             <?php echo $this->Html->css('../dist/css/skins/_all-skins.min.css'); ?>
