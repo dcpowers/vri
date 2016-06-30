@@ -42,10 +42,11 @@ class TrainingsController extends AppController {
         parent::beforeFilter();
         
         $this->set('title_for_layout', 'Training');
-        
+        /*
         $this->set('breadcrumbs', array(
             array('title'=>'Training', 'link'=>array('controller'=>'Trainings', 'action'=>'index')),
         ));
+        */
     }
     
     public function index() {
@@ -55,8 +56,8 @@ class TrainingsController extends AppController {
                 #'Account.id' => $search_ids,
             ),
             'contain'=>array(
-                'User'=>array(
-                    'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+                'UpdatedBy'=>array(
+                    'fields'=>array('UpdatedBy.id', 'UpdatedBy.first_name', 'UpdatedBy.last_name')
                 ),
                 'Status'=>array(),
                 'Account'=>array(),
@@ -92,8 +93,8 @@ class TrainingsController extends AppController {
                 'Training.id' => $id,
             ),
             'contain'=>array(
-                'User'=>array(
-                    'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+                'UpdatedBy'=>array(
+                    'fields'=>array('UpdatedBy.id', 'UpdatedBy.first_name', 'UpdatedBy.last_name'),
                 ),
                 'Status'=>array(),
                 'Account'=>array(),
@@ -112,10 +113,20 @@ class TrainingsController extends AppController {
                         )
                     )
                 ),
+                'TrainingRecord'=>array(
+                    'User'=>array(
+                        'fields'=>array(
+                            'User.id', 'User.first_name', 'User.last_name'
+                        ),
+                    )
+                )
             ),
         ));
+        
+        #pr($training);
+        #exit;
         $this->set('training', $training);
-        $this->set('status', $this->Setting->pickList('status'));
+        $this->set('settings', $this->Training->yesNo());
         $this->set('trnCat', $this->TrainingCategory->pickList());
     }
 }

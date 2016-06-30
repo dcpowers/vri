@@ -128,7 +128,6 @@ class AccountsController extends AppController {
         
         $this->set('pageStatus', $setStatus);
         
-        
         $account = $this->request->data = $this->Account->find('first', array(
             'conditions' => array(
                 'Account.id' => $id
