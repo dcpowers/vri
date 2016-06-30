@@ -39,4 +39,8 @@ class AppModel extends Model {
     function statusInt() {  
         return array(1 => 'Active', 2 => 'Inactive');  
     }
+    
+    function yesNo() {  
+        return array(1 => 'Yes', 2 => 'No');  
+    }
 }

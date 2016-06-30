@@ -2,7 +2,7 @@
     #pr($trainings);
     #exit; 
 ?>
-<div class="account index bg-white">
+<div class="training index">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">List Of Trainings</h6>
@@ -14,55 +14,74 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <ul class="pagination pagination-sm">
-                <li>
-                    <?php
-                    echo $this->Html->link(
-                        'View By File Type',
-                        array('controller'=>'Trainings', 'action'=>'index', 'fileType'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li>
-                    <?php
-                    echo $this->Html->link(
-                        'View Required',
-                        array('controller'=>'Trainings', 'action'=>'index', 'required'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li>
-                    <?php
-                    echo $this->Html->link(
-                        'View By Account',
-                        array('controller'=>'Trainings', 'action'=>'index', 'account'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li>
-                    <?php
-                    echo $this->Html->link(
-                        'View By Departments',
-                        array('controller'=>'Trainings', 'action'=>'index', 'department'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-            </ul>
+            <div class="btn-group">
+                <?php
+                echo $this->Html->link(
+                    '<i class="fa fa-plus fa-fw"></i> Add Training',
+                    array(),
+                    array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm' )
+                );
+                ?>
+            </div>
+            <div class="btn-group">
+                <?php
+                echo $this->Form->button('<i class="fa fa-gear fa-fw"></i><span class="caret"></span>',array(
+                    'type'=>'button',
+                    'class'=>'btn btn-default btn-sm dropdown-toggle', 
+                    'data-toggle'=>'dropdown', 
+                    'aria-haspopup'=>'true', 
+                    'aria-expanded'=>'false'
+                ));
+                ?>
+                <ul class="dropdown-menu">
+                    <li>
+                        <?php
+                        echo $this->Html->link(
+                            'View By File Type',
+                            array('controller'=>'Trainings', 'action'=>'index', 'fileType'),
+                            array('escape'=>false)
+                        );
+                        ?>
+                    </li>
+                    
+                    <li>
+                        <?php
+                        echo $this->Html->link(
+                            'View Required',
+                            array('controller'=>'Trainings', 'action'=>'index', 'required'),
+                            array('escape'=>false)
+                        );
+                        ?>
+                    </li>
+                    
+                    <li>
+                        <?php
+                        echo $this->Html->link(
+                            'View By Account',
+                            array('controller'=>'Trainings', 'action'=>'index', 'account'),
+                            array('escape'=>false)
+                        );
+                        ?>
+                    </li>
+                    
+                    <li>
+                        <?php
+                        echo $this->Html->link(
+                            'View By Departments',
+                            array('controller'=>'Trainings', 'action'=>'index', 'department'),
+                            array('escape'=>false)
+                        );
+                        ?>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <table class="table table-striped" id="accountsTable">
+    <table class="table table-striped table-condensed" id="trainingTable">
         <thead>
             <tr class="tr-heading">
-                <th class="col-md-3">
+                <th class="col-md-4">
                     <?php echo $this->Paginator->sort('name', 'Name');?>  
                     <?php if ($this->Paginator->sortKey() == 'name'): ?>
                         <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -82,7 +101,7 @@
                     <?php endif; ?>
                 </th>
                 
-                <th class="col-md-3 text-center">Files</th>
+                <th class="col-md-2 text-center">Files</th>
             </tr>
         </thead>
         

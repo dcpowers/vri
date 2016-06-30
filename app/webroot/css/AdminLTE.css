@@ -307,7 +307,7 @@ a:focus {
   display: none;
 }
 .main-header .navbar-brand {
-  color: #fff;
+  color: #000000;
 }
 .content-header {
   position: relative;
@@ -395,7 +395,10 @@ a:focus {
     margin: 0;
   }
   .main-header .navbar-custom-menu {
-    float: right;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 40px;
   }
 }
 @media (max-width: 991px) {
@@ -687,7 +690,7 @@ a:focus {
 }
 .control-sidebar-bg,
 .control-sidebar {
-  top: 0;
+  
   right: -230px;
   width: 230px;
   -webkit-transition: right 0.3s ease-in-out;
@@ -696,7 +699,7 @@ a:focus {
 }
 .control-sidebar {
   position: absolute;
-  padding-top: 50px;
+  top: 105px;
   z-index: 1010;
 }
 @media (max-width: 768px) {
@@ -905,7 +908,8 @@ a:focus {
  * -------------------------
  */
 /*Dropdowns in general*/
-.dropdown-menu {
+
+/*.dropdown-menu {
   box-shadow: none;
   border-color: #eee;
 }
@@ -924,6 +928,7 @@ a:focus {
 .dropdown-menu > .divider {
   background-color: #eee;
 }
+*/
 .navbar-nav > .notifications-menu > .dropdown-menu,
 .navbar-nav > .messages-menu > .dropdown-menu,
 .navbar-nav > .tasks-menu > .dropdown-menu {
@@ -2261,6 +2266,7 @@ a:focus {
 .btn-warning.hover {
   background-color: #e08e0b;
 }
+/*
 .btn-outline {
   border: 1px solid #fff;
   background: transparent;
@@ -2272,6 +2278,7 @@ a:focus {
   color: rgba(255, 255, 255, 0.7);
   border-color: rgba(255, 255, 255, 0.7);
 }
+*/
 .btn-link {
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -2615,7 +2622,9 @@ a:focus {
   border-top: 1px solid #dddddd;
 }
 .table > thead > tr > th {
-  border-bottom: 2px solid #C0C0C0;
+  border-bottom: 2px solid #BABABA;
+  border-top: 2px solid #BABABA;
+  background-color: #EFEFEF;
 }
 .table tr td .progress {
   margin-top: 5px;
@@ -4226,7 +4235,7 @@ table.text-center th {
 }
 .bg-white {
     background-color: #ffffff !important;
-    padding: 20px;
+    
 }
 .bg-light-blue,
 .label-primary,

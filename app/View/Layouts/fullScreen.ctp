@@ -123,20 +123,19 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body class="hold-transition layout-top-nav skin-black">
-        <div class="wrapper bg-white">
-            <?php echo $this->element('header'); ?>
-            <?php echo $this->element('menu'); ?>
-            <div class="content-wrapper bg-white">
-                <div class="container">
-                    <section class="content-header">
-                        <?php echo $this->element('breadcrumbs'); ?>        
-                    </section>
-                    <section class="content">
-                        <?php echo $this->Flash->render(); ?>
-                        <?php echo $this->fetch('content'); ?>
-                    </section>
-                </div>
+    <body class="hold-transition skin-purple sidebar-mini wysihtml5-supported">
+        <div class="wrapper">
+            <?php echo $this->element('fullScreenHeader'); ?>
+            <?php echo $this->element('fullScreenMenu-left'); ?>
+            
+            <div class="content-wrapper">
+                <section class="content-header">
+                    <?php echo $this->element('breadcrumbs'); ?>        
+                </section>
+                <section class="content">
+                    <?php echo $this->Flash->render(); ?>
+                    <?php echo $this->fetch('content'); ?>
+                </section>
             </div>
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">

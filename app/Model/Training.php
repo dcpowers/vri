@@ -29,7 +29,7 @@ class Training extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'User' => array(
+        'UpdatedBy' => array(
             'className' => 'User',
             'foreignKey' => 'updated_by_id',
             'conditions' => '',
@@ -63,7 +63,7 @@ class Training extends AppModel {
     
     public $hasMany = array(
         'TrainingMembership',
-        'TrainingUser',
+        'TrainingRecord',
     );
     
     

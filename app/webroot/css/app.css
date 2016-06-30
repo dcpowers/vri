@@ -386,3 +386,10 @@
      border-top-left-radius: 5px;
      border-top-right-radius: 5px;
 }
+
+.tab-content{
+    border:1px solid #dddddd;
+    padding:16px 12px;
+    position:relative;
+    border-width: 0px 1px 1px;
+}
