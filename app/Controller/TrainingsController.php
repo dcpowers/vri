@@ -118,7 +118,8 @@ class TrainingsController extends AppController {
                         'fields'=>array(
                             'User.id', 'User.first_name', 'User.last_name'
                         ),
-                    )
+                    ),
+                    'order'=>array('TrainingRecord.date'=>'DESC')
                 )
             ),
         ));

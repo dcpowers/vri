@@ -41,10 +41,6 @@ class AssetsController extends AppController {
         parent::beforeFilter();
         
         $this->set('title_for_layout', 'Assets');
-        
-        $this->set('breadcrumbs', array(
-            array('title'=>'Assets', 'link'=>array('controller'=>'Assets', 'action'=>'index')),
-        ));
     }
     
     public function index($letter = null, $status = null, $viewBy = null) {

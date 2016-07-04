@@ -62,7 +62,8 @@ class Account extends AppModel {
     public $hasMany = array(
         'AccountDepartment',
         'DepartmentUser',
-        'User'
+        'User',
+        'Asset'
     );
     
     

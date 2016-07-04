@@ -153,7 +153,7 @@ class UsersController extends AppController {
                     'fields'=>array('Department.name', 'Department.abr')
                 ),
                 'Status'=>array(
-                    'fields'=>array('Status.name', 'Status.color')
+                    'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
             ),
             'limit' => 100,

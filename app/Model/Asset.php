@@ -54,7 +54,7 @@ class Asset extends AppModel {
             'className' => 'User',
             'foreignKey' => 'user_id',
             'conditions' => '',
-            'fields' => 'CONCAT( AssignedTo.last_name, ", " , AssignedTo.first_name ) as full_name',
+            'fields' => '',
             'order' => ''
         ),
         'Status' => array(
