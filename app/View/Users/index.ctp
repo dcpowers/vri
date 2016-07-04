@@ -91,7 +91,7 @@
     <div id="employeeList">
         <div class="collapse <?=$in?>" id="collapseExample" aria-expanded="<?=$var?>">
             <div class="flextable">
-                <?php echo $this->element( 'users/flex_table' );?>            
+                <?php echo $this->element( 'Users/flex_table' );?>            
             </div>
         </div>
         <?php
