@@ -13,14 +13,25 @@
         </div>
     </div>
     <div class="flextable">
-        <div class="flextable-item">
+        <div class="flextable-item flextable-primary">
+            <?php    
+            echo $this->Html->link(
+                '<i class="fa fa-plus fa-fw"></i> Add Asset', 
+                array('plugin'=>false, 'controller'=>'Assets', 'action'=>'add'),
+                array('escape'=>false, 'class'=>'btn btn-primary btn-outline btn-sm', 'data-toggle'=>'modal','data-target'=>'#myLgModal'  ) 
+            );
+            ?>
         </div>
     </div>
-
-    <div class="col-md-2 pull-right">
-        <?php echo $this->element( 'Assets/search_bar' );?>    
-    </div>
-    <div class="col-md-10 pull-right">
+    
+    <?php echo $this->element( 'Assets/search_bar' );?>    
+    
+    <div class="collapse <?=$in?>" id="collapseExample" aria-expanded="<?=$var?>">
+            <div class="flextable">
+                <?php echo $this->element( 'users/flex_table' );?>            
+            </div>
+        </div>
+    
     <?php
     foreach($assets as $title=>$data){
         ?>

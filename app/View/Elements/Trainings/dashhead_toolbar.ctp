@@ -1,8 +1,8 @@
     <div class="dashhead-toolbar-item">
         <?php    
         echo $this->Html->link(
-            '<i class="fa fa-pencil fa-fw"></i> Edit Account', 
-            array('plugin'=>false, 'controller'=>'Accounts', 'action'=>'edit', $account['Account']['id'] ),
+            '<i class="fa fa-plus fa-fw"></i> Add Asset', 
+            array('plugin'=>false, 'controller'=>'Accounts', 'action'=>'add'),
             array('escape'=>false, 'class'=>'btn btn-primary', 'data-toggle'=>'modal','data-target'=>'#myLgModal'  ) 
         );
         ?>

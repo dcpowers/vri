@@ -8,7 +8,9 @@
             <h6 class="dashhead-subtitle">Training Details: <?=$training['Training']['name']?></h6>
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Training</h3>
         </div>
-        <div class="dashhead-toolbar">
+    </div>
+    <div class="flextable">
+        <div class="flextable-item flextable-primary">
             <?php
             echo $this->Html->link(
                 '<i class="fa fa-pencil fa-fw"></i> Edit',
@@ -16,10 +18,6 @@
                 array( 'escape'=>false, 'class'=>'btn btn-primary btn-outline' )
             );
             ?>
-        </div>
-    </div>
-    <div class="flextable">
-        <div class="flextable-item flextable-primary">
         </div>
     </div>
     

@@ -124,6 +124,7 @@
         <![endif]-->
     </head>
     <body class="hold-transition layout-top-nav skin-black">
+        
         <div class="wrapper bg-white">
             <?php echo $this->element('header'); ?>
             <?php echo $this->element('menu'); ?>

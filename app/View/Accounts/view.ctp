@@ -1,443 +1,459 @@
-<?php
-    #pr($settings);
-    #exit; 
-?>
+<style type="text/css">
+    #LoadingDiv{
+        margin:0px 0px 0px 0px;
+        position: relative;
+        min-height: 100%;
+        height: 100vh;
+        z-index:9999;
+        padding-top: 200px;
+        padding-left: 45%;
+        width: 100%;
+        clear:none;
+        /*background:url(/img/transbg.png);*/
+        background-color:#666666;
+        border:1px solid #000000;
+    }
+</style>
+
 <div class="account view bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">View/Edit Account: <?=$account['Account']['name']?></h6>
+            <h6 class="dashhead-subtitle">Account Details: <?=$account['Account']['name']?></h6>
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php #echo $this->element( 'accounts/dashhead_toolbar' );?>
+            <?php echo $this->element( 'accounts/dashhead_toolbar' );?>
         </div>
     </div>
     <div class="flextable">
         <div class="flextable-item flextable-primary">
         </div>
     </div>
-    
-    <?php 
-    echo $this->Form->create('Account', array(
-        'url'=>array('controller'=>'Accounts', 'action'=>'edit'),
-        'class'=>'form-horizontal',
-        'role'=>'form',
-        'inputDefaults'=>array(
-            'label'=>false,
-            'div'=>false,
-            'class'=>'form-control',
-            'error'=>false
-        )
-    ));
-                    
-    echo $this->Form->hidden('id', array('value'=>$this->request->data['Account']['id'])); 
-    ?> 
-    <h3 class="page-header pull-left">Account Information:</h3>
-    <ul class="pagination pagination-sm" style="margin: 10px 0px 10px 10px;">
-        <li class="btn-edit-set">
-            <?php 
-            echo $this->Form->button(
-                '<i class="fa fa-pencil fa-fw"></i> <span> Edit</span>',
-                array('type'=>'button', 'class'=>'btn btn-default btn-sm btn-edit')
-            );
-            ?>
-        </li>
-        
-        <li class="btn-cancel-set" style="display: none">
-            <?php
-            echo $this->Form->button(
-                '<i class="fa fa-close fa-fw"></i> <span> Cancel</span>',
-                array('type'=>'button', 'class'=>'btn btn-default btn-sm btn-cancel')
-            );
-            ?>
-        </li>
-        
-        <li class="btn-cancel-set" style="display: none">
-            <?php
-            echo $this->Form->button(
-                '<i class="fa fa-save fa-fw"></i> Save', 
-                array('type'=>'submit', 'class'=>'btn btn-primary btn-sm')
-            );
-            ?> 
-        </li>
-    </ul>
-    
-    <div class="row" style="clear: both;">
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label for="name" class="col-sm-4 control-label">Name:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input( 'name', array(
-                        'disabled'=>true, 
-                        'class'=>'accountInputs form-control'
-                    )); 
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="abr" class="col-sm-4 control-label">Abbreviation:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input( 'abr', array(
-                        'disabled'=>true, 
-                        'class'=>'accountInputs form-control'
-                    )); 
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="address" class="col-sm-4 control-label">Address:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input( 'address', array(
-                        'disabled'=>true, 
-                        'class'=>'accountInputs form-control'
-                    )); 
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="supervisor" class="col-sm-4 control-label">Supervisor:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input( 'manager_id', array(
-                        'options'=>$userList,
-                        'class'=>'chzn-select form-control accountInputs', 
-                        'empty' => true,
-                        'data-placeholder'=>'Select a Supervisor.....',
-                        'disabled'=>true, 
-                    ));
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="manager" class="col-sm-4 control-label">Systems Coordinator:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('coordinator_id', array(
-                        'options'=>$userList,
-                        'class'=>'chzn-select form-control accountInputs', 
-                        'empty' => true,
-                        'data-placeholder'=>'Select a Systems Coordinator.....',
-                        'disabled'=>true, 
-                    ));
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="regional_admin" class="col-sm-4 control-label">Regional Administrator:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('regional_admin_id', array(
-                        'options'=>$userList['Vanguard Resources'],
-                        'class'=>'chzn-select form-control accountInputs', 
-                        'empty' => true,
-                        'data-placeholder'=>'Select a Regional Administrator.....',
-                        'disabled'=>true,
-                    ));
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="department" class="col-sm-4 control-label">Department(s):</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('AccountDepartment.department_id', array(
-                        'options'=>$departments,
-                        'class'=>'chzn-select form-control accountInputs', 
-                        'empty' => true,
-                        'multiple'=>true,
-                        'data-placeholder'=>'Select Department(s).....',
-                        'disabled'=>true, 
-                    ));
-                    ?>
-                </div>
-            </div>
-        </div>
-                
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label for="status" class="col-sm-4 control-label">Account Status:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('is_active', array(
-                        'options'=>$status,
-                        'value'=>$account['Status']['id'],
-                        'class'=>'chzn-select form-control accountInputs', 
-                        'empty' => true,
-                        'multiple'=>false,
-                        'data-placeholder'=>'Select Account Status.....',
-                        'disabled'=>true, 
-                    ));
-                    ?>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="SprocketDB" class="col-sm-4 control-label">SprocketDB:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('SprocketDB', array(
-                        'disabled'=>true, 
-                        'class'=>'accountInputs form-control'
-                    )); 
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="AllPayID" class="col-sm-4 control-label">All Pay Id:</label>
-                <div class="col-sm-8">
-                    <?php 
-                    echo $this->Form->input('AllPayID', array(
-                        'disabled'=>true, 
-                        'class'=>'accountInputs form-control'
-                    )); 
-                    ?>
-                </div>
-            </div>
-                    
-            <div class="form-group">
-                <label for="AllPayID" class="col-sm-4 control-label">Old Department(s):</label>
-                <div class="col-sm-8">
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('EVS', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            EVS
-                        </label>
-                    </div>
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#info" data-toggle="tab">Account Details</a></li>
+            <li><a href="#users" data-toggle="tab">Employees</a></li>
+            <li><a href="#records" data-toggle="tab">Training Records</a></li>
+            <li><a href="#assets" data-toggle="tab">Assets</a></li>
+            <li><a href="#safety" data-toggle="tab">Safety</a></li>
+        </ul>
 
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('CE', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            CE
-                        </label>
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="info">
+                <?php #pr($account); ?>
+                <div class="row">
+                    <div class="col-md-3">
+                        <dl>
+                            <dt>Account Status:</dt>
+                            <dd><?=$account['Status']['name']?></dd>
+                        </dl>
+                        <dl>
+                            <dt>SprocketDB:</dt>
+                            <dd><?=$account['Account']['SprocketDB']?></dd>
+                        </dl>
+                        <dl>    
+                            <dt>All Pay Id:</dt>
+                            <dd><?=$account['Account']['AllPayID']?></dd>
+                        </dl>
+                        <dl>    
+                            <dt>Supervisor:</dt>
+                            <dd><?=$account['Manager']['first_name']?> <?=$account['Manager']['last_name']?></dd>
+                        </dl>
+                        <dl>    
+                            <dt>Systems Coordinator:</dt>
+                            <dd><?=$account['Coordinator']['first_name']?> <?=$account['Coordinator']['last_name']?></dd>
+                        </dl>
+                        <dl>    
+                            <dt>Regional Administrator:</dt>
+                            <dd><?=$account['RegionalAdmin']['first_name']?> <?=$account['RegionalAdmin']['last_name']?></dd>
+                        </dl>
                     </div>
-
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('Food', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            Food
-                        </label>
-                    </div>
-                            
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('POM', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            POM
-                        </label>
-                    </div>
-                            
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('LAU', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            LAU
-                        </label>
-                    </div>
-                            
-                    <div class="checkbox">
-                        <label>
-                            <?php 
-                            echo $this->Form->checkbox('SEC', array(
-                                'disabled'=>true, 
-                                'class'=>'accountInputs'
-                            )); 
-                            ?>
-                            SEC
-                        </label>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <dl>
+                                    <dt>Name:</dt>
+                                    <dd><?=$account['Account']['name']?> ( <?=$account['Account']['abr']?> )</dd>
+                                </dl>
+                                <dl>    
+                                    <dt>Address:</dt>
+                                    <dd><?=$account['Account']['address']?></dd>
+                                </dl>
+                            </div>
+                                    
+                            <div class="col-sm-6">
+                                <?php
+                                $evs = ($account['Account']['EVS'] == 1) ? true : false;
+                                $ce = ($account['Account']['CE'] == 1) ? true : false;
+                                $food = ($account['Account']['Food'] == 1) ? true : false;
+                                $pom = ($account['Account']['POM'] == 1) ? true : false;
+                                $lau = ($account['Account']['LAU'] == 1) ? true : false;
+                                $sec = ($account['Account']['SEC'] == 1) ? true : false;
+                                ?>
+                                <dl>
+                                    <dt>Current Department(s):</dt>
+                                    <dd>
+                                        <?php
+                                        if(!empty($account['AccountDepartment'])){
+                                            ?>
+                                            <ul>
+                                                <?php
+                                                foreach($account['AccountDepartment'] as $group){
+                                                    ?>
+                                                    <li><?=$group['Department']['name']?></li>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </ul>
+                                            <?php
+                                        }
+                                        ?>
+                                    </dd>
+                                </dl>
+                                <dl>    
+                                    <dt>Old Department(s):</dt>
+                                    
+                                    <dd>
+                                        <ul>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('EVS', array(
+                                                            'disabled'=>true, 
+                                                            'checked'=>$evs
+                                                        )); 
+                                                        ?>
+                                                        EVS
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('CE', array(
+                                                            'disabled'=>true, 
+                                                            'class'=>'accountInputs'
+                                                        )); 
+                                                        ?>
+                                                        CE
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('Food', array(
+                                                            'disabled'=>true, 
+                                                            'class'=>'accountInputs'
+                                                        )); 
+                                                        ?>
+                                                        Food
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('POM', array(
+                                                            'disabled'=>true, 
+                                                            'class'=>'accountInputs'
+                                                        )); 
+                                                        ?>
+                                                        POM
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('LAU', array(
+                                                            'disabled'=>true, 
+                                                            'class'=>'accountInputs'
+                                                        )); 
+                                                        ?>
+                                                        LAU
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <?php 
+                                                        echo $this->Form->checkbox('SEC', array(
+                                                            'disabled'=>true, 
+                                                            'class'=>'accountInputs'
+                                                        )); 
+                                                        ?>
+                                                        SEC
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <?php echo $this->Form->end();?>
+            </div>
+            <div class="tab-pane fade" id="users">
+                <div id="LoadingDiv" style="display:none;">
+                        <?php echo $this->Html->image('ajax-loader.gif'); ?>
+                    </div>
+                <div id="employeeList">
+                    
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <ul class="pagination pagination-sm">
+                                <li class="<?=$deptClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'View By Department',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'type', 'id'=>'department')
+                                    );
+                                    ?>
+                                </li>
+                                
+                                <li class="<?=$roleClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'View By Role',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'type', 'id'=>'role')
+                                    );
+                                    ?>
+                                </li>
+                                
+                                <li class="<?=$superClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'View By Supervisor',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'type', 'id'=>'supervisor')
+                                    );
+                                    ?>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-8">
+                            <ul class="pagination pagination-sm">
+                                <li class="<?=$aStatusClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'Active',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'statusType', 'id'=>1)
+                                    );
+                                    ?>
+                                </li>
+                                
+                                <li class="<?=$iStatusClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'Inactive',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'statusType', 'id'=>2)
+                                    );
+                                    ?>
+                                </li>
+                                
+                                <li class="<?=$allStatusClass?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        'View All',
+                                        '#',
+                                        array('escape'=>false, 'class'=>'statusType', 'id'=>'all')
+                                    );
+                                    ?>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <?php
+                    foreach($employees as $department=>$employee){
+                        ?>
+                        <div class="hr-divider">
+                            <h3 class="hr-divider-content hr-divider-heading">
+                                <?=$department?>
+                            </h3>
+                        </div>
+                        <table class="table table-striped table-condensed table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-2">Name</th>
+                                    <th class="col-sm-2">Username</th>
+                                    <th class="col-sm-2">E-Mail</th>
+                                    <th class="col-sm-2">Role</th>
+                                    <th class="col-sm-2">Supervisor</th>
+                                    <th class="col-sm-2 text-center">Status</th>
+                                </tr>
+                            </thead>
+                                    
+                            <tbody>
+                                <?php
+                                foreach($employee as $user){
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <?php
+                                            echo $this->Html->link(
+                                                $user['first_name'].' '.$user['last_name'],
+                                                array('controller'=>'Users', 'action'=>'view', $user['id']),
+                                                array('escape'=>false)
+                                            );
+                                            ?>
+                                        </td>
+                                                
+                                        <td><?=$user['username']?></td>
+                                                
+                                        <td><?=$user['email']?></td>
+                                                
+                                        <td><?=$user['Role']['name']?></td>
+                                        <td>
+                                            <?php
+                                            if(array_key_exists('first_name', $user['Supervisor'])){
+                                                echo $user['Supervisor']['first_name'].' '.$user['Supervisor']['last_name'];
+                                            }else{
+                                                echo '--';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="<?=$user['Status']['color']?> label-as-badge"><i class="fa <?=$user['Status']['icon']?>"></i></span>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                        <?php
+                    }
+                    ?>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="records">
+            </div>
+            <div class="tab-pane fade" id="assets">
+                <table class="table table-striped table-condensed" id="assetsTable">
+                    <thead>
+                        <tr class="tr-heading">
+                            <th class="col-md-6">Asset</th>
+                            <th>Tag</th>
+                            <th>Manufacturer</th>
+                            <th>Model</th>
+                            <th class="col-md-3">Assigned To</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <?php
+                        foreach($account['Asset'] as $asset){
+                            ?>
+                            <tr>
+                                <td>
+                                    <?php 
+                                    echo $this->Html->link(
+                                        $asset['asset'],
+                                        array('controller'=>'Assets', 'action'=>'view', $asset['id']),
+                                        array('escape'=>false)
+                                    );
+                                    ?> 
+                                </td>
+                                        
+                                <td><?=$asset['tag_number']?></td>
+                                        
+                                <td><?=$asset['Manufacturer']['name']?></td>
+                                        
+                                <td><?=$asset['model']?></td>
+                                        
+                                <td><?=$asset['AssignedTo']['first_name']?> <?=$asset['AssignedTo']['last_name']?></td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>    
+            </div>
+            <div class="tab-pane fade" id="safety">
             </div>
         </div>
-    </div>
-    <?php echo $this->Form->end();?> 
-    <h3 class="page-header">Employees:</h3>
-    <div class="row">
-        <div class="col-sm-4">
-            <ul class="pagination pagination-sm">
-                <li class="<?=$deptClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'View By Department',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], $pageStatus, 'department'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li class="<?=$roleClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'View By Role',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], $pageStatus, 'role'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li class="<?=$superClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'View By Supervisor',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], $pageStatus, 'supervisor'),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-8">
-            <ul class="pagination pagination-sm">
-                <li class="<?=$aStatusClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'Active',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], 1, $viewBy),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li class="<?=$iStatusClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'Inactive',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], 2, $viewBy),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-                
-                <li class="<?=$allStatusClass?>">
-                    <?php
-                    echo $this->Html->link(
-                        'View All',
-                        array('controller'=>'Accounts', 'action'=>'view', $account['Account']['id'], 'all', $viewBy),
-                        array('escape'=>false)
-                    );
-                    ?>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <?php
-    foreach($employees as $department=>$employee){
-        ?>
-        <div class="hr-divider">
-            <h3 class="hr-divider-content hr-divider-heading">
-                <?=$department?>
-            </h3>
-        </div>
-        <table class="table table-striped table-condensed table-hover">
-            <thead>
-                <tr>
-                    <th class="col-sm-2">Name</th>
-                    <th class="col-sm-2">Username</th>
-                    <th class="col-sm-2">E-Mail</th>
-                    <th class="col-sm-2">Role</th>
-                    <th class="col-sm-2">Supervisor</th>
-                    <th class="col-sm-2">Status</th>
-                </tr>
-            </thead>
-                    
-            <tbody>
-                <?php
-                foreach($employee as $user){
-                    ?>
-                    <tr>
-                        <td>
-                            <?php
-                            echo $this->Html->link(
-                                $user['first_name'].' '.$user['last_name'],
-                                array('controller'=>'Users', 'action'=>'view', $user['id']),
-                                array('escape'=>false)
-                            );
-                            ?>
-                        </td>
-                                
-                        <td><?=$user['username']?></td>
-                                
-                        <td><?=$user['email']?></td>
-                                
-                        <td><?=$user['Role']['name']?></td>
-                        <td>
-                            <?php
-                            if(array_key_exists('first_name', $user['Supervisor'])){
-                                echo $user['Supervisor']['first_name'].' '.$user['Supervisor']['last_name'];
-                            }else{
-                                echo '--';
-                            }
-                            ?>
-                        </td>
-                        <td><span class="<?=$user['Status']['color']?>"><?=$user['Status']['name']?></span></td>
-                    </tr>
-                    <?php
-                }
-                ?>
-            </tbody>
-        </table>
-        <?php
-    }
-    ?>
+    </div> 
 </div> 
 
+<?php
+    $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Accounts', 'action' => 'employeeView', $account['Account']['id']));
+?>
 <script type="text/javascript">
     jQuery(window).ready( function($) {
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
         
-        $(".btn-edit").click(function(){
-            $('.accountInputs').prop('disabled', false);
-            $('.accountInputs').prop('disabled', false).trigger("chosen:updated");
+        $('.statusType').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url:'<?=$url?>/' + $(this).attr("id") + '/<?=$viewBy?>' + '.json',
+                cache: false,
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    $('#LoadingDiv').show();
+                    $('#employeeList').empty();
+                },
+                complete: function(){
+                    $('#LoadingDiv').hide();
+                },
+                success: function(response) {
+                    $('#employeeList').html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+                
+            });
             
-            $(".btn-edit-set").hide();
-            $(".btn-cancel-set").show();
+            return false;
             
         });
         
-        $(".btn-cancel").click(function(){
-            $('.accountInputs').prop('disabled', true);
-            $('.accountInputs').prop('disabled', true).trigger("chosen:updated");
+        $('.type').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url:'<?=$url?>/' + '<?=$pageStatus?>/' + $(this).attr("id") + '.json',
+                cache: false,
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    $('#LoadingDiv').show();
+                    $('#employeeList').empty();
+                },
+                success: function(response) {
+                    $('#employeeList').html(response);
+                },
+                complete: function(){
+                    $('#LoadingDiv').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+                
+            });
             
-            $(".btn-edit-set").show();
-            $(".btn-cancel-set").hide();
-        });
-        
-        $('#UserFirstName').editable({
-            type: 'text',
-            name: 'name'
+            return false;
+            
         });
     });
 </script>

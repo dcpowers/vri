@@ -8,9 +8,6 @@
             <h6 class="dashhead-subtitle">List Of Trainings</h6>
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> All Training</h3>
         </div>
-        <div class="dashhead-toolbar">
-            <?php echo $this->element( 'accounts/dashhead_toolbar' );?>
-        </div>
     </div>
     <div class="flextable">
         <div class="flextable-item">
@@ -19,61 +16,9 @@
                 echo $this->Html->link(
                     '<i class="fa fa-plus fa-fw"></i> Add Training',
                     array(),
-                    array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm' )
+                    array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm btn-outline' )
                 );
                 ?>
-            </div>
-            <div class="btn-group">
-                <?php
-                echo $this->Form->button('<i class="fa fa-gear fa-fw"></i><span class="caret"></span>',array(
-                    'type'=>'button',
-                    'class'=>'btn btn-default btn-sm dropdown-toggle', 
-                    'data-toggle'=>'dropdown', 
-                    'aria-haspopup'=>'true', 
-                    'aria-expanded'=>'false'
-                ));
-                ?>
-                <ul class="dropdown-menu">
-                    <li>
-                        <?php
-                        echo $this->Html->link(
-                            'View By File Type',
-                            array('controller'=>'Trainings', 'action'=>'index', 'fileType'),
-                            array('escape'=>false)
-                        );
-                        ?>
-                    </li>
-                    
-                    <li>
-                        <?php
-                        echo $this->Html->link(
-                            'View Required',
-                            array('controller'=>'Trainings', 'action'=>'index', 'required'),
-                            array('escape'=>false)
-                        );
-                        ?>
-                    </li>
-                    
-                    <li>
-                        <?php
-                        echo $this->Html->link(
-                            'View By Account',
-                            array('controller'=>'Trainings', 'action'=>'index', 'account'),
-                            array('escape'=>false)
-                        );
-                        ?>
-                    </li>
-                    
-                    <li>
-                        <?php
-                        echo $this->Html->link(
-                            'View By Departments',
-                            array('controller'=>'Trainings', 'action'=>'index', 'department'),
-                            array('escape'=>false)
-                        );
-                        ?>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>

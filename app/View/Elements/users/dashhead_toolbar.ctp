@@ -1,17 +1,5 @@
 <div class="dashhead-toolbar-item">
     <?php 
-    echo $this->Html->link(
-        '<i class="fa fa-plus"></i> Add New Employee', 
-        array('controller'=>'Users', 'action'=>'add' ),
-        array('escape'=>false, 'class'=>'btn btn-primary') 
-    );
-    ?>
-</div>
-
-<span class="dashhead-toolbar-divider hidden-xs"></span>
-
-<div class="dashhead-toolbar-item">
-    <?php 
     echo $this->Form->create('User', array(
         'url' => array('controller' => 'Users', 'action'=>'search'),
         'role'=>'form',
