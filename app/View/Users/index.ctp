@@ -9,7 +9,7 @@
             <h3 class="dashhead-title"><i class="fa fa-users fa-fw"></i> Employees</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php echo $this->element( 'users/dashhead_toolbar' );?>
+            <?php echo $this->element( 'Users/dashhead_toolbar' );?>
         </div>
     </div>
     <div class="flextable">
