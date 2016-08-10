@@ -2415,7 +2415,7 @@ a:focus {
   background: #f7f7f7;
 }
 /* NAV PILLS */
-.nav-pills > li > a {
+/*.nav-pills > li > a {
   border-radius: 0;
   border-top: 3px solid transparent;
   color: #444;
@@ -2432,7 +2432,7 @@ a:focus {
 }
 .nav-pills > li.active > a {
   font-weight: 600;
-}
+} */
 /* NAV STACKED */
 .nav-stacked > li > a {
   border-radius: 0;

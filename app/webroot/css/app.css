@@ -393,3 +393,7 @@
     position:relative;
     border-width: 0px 1px 1px;
 }
+
+.tab-content-noLine{
+    border:0px solid #dddddd;
+}
