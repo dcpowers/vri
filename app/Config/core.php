@@ -16,10 +16,20 @@
  * @package       app.Config
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * 
  */
-
+ 
+ 
+ if ( strstr( gethostname(), 'prod' ) ) {
+    defined('APP_ENV') or define('APP_ENV', 'prod' );
+    Configure::write('App.environment', 'prod');
+ } else {
+    defined('APP_ENV') or define('APP_ENV', 'dev' );
+    Configure::write('App.environment', 'dev');
+ }
+ 
 //setLocale(LC_ALL, 'deu');
-//Configure::write('Config.language', 'deu');
+Configure::write('Config.language', 'eng');
 
 /**
  * CakePHP Debug Level:
@@ -153,12 +163,12 @@
  *	`admin_index()` and `/admin/controller/index`
  *	`manager_index()` and `/manager/controller/index`
  */
-	//Configure::write('Routing.prefixes', array('admin'));
+	Configure::write('Routing.prefixes', array('admin', 'pdf'));
 
 /**
  * Turn off all caching application-wide.
  */
-	//Configure::write('Cache.disable', true);
+	Configure::write('Cache.disable', true);
 
 /**
  * Enable cache checking.
@@ -218,9 +228,24 @@
  * To use database sessions, run the app/Config/Schema/sessions.php schema using
  * the cake shell command: cake schema create Sessions
  */
-	Configure::write('Session', array(
-		'defaults' => 'php'
-	));
+	#ini_set('session.cookie_domain', env('HTTP_BASE'));
+    
+    Configure::write('Session', array(
+        'defaults' => 'database',
+        'cookie' => ( 'ONESYSTEM'),
+        'checkAgent'=>false
+    ));
+    
+    /**
+ * The level of CakePHP security.
+ */
+    Configure::write('Security.level', 'low');
+
+    /**
+     * Session time out time (in seconds).
+     * Actual value depends on 'Security.level' setting.
+     */
+    Configure::write('Session.timeout', '972000'); // 11 days
 
 /**
  * A random string used in security hashing methods.
@@ -278,7 +303,7 @@
  * then the value of `Config.timezone` will be used. This feature allows you to set users' timezone just
  * once instead of passing it each time in function calls.
  */
-	//Configure::write('Config.timezone', 'Europe/Paris');
+	Configure::write('Config.timezone', 'America/Chicago');
 
 /**
  * Cache Engine Configuration
