@@ -75,14 +75,39 @@ class Account extends AppModel {
     );
     
     public function pickListActive(){
+        $option = null;
+        if(AuthComponent::user('Role.permission_level') == 50){
+            $option = array('Account.regional_admin_id' => AuthComponent::user('id'));
+        }
+        
+        if(AuthComponent::user('Role.permission_level') <= 40){
+            $account_ids = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
+            $option = array('Account.id' => $account_ids);
+        }
+        
         $data = $this->find('list', array(
-            'conditions' => array(
-                'Account.is_active' => 1
+            'conditions'=>array(
+                'Account.is_active' => 1,
+                $option
             ),
             'contain'=>array(),
             'fields'=>array('Account.id', 'Account.name'),
             'order'=>array('Account.name')
         ));
+        #debug($this->validationErrors); //show validationErrors
+        #debug($this->getDataSource()->getLog(false, false)); //show last sql query
+        #pr($data);
+        #exit;
         return $data; 
+    }
+    
+    public function myAccounts(){
+        $ids = $this->find('list', array(
+            'conditions'=>array(
+                'Account.regional_admin_id' => AuthComponent::user('id')
+            ),
+        ));
+        
+        return $ids;
     }
 }

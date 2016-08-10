@@ -43,4 +43,6 @@ class AppModel extends Model {
     function yesNo() {  
         return array(1 => 'Yes', 2 => 'No');  
     }
+    
+    
 }

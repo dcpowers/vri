@@ -20,20 +20,6 @@ class User extends AppModel {
     public $profileUploadDir = 'img/profiles';
     
     public $belongsTo = array(
-        'Account' => array(
-            'className' => 'Account',
-            'foreignKey' => 'account_id',
-            'conditions' => '',
-            'fields' => array('Account.id', 'Account.name', 'Account.abr'),
-            'order' => ''
-        ),
-        'Department' => array(
-            'className' => 'Department',
-            'foreignKey' => 'department_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
         'Role' => array(
             'className' => 'AuthRole',
             'foreignKey' => 'auth_role_id',
@@ -56,11 +42,19 @@ class User extends AppModel {
             'order' => ''
         ),
     );
-     
+    
+    public $hasMany = array(
+        'DepartmentUser',
+        'AccountUser',
+        'Asset',
+        'TrainingRecord',
+        'TrainingExempt',
+    );
+    /* 
     public $validate = array(
         'username' => array(
             'nonEmpty' => array(
-                'rule' => array('notEmpty'),
+                'rule' => array('notBlank'),
                 'message' => 'A username is required',
                 'allowEmpty' => false
             ),
@@ -80,18 +74,20 @@ class User extends AppModel {
         ),
         'password' => array(
             'required' => array(
-                'rule' => array('notEmpty'),
-                'message' => 'A password is required'
+                'rule' => array('notBlank'),
+                'message' => 'A password is required',
+                
             ),
             'min_length' => array(
                 'rule' => array('minLength', '6'),  
-                'message' => 'Password must have a mimimum of 6 characters'
+                'message' => 'Password must have a mimimum of 6 characters',
+                
             )
         ),
          
         'password_confirm' => array(
             'required' => array(
-                'rule' => array('notEmpty'),
+                'rule' => array('notBlank'),
                 'message' => 'Please confirm your password'
             ),
              'equaltofield' => array(
@@ -114,15 +110,94 @@ class User extends AppModel {
                 'message' => 'Usernames must be between 6 to 60 characters'
             )
         ),
-        'role' => array(
-            'valid' => array(
-                'rule' => array('inList', array('king', 'queen', 'bishop', 'rook', 'knight', 'pawn')),
-                'message' => 'Please enter a valid role',
+        
+         
+         
+        'password_update' => array(
+            'min_length' => array(
+                'rule' => array('minLength', '6'),   
+                'message' => 'Password must have a mimimum of 6 characters',
+                'allowEmpty' => true,
+                'required' => false
+            )
+        ),
+        'password_confirm_update' => array(
+             'equaltofield' => array(
+                'rule' => array('equaltofield','password_update'),
+                'message' => 'Both passwords must match.',
+                'required' => false,
+            )
+        )
+ 
+         
+    );
+    */
+    public $validate = array(
+        'username' => array(
+            'nonEmpty' => array(
+                'rule' => array('notBlank'),
+                'message' => 'A Username is required',
                 'allowEmpty' => false
+            ),
+            'unique' => array(
+                'rule'    => array('isUniqueUsername'),
+                'message' => 'This Username is already in use'
+            ),
+        ),
+        'first_name' => array(
+            'nonEmpty' => array(
+                'rule' => array('notBlank'),
+                'message' => 'A Firstname is required',
+                'allowEmpty' => false
+            ),
+        ),
+        'last_name' => array(
+            'nonEmpty' => array(
+                'rule' => array('notBlank'),
+                'message' => 'A Lastname is required',
+                'allowEmpty' => false
+            ),
+        ),
+        
+        'password' => array(
+            'required' => array(
+                'rule' => array('notBlank'),
+                'message' => 'A password is required',
+                
+            ),
+            'min_length' => array(
+                'rule' => array('minLength', '6'),  
+                'message' => 'Password must have a mimimum of 6 characters',
+                
             )
         ),
          
+        'password_confirm' => array(
+            'required' => array(
+                'rule' => array('notBlank'),
+                'message' => 'Please confirm your password'
+            ),
+             'equaltofield' => array(
+                'rule' => array('equaltofield','password'),
+                'message' => 'Both passwords must match.'
+            )
+        ),
          
+        'email' => array(
+            'required' => array(
+                'rule' => array('email', true),    
+                'message' => 'Please provide a valid email address.'   
+            ),
+             'unique' => array(
+                'rule'    => array('isUniqueEmail'),
+                'message' => 'This email is already in use',
+            ),
+            'between' => array( 
+                'rule' => array('between', 6, 60), 
+                'message' => 'Usernames must be between 6 to 60 characters'
+            )
+        ),
+        
         'password_update' => array(
             'min_length' => array(
                 'rule' => array('minLength', '6'),   
@@ -228,8 +303,11 @@ class User extends AppModel {
      * @param array $options
      * @return boolean
      */
-    public function beforeSave($options = array()) {
+    function beforeSave($options = array()) {
+        
+        parent::beforeSave();
         if (isset($this->data[$this->alias]['password'])) {
+            
             $passwordHasher = new BlowfishPasswordHasher();
             
             $this->data[$this->alias]['password'] = $passwordHasher->hash(
@@ -368,4 +446,6 @@ class User extends AppModel {
         
         return $img;
     }
+    
+    
 }

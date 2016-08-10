@@ -47,19 +47,21 @@ class AuthRole extends AppModel {
             ),
             'contain'=>array(
             ),
-            'fields'=>array($this->alias.'.lft', $this->alias.'.rght')
+            'fields'=>array($this->alias.'.permission_level')
         ));
         
-        $data = $this->find('threaded', array(
+        $data = $this->find('all', array(
             'conditions' => array(
-                $this->alias.'.lft >=' => $parent[$this->alias]['lft'], 
-                $this->alias.'.rght <=' => $parent[$this->alias]['rght']
+                $this->alias.'.permission_level <=' => $parent[$this->alias]['permission_level'], 
             ),
             'contain'=>array(
             ),
             'order'=>array($this->alias.'.lft')
         ));
-        $dataArr = Set::extract( $data, '{n}.AuthRole.id' );
+        
+        foreach($data as $rec=>$v){
+            $dataArr[$v['AuthRole']['id']] = $v['AuthRole']['name'];
+        }
         
         return $dataArr;
     }
