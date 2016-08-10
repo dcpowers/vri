@@ -1,3 +1,12 @@
+    <?php
+    $employeesClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'employees') ? 'active' : null;
+    $recordsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'records') ? 'active' : null;
+    $assetsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'assets') ? 'active' : null;
+    $safetyClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'safety') ? 'active' : null;
+    
+    $accountClass = (empty($this->params['pass'][1]) || $this->params['pass'][1] == 'accounts') ? 'active' : null;
+    
+    ?>
 <style type="text/css">
     #LoadingDiv{
         margin:0px 0px 0px 0px;
@@ -9,9 +18,11 @@
         padding-left: 45%;
         width: 100%;
         clear:none;
-        /*background:url(/img/transbg.png);*/
+        background-color: #fff;
+  opacity: 0.5;
+        /*background:url(/img/transbg.png);
         background-color:#666666;
-        border:1px solid #000000;
+        border:1px solid #000000;*/
     }
 </style>
 
@@ -22,24 +33,25 @@
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php echo $this->element( 'accounts/dashhead_toolbar' );?>
+            <?php echo $this->element( 'Accounts/search' );?>
         </div>
     </div>
     <div class="flextable">
-        <div class="flextable-item flextable-primary">
+        <div class="flextable-item">
+            <?php echo $this->element( 'Accounts/menu' );?>                
         </div>
     </div>
     <div class="tabbable">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#info" data-toggle="tab">Account Details</a></li>
-            <li><a href="#users" data-toggle="tab">Employees</a></li>
-            <li><a href="#records" data-toggle="tab">Training Records</a></li>
-            <li><a href="#assets" data-toggle="tab">Assets</a></li>
-            <li><a href="#safety" data-toggle="tab">Safety</a></li>
+            <li class="<?=$accountClass?>"><a href="#info" data-toggle="tab">Account Details</a></li>
+            <li class="<?=$employeesClass?>"><a href="#users" data-toggle="tab">Employees</a></li>
+            <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab">Training Records</a></li>
+            <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab">Assets</a></li>
+            <li class="<?=$safetyClass?>"><a href="#safety" data-toggle="tab">Safety</a></li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane fade active in" id="info">
+            <div class="tab-pane fade <?=$accountClass?> in" id="info">
                 <?php #pr($account); ?>
                 <div class="row">
                     <div class="col-md-3">
@@ -202,9 +214,9 @@
                 </div>
                 <?php echo $this->Form->end();?>
             </div>
-            <div class="tab-pane fade" id="users">
+            <div class="tab-pane fade <?=$employeesClass?> in" id="users">
                 <div id="LoadingDiv" style="display:none;">
-                        <?php echo $this->Html->image('ajax-loader.gif'); ?>
+                        <?php echo $this->Html->image('ajax-loader-red.gif'); ?>
                     </div>
                 <div id="employeeList">
                     
@@ -278,6 +290,7 @@
                     </div>
                     
                     <?php
+                    #pr($employees);
                     foreach($employees as $department=>$employee){
                         ?>
                         <div class="hr-divider">
@@ -340,9 +353,9 @@
                     ?>
                 </div>
             </div>
-            <div class="tab-pane fade" id="records">
+            <div class="tab-pane fade <?=$recordsClass?> in" id="records">
             </div>
-            <div class="tab-pane fade" id="assets">
+            <div class="tab-pane fade <?=$assetsClass?> in" id="assets">
                 <table class="table table-striped table-condensed" id="assetsTable">
                     <thead>
                         <tr class="tr-heading">
@@ -357,6 +370,7 @@
                     <tbody>
                         <?php
                         foreach($account['Asset'] as $asset){
+                            $name = (!empty($asset['AssignedTo']['first_name'])) ? $asset['AssignedTo']['first_name'].' '.$asset['AssignedTo']['last_name'] : '--' ;
                             ?>
                             <tr>
                                 <td>
@@ -375,7 +389,7 @@
                                         
                                 <td><?=$asset['model']?></td>
                                         
-                                <td><?=$asset['AssignedTo']['first_name']?> <?=$asset['AssignedTo']['last_name']?></td>
+                                <td><?=$name?></td>
                             </tr>
                             <?php
                         }
@@ -383,7 +397,7 @@
                     </tbody>
                 </table>    
             </div>
-            <div class="tab-pane fade" id="safety">
+            <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
             </div>
         </div>
     </div> 

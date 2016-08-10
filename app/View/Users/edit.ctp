@@ -3,7 +3,7 @@
     <div class="account index bg-white">
         <div class="dashhead">
             <div class="dashhead-titles">
-                <h6 class="dashhead-subtitle">Add New Employee:</h6>
+                <h6 class="dashhead-subtitle">Edit Employee: <?=$this->request->data['User']['first_name']?> <?=$this->request->data['User']['last_name']?></h6>
                 <h3 class="dashhead-title"><i class="fa fa-users fa-fw"></i>Employees:</h3>
             </div>
             <div class="dashhead-toolbar">
@@ -27,7 +27,7 @@
             $i = date('i', strtotime('now'));
             
             echo $this->Form->create('User', array(
-                'url'=>array('controller'=>'Users', 'action'=>'add'),
+                'url'=>array('controller'=>'Users', 'action'=>'edit'),
                 #'class'=>'form-horizontal',
                 'role'=>'form',
                 'inputDefaults'=>array(
@@ -36,10 +36,11 @@
                     #'between' => '<div class="input-group">',
                     'class'=>'form-control',
                     #'after' => '</div>',
-                    'error' => false
+                    'error' => array('attributes' => array('wrap' => 'span', 'class' => 'help-block'))
                 )
             ));
-            #echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id'])); 
+                                        
+            echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id'])); 
             ?>
             <div class="row">
                 <div class="col-md-3">
@@ -52,6 +53,8 @@
                                 'class'=>'chzn-select form-control',
                                 'required'=>false,
                                 'label'=>false,
+                                'between' => '<div class="input-group">',
+                                'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                             ));
                             ?>
                         </dd>
@@ -66,6 +69,9 @@
                                 'required'=>false,
                                 'label'=>false,
                                 'data-placeholder'=>'Select An Account',
+                                'value'=>$this->request->data['User']['supervisor_id'],
+                                'between' => '<div class="input-group">',
+                                'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                             ));
                             ?>
                         </dd>
@@ -93,7 +99,7 @@
                         </dd>
                     </dl>
                     <dl>    
-                        <dt>Permissions ( Role ):</dt>
+                        <dt>Permissions (Role ):</dt>
                         <dd>
                             <?php
                             echo $this->Form->input( 'auth_role_id', array(
@@ -101,7 +107,9 @@
                                 'class'=>'chzn-select form-control',
                                 'required'=>false,
                                 'label'=>false,
-                                'value'=>10,
+                                'value'=>$this->request->data['User']['auth_role_id'],
+                                'between' => '<div class="input-group">',
+                                'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                             ));
                             ?>
                         </dd>
@@ -110,78 +118,59 @@
                 <div class="col-md-9">
                     <div class="row">
                         <div class="col-sm-6">
-                            <?php 
-                            unset($class,$error);
-                            $class = !empty($validationErrors['User']['first_name']) ? 'has-error has-feedback' : ''; 
-                            $error = !empty($validationErrors['User']['first_name']) ? $validationErrors['User']['first_name'][0] : 'Firstname';
-                            ?>
-                            <div class="form-group <?=$class?>">
-                                <label class="control-label" for="state"><?=$error?>:</label>
-                                <div class="input-group">
+                            <dl>
+                                <dt>First Name:</dt>
+                                <dd>
                                     <?php
                                     echo $this->Form->input( 'first_name', array(
-                                        'required'=>true,
+                                        'required'=>false,
                                         'label'=>false,
                                     ));
                                     ?>
-                                    <div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div>
-                                </div>
-                            </div>
-                            <?php 
-                            unset($class,$error);
-                            $class = !empty($validationErrors['User']['last_name']) ? 'has-error has-feedback' : ''; 
-                            $error = !empty($validationErrors['User']['last_name']) ? $validationErrors['User']['last_name'][0] : 'Lastname';
-                            ?>
-                            <div class="form-group <?=$class?>">
-                                <label class="control-label" for="state"><?=$error?>:</label>
-                                <div class="input-group">
+                                </dd>
+                            </dl>
+                            
+                            <dl>
+                                <dt>Last Name:</dt>
+                                <dd>
                                     <?php
                                     echo $this->Form->input( 'last_name', array(
                                         'required'=>false,
                                         'label'=>false,
                                     ));
                                     ?>
-                                    <div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div>
-                                </div>
-                            </div>
-                            <?php 
-                            unset($class,$error);
-                            $class = !empty($validationErrors['User']['username']) ? 'has-error has-feedback' : ''; 
-                            $error = !empty($validationErrors['User']['username']) ? $validationErrors['User']['username'][0] : 'Username';
-                            ?>
-                            <div class="form-group <?=$class?>">
-                                <label class="control-label" for="state"><?=$error?>:</label>
-                                <div class="input-group">
+                                </dd>
+                            </dl>
+                            
+                            <dl>    
+                                <dt>Username:</dt>
+                                <dd>
                                     <?php
                                     echo $this->Form->input( 'username', array(
                                         'required'=>false,
                                         'label'=>false,
                                     ));
                                     ?>
-                                    <div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div>
-                                </div>
-                            </div>
-                            
-                            <?php 
-                            unset($class,$error);
-                            $class = !empty($validationErrors['User']['email']) ? 'has-error has-feedback' : ''; 
-                            $error = !empty($validationErrors['User']['email']) ? $validationErrors['User']['email'][0] : 'E-Mail Address';
-                            ?>
-                            <div class="form-group <?=$class?>">
-                                <label class="control-label" for="state"><?=$error?>:</label>
-                                <div class="input-group">
+                                </dd>
+                            </dl>
+                            <dl>    
+                                <dt>E-Mail Address:</dt>
+                                <dd>
                                     <?php
                                     echo $this->Form->input( 'email', array(
                                         'required'=>false,
                                         'label'=>false,
                                     ));
                                     ?>
-                                    <div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div>
-                                </div>
-                            </div>
+                                </dd>
+                            </dl>
                         </div>
                                             
                         <div class="col-sm-6">
+                            <?php
+                            $doh = (!empty($user['User']['doh'])) ? date('F d, Y', strtotime($user['User']['doh'])) : 'N/A' ;
+                            $dob = (!empty($user['User']['dob'])) ? date('F d, Y', strtotime($user['User']['dob'])) : 'N/A' ;
+                            ?>
                             <dl>
                                 <dt>Date Of Hire</dt>
                                 <dd>
@@ -190,7 +179,7 @@
                                         'type'=>'text',
                                         'required'=>false,
                                         'label'=>false,
-                                        #'value'=>date('m/d/Y', strtotime($this->request->data['User']['doh'])),
+                                        'value'=>date('m/d/Y', strtotime($this->request->data['User']['doh'])),
                                         'class'=>'datepicker form-control'
                                     ));
                                     ?>
@@ -204,7 +193,7 @@
                                         'type'=>'text',
                                         'required'=>false,
                                         'label'=>false,
-                                        #'value'=>date('m/d/Y', strtotime($this->request->data['User']['dob'])),
+                                        'value'=>date('m/d/Y', strtotime($this->request->data['User']['dob'])),
                                         'class'=>'datepicker form-control'
                                     ));
                                     ?>
@@ -214,12 +203,15 @@
                                 <dt>Current Account(s):</dt>
                                 <dd>
                                     <?php
+                                    $this->request->data['AccountUser']['account_id'] = Set::extract( $this->request->data['AccountUser'], '/account_id' );
                                     echo $this->Form->input( 'AccountUser.account_id', array(
                                         'options'=>$accounts,
                                         'class'=>'chzn-select form-control',
                                         'required'=>false,
                                         'label'=>false,
                                         'multiple'=>true,
+                                        'between' => '<div class="input-group">',
+                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                                     ));
                                     ?>
                                 </dd>
@@ -228,12 +220,15 @@
                                 <dt>Current Department(s):</dt>
                                 <dd>
                                     <?php
+                                    $this->request->data['DepartmentUser']['department_id'] = Set::extract( $this->request->data['DepartmentUser'], '/department_id' );
                                     echo $this->Form->input( 'DepartmentUser.department_id', array(
                                         'options'=>$departments,
                                         'class'=>'chzn-select form-control',
                                         'multiple'=>true,
                                         'required'=>false,
                                         'label'=>false,
+                                        'between' => '<div class="input-group">',
+                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                                     ));
                                     ?>
                                 </dd>

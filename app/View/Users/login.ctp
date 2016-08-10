@@ -53,7 +53,9 @@
         
     </div><!-- /.login-box-body -->
 </div><!-- /.login-box -->
-
+<?php
+    
+?>
 <script type="text/javascript">
     $(function () {
         $('input').iCheck({

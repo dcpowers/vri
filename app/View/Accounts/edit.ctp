@@ -1,4 +1,19 @@
-<?php 
+<div class="account index bg-white">
+    <div class="dashhead">
+        <div class="dashhead-titles">
+            <h6 class="dashhead-subtitle">Edit Account: <?=$account['Account']['name']?></h6>
+            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
+        </div>
+        <div class="dashhead-toolbar">
+            <?php echo $this->element( 'Accounts/search' );?>
+        </div>
+    </div>
+    <div class="flextable">
+        <div class="flextable-item">
+            <?php echo $this->element( 'Accounts/menu' );?>                
+        </div>
+    </div>
+    <?php 
     echo $this->Form->create('Account', array(
         'url'=>array('controller'=>'Accounts', 'action'=>'edit'),
         #'class'=>'form-horizontal',
@@ -12,13 +27,8 @@
     ));
                                 
     echo $this->Form->hidden('id', array('value'=>$this->request->data['Account']['id'])); 
-?>
-<div class="modal-header modal-header-primary">
-    <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
-    <h2><?php echo __('Edit Account: '); ?></h2>
-</div>
-<div class="modal-body">
-    <div class="row" style="clear: both;">
+    ?>
+    <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
                 <label for="name" class="control-label">Name:</label>
@@ -178,13 +188,13 @@
             </div>
         </div>
     </div>
-</div>
-<div class="modal-footer">
-    <a href="#" class="btn btn-default pull-left" data-dismiss="modal">Cancel</a>
-    <?php echo $this->Form->button('Save', array('type'=>'submit', 'class'=>'btn btn-primary pull-left')); ?>
+    <div class="form-group">
+        <a href="#" class="btn btn-default pull-left" data-dismiss="modal">Cancel</a>
+        <?php echo $this->Form->button('Save', array('type'=>'submit', 'class'=>'btn btn-primary pull-left')); ?>
+    </div>
+    <?php echo $this->Form->end(); ?>
 </div>
 
-<?php echo $this->Form->end(); ?>
     
 <script type="text/javascript">
     jQuery(document).ready( function($) {

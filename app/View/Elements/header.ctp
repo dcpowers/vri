@@ -6,7 +6,7 @@
                 <?php
                 echo $this->Html->link(
                     '<span class="logo-lg"><b>One</b>System</span>',   
-                    array('controller'=>null, 'action'=>'dashboard'),
+                    array('controller'=>'Dashboard', 'action'=>'index'),
                     array('escape'=>false, 'class'=>'navbar-brand')
                 );    
                 ?>

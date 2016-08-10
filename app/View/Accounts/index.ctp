@@ -9,18 +9,18 @@
             <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php #echo $this->element( 'accounts/dashhead_toolbar' );?>
+            <?php echo $this->element( 'Accounts/search' );?>
         </div>
     </div>
     <div class="flextable">
-        <div class="flextable-item flextable-primary">
-            <?php    
-            echo $this->Html->link(
-                '<i class="fa fa-plus fa-fw"></i> Add Account', 
-                array('plugin'=>false, 'controller'=>'Accounts', 'action'=>'add'),
-                array('escape'=>false, 'class'=>'btn btn-primary btn-outline btn-sm', 'data-toggle'=>'modal','data-target'=>'#myLgModal'  ) 
-            );
-            ?>
+        <div class="flextable-item">
+            <?php echo $this->element( 'Accounts/menu' );?>                
+        </div>
+        <div class="flextable-item">
+            <?php echo $this->element( 'Accounts/status_filter' );?>
+        </div>
+        <div class="flextable-item">                    
+            <?php #echo $this->element( 'Accounts/search_filter', ['in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy] );?>
         </div>
     </div>
 

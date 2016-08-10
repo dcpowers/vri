@@ -14,7 +14,7 @@
             <div class="btn-group">
                 <?php
                 echo $this->Html->link(
-                    '<i class="fa fa-plus fa-fw"></i> Add Training',
+                    '<i class="fa fa-plus fa-fw"></i> Add New Training',
                     array(),
                     array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm btn-outline' )
                 );

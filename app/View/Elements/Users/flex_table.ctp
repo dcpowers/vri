@@ -1,5 +1,5 @@
-<div class="flextable-item">
-    <div class="paginate">
+    <nav>
+        <p>Search By First Letter Of First Name</p>
         <ul class="pagination pagination-sm">
             <?php
             foreach($letters as $key=>$letter){
@@ -8,9 +8,15 @@
                     ?>
                     <li class="<?=$class?>">
                         <?php
-                        echo $this->Html->link(
+                        echo $this->Html->link( 
                             $letter, 
-                            array('controller'=>'Users','action'=>'index', $letter, $status, $viewBy),
+                            array( 
+                                'controller'=>'Users',
+                                'action'=>'index', 
+                                $letter,
+                                $status,
+                                $viewBy
+                            ), 
                             array( 'escape'=>false) 
                         );
                         ?>
@@ -27,41 +33,14 @@
                 }
             }
             ?>
-        </ul>
-        <ul class="pagination pagination-sm">
-            <?php
-            $activeclass = ($status == 1) ? 'active' : null ;
-            $inactiveclass = ($status == 2) ? 'active' : null ;
-            ?>
-            <li class="<?=$activeclass?>">
-                <?php
-                echo $this->Html->link( 
-                    'Active', 
-                    array('controller'=>'Users', 'action'=>'index', $currentLetter, 1, $viewBy), 
-                    array( 'escape'=>false) 
-                );
-                ?>
-            </li>
-                
-            <li class="<?=$inactiveclass?>">
-                <?php
-                echo $this->Html->link( 
-                    'Inactive', 
-                    array('controller'=>'Users', 'action'=>'index', $currentLetter, 2, $viewBy), 
-                    array( 'escape'=>false) 
-                );
-                ?>
-            </li>
-                    
             <li>
-                <?php
+            <?php
                 echo $this->Html->link( 
-                    'Clear Filters',
-                    array('controller'=>'Users', 'action'=>'index'), 
+                    'Clear Search By Letter',
+                    array('controller'=>'Users', 'action'=>'index', 'All', $status, $viewBy), 
                     array( 'escape'=>false) 
                 );
                 ?>
             </li>
         </ul>
-    </div>
-</div>
+    </nav>

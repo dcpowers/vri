@@ -7,13 +7,15 @@
                 
                     <ul class="nav navbar-nav">
                         <?php
+                        #pr($apps);
+                        #exit;
                         foreach($apps as $menu_item){
                             if(!empty($menu_item['children'])){
                                 ?>
                                 <li class="dropdown">
                                     <?php
                                     echo $this->Html->link(
-                                        '<i class="'. $menu_item['Application']['iconCls'] .'"></i> <span>'. $menu_item['Application']['name'] . '</span><i class="fa fa-angle-left pull-right"></i>',
+                                        '<i class="'. $menu_item['Application']['iconCls'] .'"></i> <span>'. $menu_item['Application']['name'] . '</span><i class="fa fa-angle-down pull-right"></i>',
                                         '#',
                                         array('escape'=>false, 'class'=>'dropdown-toggle', 'data-toggle'=>'dropdown')
                                     );
@@ -21,7 +23,7 @@
                                     <ul class="dropdown-menu" role="menu">
                                         <?php
                                         foreach($menu_item['children'] as $child){
-                                            $subClass = ($this->request->params['controller'] == $child['Application']['controller']) ? 'active' : null ;
+                                            $subClass = ($this->request->params['action'] == $child['Application']['action']) ? 'active' : null ;
                                             ?>
                                             <li class="<?=$subClass?>">
                                                 <?php
