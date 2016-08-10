@@ -39,9 +39,11 @@ class DashboardController extends AppController {
         'User', 
     );
     
-    public $helpers = array('Session');
-    
-    public $components = array('RequestHandler', 'Paginator');
+    #public $helpers = array('Session');
+    public function isAuthorized($user = null) {
+        return true;
+    }
+    #public $components = array('RequestHandler', 'Paginator');
     
     public function pluginSetup() {
         $user = AuthComponent::user();

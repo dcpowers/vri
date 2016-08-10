@@ -47,11 +47,12 @@ class AccountsController extends AppController {
         $this->set('title_for_layout', 'Accounts');
     }
     
-    public function index() {
+    public function index($status=null) {
         $options = array();
         
         if($this->Auth->user('Role.permission_level') == 50){
-            $options = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
+            $option = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
+            $options = array_merge_recursive($options,$option);
         }
         
         #$this->User->virtualFields['Manager.manager_name'] = 'CONCAT(Manager.first_name, " " , Manager.last_name)';
@@ -79,7 +80,33 @@ class AccountsController extends AppController {
             'limit' => 50,
             'order'=>array('Account.name'=> 'asc'),
         );
+        
+        if(!empty($this->request->data['Search']['q'])){
+            $option = array('conditions'=>array(
+                'OR'=>array(
+                    'Account.name LIKE' => '%'.$this->request->data['Search']['q'].'%', 
+                    'Account.abr LIKE' => '%'.$this->request->data['Search']['q'].'%' 
+                )
+            ));
+            $options = array_merge_recursive($options,$option);
+        }
+        
+        if(is_null($status)){
+            $status = 1;    
+        }
+        
+        if($status == 'All'){
+            $option = array('conditions'=>array('Account.is_active' => array(1,2)));
+            $options = array_merge_recursive($options,$option);
+            $this->set('status', 'All');
+        }else{
+            $option = array('conditions'=>array('Account.is_active' => $status));
+            $options = array_merge_recursive($options,$option);
+            $this->set('status', $status);
+        }
+        
         $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
+        
         #pr($this->Paginator->settings);
         #exit;
         #$accounts = $this->Paginator->paginate('Account');
@@ -177,8 +204,10 @@ class AccountsController extends AppController {
                     'Role'=>array(
                         'fields'=>array('Role.name', 'Role.lft')
                     ),
-                    'Department'=>array(
-                        'fields'=>array('Department.name', 'Department.abr')
+                    'DepartmentUser'=>array(
+                        'Department'=>array(
+                            'fields'=>array('Department.name', 'Department.abr')
+                        )
                     ),
                     'fields'=>array(
                         'User.id',
@@ -212,33 +241,42 @@ class AccountsController extends AppController {
                         $keysort[$indexName] = '--';
                     }
                     $superClass = 'active';
+                    $value[$indexName][] = $data;
                     break;
                 
                 case 'role':
                     $indexName = $data['Role']['name'];
                     $keysort[$indexName] = $data['Role']['lft'];
                     $roleClass = 'active';
+                    $value[$indexName][] = $data;
                     break;
                 
                 case 'department':
                 default:
-                    if(array_key_exists('name', $data['Department'])){
-                        $indexName = $data['Department']['name'].' ( '. $data['Department']['abr'] .' )';
-                        $keysort[$indexName] = $data['Department']['name'];
+                    if(!empty($data['DepartmentUser'])){
+                        foreach($data['DepartmentUser'] as $newItem){
+                            $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
+                            $keysort[$indexName] = $newItem['Department']['name'];
+                            
+                            $value[$indexName][] = $data;
+                        }
+                        
                     }else{
                         $indexName = '--';
                         $keysort[$indexName] = '--';
+                        $value[$indexName][] = $data;
                     }
                     $deptClass = 'active';
                     break;
                 
             }
             
-            $value[$indexName][] = $data;
+            #$value[$indexName][] = $data;
             
             $users = array_merge($users,$value);
         }
         #pr($users);
+        #exit;
         if(!empty($account['User'])){
             array_multisort($keysort, SORT_ASC, $users);
         }
@@ -340,8 +378,10 @@ class AccountsController extends AppController {
                     'Role'=>array(
                         'fields'=>array('Role.name', 'Role.lft')
                     ),
-                    'Department'=>array(
-                        'fields'=>array('Department.name', 'Department.abr')
+                    'DepartmentUser'=>array(
+                        'Department'=>array(
+                            'fields'=>array('Department.name', 'Department.abr')
+                        ),
                     ),
                     'fields'=>array(
                         'User.id',
@@ -375,29 +415,37 @@ class AccountsController extends AppController {
                         $keysort[$indexName] = '--';
                     }
                     $superClass = 'active';
+                    $value[$indexName][] = $data;
                     break;
                 
                 case 'role':
                     $indexName = $data['Role']['name'];
                     $keysort[$indexName] = $data['Role']['lft'];
                     $roleClass = 'active';
+                    $value[$indexName][] = $data;
                     break;
                 
                 case 'department':
                 default:
-                    if(array_key_exists('name', $data['Department'])){
-                        $indexName = $data['Department']['name'].' ( '. $data['Department']['abr'] .' )';
-                        $keysort[$indexName] = $data['Department']['name'];
+                    if(!empty($data['DepartmentUser'])){
+                        foreach($data['DepartmentUser'] as $newItem){
+                            $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
+                            $keysort[$indexName] = $newItem['Department']['name'];
+                            
+                            $value[$indexName][] = $data;
+                        }
+                        
                     }else{
                         $indexName = '--';
                         $keysort[$indexName] = '--';
+                        $value[$indexName][] = $data;
                     }
                     $deptClass = 'active';
                     break;
                 
             }
             
-            $value[$indexName][] = $data;
+            #$value[$indexName][] = $data;
             
             $users = array_merge($users,$value);
         }

@@ -50,6 +50,26 @@ class TrainingsController extends AppController {
     }
     
     public function index() {
+        if($this->Auth->user('Role.permission_level') >= 50){
+            #$option = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
+            
+            #$options = array_merge_recursive($options,$option);
+        }
+        $options = array();
+        
+        if($this->Auth->user('Role.permission_level') == 40 || $this->Auth->user('Role.permission_level') == 30){
+            $option = array('conditions'=>array(
+                'OR'=>array(
+                    array(
+                        'Training.account_id' => null
+                    ),
+                    array(
+                        'Training.account_id' => $this->Auth->user('account_id')
+                    ),
+                )
+            ));
+            $options = array_merge_recursive($options,$option);
+        }
         
         $this->Paginator->settings = array(
             'conditions' => array(     
@@ -81,6 +101,8 @@ class TrainingsController extends AppController {
             'order'=>array('Training.name'=> 'asc'),
         );    
         
+        $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
+        
         $trainings = $this->Paginator->paginate('Training');
         #pr($trainings);
         #exit;
@@ -88,6 +110,13 @@ class TrainingsController extends AppController {
     }
     
     public function view($id=null){
+        $options = array();
+        
+        if($this->Auth->user('Role.permission_level') <= 30){
+            $option = array('conditions'=>array('TrainingRecord.User.account_id' => $this->Auth->user('account_id'), 'Role.lft >' => $this->Auth->user('Role.lft'), 'Role.rght <' => $this->Auth->user('Role.rght')));
+            $options = array_merge_recursive($options,$option);
+        }
+        
         $training = $this->request->data = $this->Training->find('first', array(
             'conditions' => array(     
                 'Training.id' => $id,
@@ -124,8 +153,6 @@ class TrainingsController extends AppController {
             ),
         ));
         
-        #pr($training);
-        #exit;
         $this->set('training', $training);
         $this->set('settings', $this->Training->yesNo());
         $this->set('trnCat', $this->TrainingCategory->pickList());

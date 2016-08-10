@@ -33,20 +33,32 @@ App::uses('Controller', 'Controller');
 class AppController extends Controller {
     public $components = array(
         #'Security',
-        #'DebugKit.Toolbar',
+        'DebugKit.Toolbar',
         'Session',
+        'Cookie',
+        'RequestHandler',
+        'Paginator',
         'Flash',
         'Auth' => array(
-            'loginRedirect' => array('controller' => 'dashboard', 'action' => 'index'),
-            'logoutRedirect' => array('controller' => 'users', 'action' => 'login'),
-            'authError' => 'You must be logged in to view this page.',
+            'loginAction' => array(
+                'controller' => 'Users',
+                'action' => 'login',
+                'plugin' => false,
+                'admin' => false
+            ),
+            'loginRedirect' => array('controller' => 'Dashboard', 'action' => 'index'),
+            'logoutRedirect' => array('controller' => 'Users', 'action' => 'login'),
+            #'authError' => 'You must be logged in to view this page.',
             'loginError' => 'Invalid Username or Password entered, please try again.',
             'authenticate' => array( 'Form' => array('passwordHasher' => 'Blowfish')),
             'authError' => 'You must sign in to access this page.',
-            'authorize' => array('Actions' => array('actionPath' => 'controllers')),
+            #'authorize' => array('Actions' => array('actionPath' => 'controllers')),
+            'authorize'=>array('Controller'),
         )
     );
- 
+    
+    public $helpers = array( 'Html', 'Form', 'Session', 'Time', 'Text' );
+    
     // only allow the login controllers only
     public function beforeFilter() {
         #$this->Security->validatePost=false;
@@ -66,7 +78,7 @@ class AppController extends Controller {
         
         $this->Auth->authorize = array('Controller');
         
-        $this->Auth->allow('login');
+        $this->Auth->allow('login', 'logout');
         
         $this->set('logged_in', $this->Auth->loggedin());
         $this->loggedIn = $this->Auth->loggedin();

@@ -18,29 +18,29 @@ class ApplicationsController extends AppController {
         
         $parent = $this->Application->find('all', array(
             'conditions' => array(
+                'Application.parent_id' => null,
                 'Application.show_main_menu' => 1,
                 'Application.is_active' => 1,
                 'Application.min_permission_level <=' => $this->Auth->user('Role.permission_level')
             ),
+            'contain'=>array(),
             'fields'=>array('Application.lft', 'Application.rght'),
-            'order'=>array('Application.order' => 'ASC')
+            'order'=>array('Application.lft' => 'ASC')
         ));
+        
         foreach($parent as $item){
             $value = $this->Application->find('threaded', array(
                 'conditions' => array(
                     'Application.lft >=' => $item['Application']['lft'], 
-                    'Application.rght <=' => $item['Application']['rght']
+                    'Application.rght <=' => $item['Application']['rght'],
+                    'Application.is_active' => 1,
+                    'Application.min_permission_level <=' => $this->Auth->user('Role.permission_level')
                 ),
-                'fields'=>array(
-                    'Application.name',
-                    'Application.controller',
-                    'Application.action',
-                    'Application.iconCls',
-                )
+                'contain'=>array(),
             ));
-            
             $apps = array_merge($apps, $value);
         }
+        
         
         return $apps;
     }
