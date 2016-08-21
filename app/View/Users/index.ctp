@@ -28,7 +28,7 @@
         
         <div id="employeeList">
             <div class="collapse <?=$in?>" id="collapseExample" aria-expanded="<?=$var?>">
-                <div class="flextable">
+                <div class="flextable well">
                     <?php echo $this->element( 'Users/flex_table' );?>
                 </div>
             </div>
@@ -44,7 +44,13 @@
                     <thead>
                         <tr class="tr-heading">
                             <th class="col-sm-3">Employee</th>
-                            <th class="col-sm-3">Account(s)</th>
+                            <?php
+                            if(AuthComponent::user('Role.permission_level') >= 50){
+                                ?>
+                                <th class="col-sm-3">Account(s)</th>
+                                <?php
+                            }
+                            ?>
                             <th class="col-sm-3">Department(s)</th>
                             <th class="col-sm-2">Role</th>
                             <th class="col-sm-1 text-center">Status</th>
@@ -67,32 +73,37 @@
                                     );
                                     ?> 
                                 </td>
-                                        
-                                <td>
-                                    <ul class="list-unstyled">
-                                        <?php
-                                        foreach($user['AccountUser'] as $acct){
-                                            if(!empty($acct['Account'])){
-                                                ?>
-                                                <li>
-                                                    <?php 
-                                                    echo $this->Html->link(
-                                                        $acct['Account']['name'],
-                                                        array('controller'=>'Accounts', 'action'=>'view', $acct['Account']['id']),
-                                                        array('escape'=>false)
-                                                    );
+                                <?php
+                                if(AuthComponent::user('Role.permission_level') >= 50){
+                                    ?>        
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <?php
+                                            foreach($user['AccountUser'] as $acct){
+                                                if(!empty($acct['Account'])){
                                                     ?>
-                                                    </li>
-                                                <?php
-                                            }else{
-                                                ?>
-                                                <li><span class="label label-danger">N/A</span></li>
-                                                <?php
-                                            }
-                                        }      
-                                        ?>
-                                    </ul>
-                                </td>
+                                                    <li>
+                                                        <?php 
+                                                        echo $this->Html->link(
+                                                            $acct['Account']['name'],
+                                                            array('controller'=>'Accounts', 'action'=>'view', $acct['Account']['id']),
+                                                            array('escape'=>false)
+                                                        );
+                                                        ?>
+                                                        </li>
+                                                    <?php
+                                                }else{
+                                                    ?>
+                                                    <li><span class="label label-danger">N/A</span></li>
+                                                    <?php
+                                                }
+                                            }      
+                                            ?>
+                                        </ul>
+                                    </td>
+                                    <?php
+                                }
+                                ?>
                                 
                                 <td>
                                     <ul class="list-unstyled">

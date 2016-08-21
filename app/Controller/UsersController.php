@@ -8,6 +8,7 @@ class UsersController extends AppController {
         'User',
         'AuthRole',
         'AccountUser',
+        'AccountDepartment',
         'DepartmentUser',
         'TrainingMembership',
         'TrainingRecord',
@@ -133,7 +134,6 @@ class UsersController extends AppController {
     }
 
     public function index($letter = null, $status = null, $viewBy = null) {
-        
         $letters = range('A', 'Z');
         array_unshift($letters, "All");
         $this->set('letters', $letters);
@@ -227,11 +227,15 @@ class UsersController extends AppController {
             #exit;
         }
         
-        if($this->Auth->user('Role.permission_level') <= 40){
-            $option = array('conditions'=>array('User.account_id' => $this->Auth->user('account_id'), 'Role.lft >' => $this->Auth->user('Role.lft'), 'Role.rght <' => $this->Auth->user('Role.rght')));
+        if(AuthComponent::user('Role.permission_level') <= 40){
+            $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+            $user_ids = $this->AccountUser->getAccountIds($account_ids);
+            
+            $option = array('conditions'=>array('User.id' => $user_ids, 'Role.lft >' => $this->Auth->user('Role.lft'), 'Role.rght <' => $this->Auth->user('Role.rght')));
             $options = array_merge_recursive($options,$option);
         }
-         
+        #pr($options);
+        #exit; 
         if(!is_null($letter) && $letter != 'All'){
             $option = array('conditions'=>array('User.first_name LIKE' => $letter.'%'));
             $options = array_merge_recursive($options,$option);
@@ -539,10 +543,12 @@ class UsersController extends AppController {
         $this->request->data = $this->User->findById($id);
         unset($this->request->data['User']['password']);
         
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        
         $this->set('status', $this->User->statusInt());
-        $this->set('pickListByAccount', $this->AccountUser->pickList($this->request->data['User']['account_id']));
+        $this->set('pickListByAccount', $this->AccountUser->pickList($account_ids));
         $this->set('accounts', $this->Account->pickListActive());
-        $this->set('departments', $this->Department->pickList());
+        $this->set('departments', $this->AccountDepartment->pickListByAccount($account_ids));
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
     
     }

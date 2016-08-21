@@ -371,6 +371,7 @@
                         <?php
                         foreach($account['Asset'] as $asset){
                             $name = (!empty($asset['AssignedTo']['first_name'])) ? $asset['AssignedTo']['first_name'].' '.$asset['AssignedTo']['last_name'] : '--' ;
+                            $manName = (!empty($asset['Manufacturer']['name'])) ? $asset['Manufacturer']['name'] : '--' ;
                             ?>
                             <tr>
                                 <td>
@@ -385,7 +386,7 @@
                                         
                                 <td><?=$asset['tag_number']?></td>
                                         
-                                <td><?=$asset['Manufacturer']['name']?></td>
+                                <td><?=$manName?></td>
                                         
                                 <td><?=$asset['model']?></td>
                                         

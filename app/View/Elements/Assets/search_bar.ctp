@@ -1,39 +1,5 @@
-<div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-search"></i> <span class="break"></span>Search Filters</h3>
-            </div>
-            <div class="panel-body">
-                <ul class="pagination pagination-sm">
-                    <li>
-                        <?php
-                        echo $this->Html->link( 
-                            'Active', 
-                            array('controller'=>'Assets', 'action'=>'index', 'all', 1), 
-                            array( 'escape'=>false, 'class'=>'btn-group btn btn-default')
-                        );
-                        ?>
-                    </li>
-                    
-                    <li>
-                        <?php
-                        echo $this->Html->link( 
-                            'Inactive', 
-                            array('controller'=>'Assets', 'action'=>'index', 'all', 2), 
-                            array( 'escape'=>false, 'class'=>'btn-group btn btn-default') 
-                        );
-                        ?>
-                    </li>
-                    
-                    <li>
-                        <?php
-                        echo $this->Html->link( 
-                            'Clear Filters',
-                            array('controller'=>'Assets', 'action'=>'index'), 
-                            array( 'escape'=>false, 'class'=>'btn-group btn btn-default')
-                        );
-                        ?>
-                    </li>
-                </ul>
+       <div>
+            <div>
                 
                 <?php 
                 echo $this->Form->create('Asset', array(
@@ -96,17 +62,7 @@
                     ?>
                 </div>
                 
-                <div class="form-group">
-                    <label class="control-label" for="area">Order By:</label>
-                    <?php
-                    echo $this->Form->input( 'Search.orderBy', array(
-                        'options'=>array('type'=>'Asset Type', 'manufacturer'=>'Manufacturer', 'account'=>'Account', 'assignedTo'=>'Assigned To' ),
-                        'class'=>'chzn-select form-control',
-                        'empty'=>false,
-                        'multiple'=>false
-                    ));
-                    ?>
-                </div>
+                
                 <?php echo $this->Form->end(__('Submit')); ?>
             </div>
         </div>

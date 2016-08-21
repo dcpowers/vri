@@ -321,20 +321,29 @@ class User extends AppModel {
     public function pickList( ) {
         $dataArr = array();
         
+        $this->virtualFields['fullName'] = 'CONCAT(first_name, " ", last_name)';
         $find_options = array(
             'conditions'=>array(
                 $this->alias.'.is_active'=>1
             ),
-            'order'=>$this->alias.'.first_name asc'
+            'order'=>array(
+                ''.$this->alias.'.first_name' => 'asc'
+            ),
+            'fields'=>array(
+                ''.$this->alias.'.id',
+                ''.$this->alias.'.fullName'
+            ),
+            
         );
 
         //pr($find_options);
         //exit;
-        $recs = $this->find('all', $find_options );
-
+        $recs = $this->find('list', $find_options );
+        
         foreach ( $recs as $key=>$rec ) {
-            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
+            $dataArr[$key] = ucwords( strtolower($rec));
         }
+        
         return $dataArr;
     }
 

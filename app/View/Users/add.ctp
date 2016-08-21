@@ -56,6 +56,34 @@
                             ?>
                         </dd>
                     </dl>
+                    <dl>                                    
+                        <dt>Current Account(s):</dt>
+                        <dd>
+                            <?php
+                            echo $this->Form->input( 'AccountUser.account_id', array(
+                                'options'=>$accounts,
+                                'class'=>'chzn-select form-control',
+                                'required'=>false,
+                                'label'=>false,
+                                'multiple'=>true,
+                            ));
+                            ?>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>Current Department(s):</dt>
+                        <dd>
+                            <?php
+                            echo $this->Form->input( 'DepartmentUser.department_id', array(
+                                'options'=>$departments,
+                                'class'=>'chzn-select form-control',
+                                'multiple'=>true,
+                                'required'=>false,
+                                'label'=>false,
+                            ));
+                            ?>
+                        </dd>
+                    </dl>
                     <dl>    
                         <dt>Supervisor:</dt>
                         <dd>
@@ -70,28 +98,7 @@
                             ?>
                         </dd>
                     </dl>
-                    <dl>    
-                        <dt>Pay Status:</dt>
-                        <dd>
-                            <?php
-                            echo $this->Form->input( 'PayStatus', array(
-                                'required'=>false,
-                                'label'=>false,
-                            ));
-                            ?>
-                        </dd>
-                    </dl>
-                    <dl>    
-                        <dt>All Pay Id:</dt>
-                        <dd>
-                            <?php
-                            echo $this->Form->input( 'AllPayId', array(
-                                'required'=>false,
-                                'label'=>false,
-                            ));
-                            ?>
-                        </dd>
-                    </dl>
+                    
                     <dl>    
                         <dt>Permissions ( Role ):</dt>
                         <dd>
@@ -210,34 +217,29 @@
                                     ?>
                                 </dd>
                             </dl>
-                            <dl>                                    
-                                <dt>Current Account(s):</dt>
+                            <dl>    
+                                <dt>Pay Status:</dt>
                                 <dd>
                                     <?php
-                                    echo $this->Form->input( 'AccountUser.account_id', array(
-                                        'options'=>$accounts,
-                                        'class'=>'chzn-select form-control',
-                                        'required'=>false,
-                                        'label'=>false,
-                                        'multiple'=>true,
-                                    ));
-                                    ?>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>Current Department(s):</dt>
-                                <dd>
-                                    <?php
-                                    echo $this->Form->input( 'DepartmentUser.department_id', array(
-                                        'options'=>$departments,
-                                        'class'=>'chzn-select form-control',
-                                        'multiple'=>true,
+                                    echo $this->Form->input( 'PayStatus', array(
                                         'required'=>false,
                                         'label'=>false,
                                     ));
                                     ?>
                                 </dd>
                             </dl>
+                            <dl>    
+                                <dt>All Pay Id:</dt>
+                                <dd>
+                                    <?php
+                                    echo $this->Form->input( 'AllPayId', array(
+                                        'required'=>false,
+                                        'label'=>false,
+                                    ));
+                                    ?>
+                                </dd>
+                            </dl>
+                            
                         </div>
                     </div>
                 </div>

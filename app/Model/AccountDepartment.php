@@ -40,13 +40,27 @@ class AccountDepartment extends AppModel {
         return $users;
     }
     
-    public function pick_list_acct(){
-        $items = $this->find('list', array(
-            'conditions' => array(),
+    public function pickListByAccount($id=null){
+        $items = $this->find('all', array(
+            'conditions' => array(
+                $this->alias.'.account_id'=>$id
+            ),
             'contain'=>array(
+                'Department'=>array(
+                    'fields'=>array(
+                        'Department.id',
+                        'Department.name'
+                    )
+                )
             ),
             'fields'=>array(),
         ));
-        return $users;
+        
+        foreach ( $items as $key=>$rec ) {
+            $dataArr[$rec['Department']['id']] = $rec['Department']['name'];
+        }
+        #pr($dataArr);
+        #exit;
+        return $dataArr;
     }
 }

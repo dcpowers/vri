@@ -32,6 +32,14 @@ class Manufacturer extends AppModel {
         'Asset'
     );
     
+    public $validate = array( 
+        'name' => array(
+            'rule' => 'notBlank',
+            'required'=>true,
+            'message' => 'This field cannot be left blank'
+        )
+    );
+    
     public function pickList( ) {
         $dataArr = array();
         

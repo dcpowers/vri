@@ -5,7 +5,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-pencil fa-fw"></i> Edit: '. $user['User']['first_name'].' '.$user['User']['last_name'] .'',
                 array('controller'=>'Users', 'action'=>'edit', $user['User']['id']),
-                array( 'escape'=>false, 'class'=>'btn btn-primary btn-outline' )
+                array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm' )
             );
             break;
         
@@ -13,7 +13,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-plus fa-fw"></i> Add New Employee', 
                 array('controller'=>'Users', 'action'=>'add' ),
-                array('escape'=>false, 'class'=>'btn btn-primary btn-sm btn-outline') 
+                array('escape'=>false, 'class'=>'btn btn-success btn-sm') 
             );
             break;
         

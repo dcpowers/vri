@@ -4,7 +4,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-pencil fa-fw"></i> Edit: '. $account['Account']['name'].'',
                 array('controller'=>'Accounts', 'action'=>'edit', $account['Account']['id']),
-                array( 'escape'=>false, 'class'=>'btn btn-primary btn-outline' )
+                array( 'escape'=>false, 'class'=>'btn btn-primary btn-sm')
             );
             break;
         
@@ -12,7 +12,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-plus fa-fw"></i> Add New Account', 
                 array('controller'=>'Accounts', 'action'=>'add' ),
-                array('escape'=>false, 'class'=>'btn btn-primary btn-sm btn-outline') 
+                array('escape'=>false, 'class'=>'btn btn-success btn-sm') 
             );
             break;
         
