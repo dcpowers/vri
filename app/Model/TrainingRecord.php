@@ -44,7 +44,8 @@ class TrainingRecord extends AppModel {
     public function findRecords($requiredTraining = null, $user_id = null){
         $data = array();
         foreach($requiredTraining as $training){
-            
+            #pr($training);
+            #exit;
             $records = $this->find('all', array(
                 'conditions'=> array(
                     $this->alias.'.training_id'=>$training['TrainingMembership']['training_id'],
@@ -89,6 +90,8 @@ class TrainingRecord extends AppModel {
             
             #'expires_on <' =>  date(DATE_MYSQL_DATETIME, strtotime( '+' . $days . ' days', time() ) )
         }
+        #pr($data);
+        #exit;
         return $data;
     }
 }

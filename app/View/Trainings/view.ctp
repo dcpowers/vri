@@ -2,181 +2,245 @@
     #pr($trnCat);
     #exit; 
 ?>
-<div class="training view bg-white">
-    <div class="dashhead">
-        <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">Training Details: <?=$training['Training']['name']?></h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Training</h3>
-        </div>
-    </div>
-    <div class="flextable">
-        <div class="flextable-item flextable-primary">
-            <?php echo $this->element( 'Trainings/edit' );?>
-        </div>
-    </div>
-    
-    <div class="tabbable">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#info" data-toggle="tab">Training Details</a></li>
-            <li><a href="#records" data-toggle="tab">Training Records</a></li>
-        </ul>
+<?php
+    echo $this->Form->create('Training', array(
+    'url' => array('controller'=>'Trainings', 'action'=>'addToAccount', $training['Training']['id']), 
+    'role'=>'form',
+    'class'=>'form-horizontal',
+    'inputDefaults' => array(
+        'label' => false,
+        'div' => false,
+        'class'=>'form-control',
+        'error'=>false
+    )
+));
+?>
+<div class="modal-header modal-header-warning">
+    <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
+    <h2><?php echo __('Training Details: '.$training['Training']['name']); ?></h2>
+</div>
 
-        <div class="tab-content">
-            <div class="tab-pane fade active in" id="info">
-                <div class="row">
-                    <div class="col-sm-2">
-                        <?php
-                        $name = '../groupFiles/'.$training['Training']['image'];
-                        $image = (!empty($training['Training']['image'])) ? $name : 'noImage.png' ;
-                                        
-                        echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
-                        ?>
-                        <dl>
-                            <dt>Status:</dt>
-                            <dd><?=$training['Status']['name']?></dd>
-                        </dl>
-                        
-                        <dl>
-                            <dt>Is Required:</dt>
-                            <dd><?=$settings[$training['Training']['is_active']]?></dd>
-                        </dl>
-                        
-                        <dl>
-                            <dt>Last Update:</dt>
-                            <dd><?php echo date('F d, Y', strtotime($training['Training']['updated_date'])); ?></dd>
-                        </dl>
-                    </div>
-                    <div class="col-sm-10">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <dl>
-                                    <dt>Name:</dt>
-                                    <dd><?=$training['Training']['name']?></dd>
-                                </dl>
-                                
-                                <dl>
-                                    <dt>Description:</dt>
-                                    <dd><?=$training['Training']['description']?></dd>
-                                </dl>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Video Files</h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        <dl class="dl-horizontal">
-                                            <dt>Name:</dt>
-                                            <dd><?=$training['Training']['video']?></dd>
-                                        
-                                            <dt>Poster:</dt>
-                                            <dd><?=$training['Training']['video_poster']?></dd>
-                                        
-                                            <dt>Runtime:</dt>
-                                            <dd><?=$training['Training']['runtime']?></dd>
-                                            
-                                            <dt>Last Updated:</dt>
-                                            <dd><?php echo date('F d, Y', strtotime($training['Training']['video_date'])); ?></dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Power Point Files</h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        <dl class="dl-horizontal">
-                                            <dt>Name:</dt>
-                                            <dd><?=$training['Training']['power_point']?></dd>
-                                        
-                                            <dt>Last Updated:</dt>
-                                            <dd><?php echo date('F d, Y', strtotime($training['Training']['power_point_date'])); ?></dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Leader Files</h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        <dl class="dl-horizontal">
-                                            <dt>Name:</dt>
-                                            <dd><?=$training['Training']['leader_files']?></dd>
-                                        
-                                            <dt>Last Updated:</dt>
-                                            <dd><?php echo date('F d, Y', strtotime($training['Training']['leader_files_date']))?></dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="box box-warning">
+                <div class="box-body">
+                    <?php
+                    $name = '../groupFiles/'.$training['Training']['image'];
+                    $image = (!empty($training['Training']['image'])) ? $name : 'noImage.png' ;
+                                                
+                    echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
+                    ?>
                 </div>
-            </div><!-- End: Info Tab -->
-            
-            <div class="tab-pane fade" id="records">
-                <table class="table table-condensed table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Date</th>
-                            <th>Hrs</th>
-                            <th>Is Exempt</th>
-                            <th>Expires On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            </div>
+            <div class="box box-warning">
+                <div class="box-body">
+                    <dl>
+                        <dt>Status:</dt>
+                        <dd><?=$training['Status']['name']?></dd>
+                    </dl>
+                                
+                    <dl>
+                        <dt>Last Update:</dt>
+                        <dd><?php echo date('F d, Y', strtotime($training['Training']['modified'])); ?></dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">Categories</h3>
+                    <!--
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div>
+                <div class="box-body">
+                    <ul>
                         <?php
-                        foreach($training['TrainingRecord'] as $record){
-                            #pr($record);
-                            $expiresDate = !empty($record['expires_on']) ? date('F d, y', strtotime($record['expires_on'])) : null ;
+                        foreach($training['TrnCat'] as $cat){
                             ?>
-                            <tr>
-                                <td><?php echo ucwords( strtolower($record['User']['first_name']));?> <?php echo ucwords( strtolower($record['User']['last_name'])); ?></td>
-                                <td><?php echo date('F d, Y', strtotime($record['date'])); ?></td>
-                                <td><?=$record['hours']?></td>
-                                <td><?=$settings[$record['is_exempt']]?></td>
-                                <td><?=$expiresDate?></td>
-                            </tr>
+                            <li><?=$cat['TrainingCategory']['name']?></li>
                             <?php
                         }
                         ?>
-                    </tbody>
-                </table>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-9">
+            <div class="box box-warning">
+                <div class="box-body">
+                    <dl>
+                        <dt>Name:</dt>
+                        <dd><?=$training['Training']['name']?></dd>
+                    </dl>
+                                                
+                    <dl>
+                        <dt>Description:</dt>
+                        <dd><?=$training['Training']['description']?></dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">Training Files</h3>
+                    <!--
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div><!-- /.box-tools -->
+                </div>
+                <div class="box-body">
+                    <table class="table table-striped table-condensed" id="trainingTable">
+                        <thead>
+                            <tr class="tr-heading">
+                                <th>File</th>
+                                <th>File Type</th>
+                                <th>File Size</th>
+                                <th>Runtime</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            <?php
+                            foreach($training['TrainingFile'] as $file){
+                                
+                                $filePath = filesize(WWW_ROOT .'/files/'.$training['Training']['id'].'/'.$file['file']);
+                                $fileSize = human_filesize($filePath);
+                                ?>
+                                <tr>
+                                    <td><?=$file['human_name']?></td>
+                                    <td><?=$file['file_type']?></td>
+                                    <td><?=$fileSize?></td>
+                                    <td><?=$file['runtime']?></td>
+                                </tr>
+                                <?php
+                            }
+                            ?>                
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="box box-warning">
+                <div class="box-body">
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <div class="checkbox">
+                                <label>
+                                    <?php 
+                                    echo $this->Form->checkbox('is_required', array());
+                                    ?>
+                                    Is Required Training
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="name">Renewal In Months:</label>
+                        <div class="col-sm-8">
+                            <?php
+                            for($i=0; $i<=48; $i++){
+                                $renewal[$i] = $i;
+                            } 
+                            echo $this->Form->input('renewal', array (
+                                'options'=>$renewal,
+                                'type'=>'select',
+                                'value'=>12,
+                                'class'=>'form-select chzn-select',
+                            ));
+                            ?><label> Months </label><br />
+                            <small>Use "0" If Only Needed Once. </small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="name">Training For These Department(s) Only:</label>
+                        <div class="col-sm-8">
+                            <?php 
+                            echo $this->Form->input('department_id', array (
+                                'options'=>$depts,
+                                'type'=>'select',
+                                'empty'=>true,
+                                'multiple'=>true,
+                                'class'=>'form-select chzn-select',
+                                'data-placeholder'=>'Select Department(s)'
+                            ));
+                            ?>
+                            <small>Leave Empty If Training Is For Everyone</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" for="name">Training For These User(s) Only:</label>
+                        <div class="col-sm-8">
+                            <?php 
+                            echo $this->Form->input('user_id', array (
+                                'options'=>$users,
+                                'type'=>'select',
+                                'empty'=>true,
+                                'multiple'=>true,
+                                'class'=>'form-select chzn-select',
+                                'data-placeholder'=>'Select User(s)'
+                            ));
+                            ?>
+                            <small>Leave Empty If Training Is For Everyone Or You Have Selected Department(s) Above</small>
+                        </div>    
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <?php
+                            if(!empty($trn['TrainingMembership'][0]['id'])){
+                                echo $this->Html->link(
+                                    '<i class="fa fa-minus fa-fw"></i> Remove This Training From My Account',
+                                    array('controller'=>'Trainings', 'action'=>'removeFromAccount', $training['TrainingMembership'][0]['id']),
+                                    array('escape'=>false, 'class'=>'btn btn-danger')
+                                );
+                            }else{
+                                echo $this->Form->button(
+                                    '<i class="fa fa-plus fa-fw"></i> Add This Training To My Account',
+                                    array('type'=>'submit', 'class'=>'btn btn-success')
+                                );
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
 
+<div class="modal-footer">
+    <?php 
+    echo $this->Form->button(
+        '<i class="fa fa-times fa-fw"></i> Close',
+        array('class'=>'btn btn-default pull-left', 'data-dismiss'=>'modal')
+    ); 
+    
+    if(AuthComponent::user('Role.permission_level') >= 60 || in_array($training['Training']['account_id'], $account_ids)){
+        echo $this->Html->link(
+            '<i class="fa fa-pencil fa-fw"></i> Edit Training',
+            array('controller'=>'Trainings', 'action'=>'edit', $training['Training']['id']),
+            array('escape'=>false, 'class'=>'btn btn-primary')
+        );
+    }
+    ?>
+</div>
+<?php echo $this->Form->end();?>     
+<?php
+function human_filesize($bytes, $decimals = 2) {
+    $sz = 'BKMGTP';
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
+?>
 <script type="text/javascript">
     jQuery(window).ready( function($) {
         $(".chzn-select").chosen({
             allow_single_deselect: true
-        });
-        
-        $(".btn-edit").click(function(){
-            $('.accountInputs').prop('disabled', false);
-            $('.accountInputs').prop('disabled', false).trigger("chosen:updated");
-            
-            $(".btn-edit-set").hide();
-            $(".btn-cancel-set").show();
-            
-        });
-        
-        $(".btn-cancel").click(function(){
-            $('.accountInputs').prop('disabled', true);
-            $('.accountInputs').prop('disabled', true).trigger("chosen:updated");
-            
-            $(".btn-edit-set").show();
-            $(".btn-cancel-set").hide();
-        });
-        
-        $('#UserFirstName').editable({
-            type: 'text',
-            name: 'name'
         });
     });
 </script>

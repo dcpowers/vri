@@ -210,6 +210,11 @@
                                             $label = 'label label-warning';
                                         }
                                         
+                                        if($records[$training['Training']['id']][0]['TrainingRecord']['no_record'] == 1){
+                                            $status = 'No Record Found';
+                                            $label = 'label label-danger';
+                                        }
+                                        
                                         $expires = (!empty($records[$training['Training']['id']][0]['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($records[$training['Training']['id']][0]['TrainingRecord']['expires_on'])) : '--' ;
                                         ?>
                                         <tr>

@@ -128,12 +128,12 @@
         <div class="wrapper bg-white">
             <?php echo $this->element('header'); ?>
             <?php echo $this->element('menu'); ?>
-            <div class="content-wrapper bg-white">
+            <div class="content-wrapper">
                 <div class="container">
                     <section class="content-header">
                         <?php echo $this->element('breadcrumbs'); ?>        
                     </section>
-                    <section class="content">
+                    <section class="content bg-white">
                         <?php echo $this->Flash->render(); ?>
                         <?php echo $this->fetch('content'); ?>
                     </section>

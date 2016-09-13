@@ -29,9 +29,16 @@ class Training extends AppModel {
      * @var array
      */
     public $belongsTo = array(
+        'Author' => array(
+            'className' => 'User',
+            'foreignKey' => 'author_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
         'UpdatedBy' => array(
             'className' => 'User',
-            'foreignKey' => 'updated_by_id',
+            'foreignKey' => 'author_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
@@ -43,6 +50,13 @@ class Training extends AppModel {
             'fields' => '',
             'order' => ''
         ),
+        'Public' => array(
+            'className' => 'Setting',
+            'foreignKey' => 'is_public',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
         'Account' => array(
             'className' => 'Account',
             'foreignKey' => 'account_id',
@@ -50,20 +64,13 @@ class Training extends AppModel {
             'fields' => '',
             'order' => ''
         ),
-        'Department' => array(
-            'className' => 'Department',
-            'foreignKey' => 'department_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
-        
-        
     );
     
     public $hasMany = array(
         'TrainingMembership',
         'TrainingRecord',
+        'TrnCat',
+        'TrainingFile',
     );
     
     
@@ -77,11 +84,12 @@ class Training extends AppModel {
     public function pickListActive(){
         $data = $this->find('list', array(
             'conditions' => array(
-                'Account.is_active' => 1
+                'Training.is_active' => 1,
+                'Training.is_public' => 1
             ),
             'contain'=>array(),
-            'fields'=>array('Account.id', 'Account.name'),
-            'order'=>array('Account.name')
+            'fields'=>array('Training.id', 'Training.name'),
+            'order'=>array('Training.name')
         ));
         return $data; 
     }

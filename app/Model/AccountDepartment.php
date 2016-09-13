@@ -63,4 +63,23 @@ class AccountDepartment extends AppModel {
         #exit;
         return $dataArr;
     }
+    
+    public function getDepartmentIds($account_id=null){
+        $dataArr = array();
+        
+        $items = $this->find('all', array(
+            'conditions' => array(
+                $this->alias.'.account_id'=>$account_id
+            ),
+            'contain'=>array(
+                
+            ),
+            'fields'=>array($this->alias.'.department_id'),
+        ));
+        
+        foreach ( $items as $key=>$rec ) {
+            $dataArr[$rec['AccountDepartment']['department_id']] = $rec['AccountDepartment']['department_id'];
+        }
+        return $dataArr;
+    }
 }

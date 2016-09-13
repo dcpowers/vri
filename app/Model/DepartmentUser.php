@@ -49,4 +49,25 @@ class DepartmentUser extends AppModel {
         ));
         return $users;
     }
+    
+    public function getUserIds($account_id=null){
+        $dataArr = array();
+        
+        $items = $this->find('all', array(
+            'conditions' => array(
+                $this->alias.'.account_id'=>$account_id
+            ),
+            'contain'=>array(
+                
+            ),
+            'fields'=>array($this->alias.'.department_id'),
+        ));
+        
+        pr($items);
+        exit;
+        foreach ( $items as $key=>$rec ) {
+            $dataArr[$rec['User']['id']] = $rec['User']['id'];
+        }
+        return $dataArr;
+    }
 }

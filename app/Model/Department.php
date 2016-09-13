@@ -54,4 +54,25 @@ class Department extends AppModel {
         }
         return $dataArr;
     }
+    
+    public function pickListById( $ids=null ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.is_active'=>1,
+                $this->alias.'.id'=>$ids
+            ),
+            'order'=>$this->alias.'.name asc'
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('all', $find_options );
+
+        foreach ( $recs as $key=>$rec ) {
+            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['name'])) . ' ( ' . ucwords( strtolower($rec[$this->alias]['abr'] .' )'));
+        }
+        return $dataArr;
+    }
 }

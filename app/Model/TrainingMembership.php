@@ -24,49 +24,71 @@ class TrainingMembership extends AppModel {
         'Training',
         'Department' => array(
             'className' => 'Department',
-            'foreignKey' => 'foreign_key_id',
+            'foreignKey' => 'department_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
         'Account' => array(
             'className' => 'Account',
-            'foreignKey' => 'foreign_key_id',
+            'foreignKey' => 'account_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'RequiredUser' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
+        'CreatedBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'created_by',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         )
     );
     
-    public function getRequiredTraining($account_ids = null, $department_ids = null){
+    public function getRequiredTraining($account_ids = null,$department_ids = null, $user_ids = null ){
         
-        $requiredTraining = $this->find('all', array(
+        $training_ids = $this->find('all', array(
             'conditions'=>array(
                 'OR' => array(
                     array(
-                        'AND' => array(
-                            'model' => 'account',
-                            'foreign_key_id' => $account_ids,
+                        'AND'=>array(
+                            'TrainingMembership.account_id' => $account_ids,
                         )
                     ),
                     array(
-                        'AND' => array(
-                            'model' => 'department',
-                            'foreign_key_id' => $department_ids,
+                        'AND'=>array(
+                            'TrainingMembership.department_id' => $department_ids,
+                            'TrainingMembership.is_manditory' => 1
                         )
-                    )
-                )
-            ),
-            'contain'=>array(
-                'Training'=>array(
-                    'fields'=>array(
-                        'Training.id',
-                        'Training.name'
-                    )
+                    ),
+                    array(
+                        'AND'=>array(
+                            'TrainingMembership.user_id' => $user_ids,
+                            'TrainingMembership.is_manditory' => 1
+                        )
+                    ),
+                    array(
+                        'AND'=>array(
+                            'TrainingMembership.account_id' => null,
+                            'TrainingMembership.department_id' => null,
+                            'TrainingMembership.user_id' => null,
+                            'TrainingMembership.is_manditory' => 1
+                        )
+                    ),
                 )
             )
         ));
         
-        return $requiredTraining;
+        #pr($training_ids);
+        #exit;
+        return $training_ids;
     }
+    
 }

@@ -44,5 +44,9 @@ class AppModel extends Model {
         return array(1 => 'Yes', 2 => 'No');  
     }
     
+    function required() {  
+        return array(1 => 'Yes', 0 => 'No');  
+    }
+    
     
 }

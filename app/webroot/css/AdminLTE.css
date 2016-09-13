@@ -1549,6 +1549,27 @@ a:focus {
 .box.box-default {
   border-top-color: #d2d6de;
 }
+
+.box.box-purple {
+  border-top-color: #555299;
+}
+
+.box.box-maroon {
+  border-top-color: #CA195A;
+}
+
+.box.box-navy {
+  border-top-color: #001A35;
+}
+
+.box.box-teal {
+  border-top-color: #30BBBB;
+}
+
+.box.box-orange {
+  border-top-color: #FF7701;
+}
+
 .box.collapsed-box .box-body,
 .box.collapsed-box .box-footer {
   display: none;
@@ -1720,7 +1741,7 @@ a:focus {
   position: relative;
 }
 .box-header.with-border {
-  border-bottom: 1px solid #f4f4f4;
+  border-bottom: 1px solid #C0C0C0;
 }
 .collapsed-box .box-header.with-border {
   border-bottom: none;
@@ -1800,14 +1821,14 @@ a:focus {
   border-bottom-left-radius: 0;
 }
 .box-footer {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 3px;
-  border-bottom-left-radius: 3px;
-  border-top: 1px solid #f4f4f4;
-  padding: 10px;
-  background-color: #ffffff;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 15px;
+    background-color: #f5f5f5;
 }
+    
 .chart-legend {
   margin: 10px 0;
 }

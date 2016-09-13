@@ -220,13 +220,56 @@ class AccountsController extends AppController {
                         'User.first_name'=>'asc',
                         'User.last_name'=>'asc',
                     ),
+                ),
+                'TrainingMembership'=>array(
+                    'Training'=>array(
+                        'fields'=>array(
+                            'Training.id',
+                            'Training.name'
+                        )
+                    ),
+                    'Department'=>array(
+                        'fields'=>array(
+                            'Department.name'
+                        )
+                    ),
+                    'RequiredUser'=>array(
+                        'fields'=>array(
+                            'RequiredUser.first_name',
+                            'RequiredUser.last_name'
+                        )
+                    ),
                     
-                )  
+                    
+                )
             ),
             
         ));
         
+        #pr($account);
+        #exit;
         $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
+        
+        $training = array();
+        #pr($account['TrainingMembership']);
+        #exit;
+        if(!empty($account['TrainingMembership'])){
+            foreach($account['TrainingMembership'] as $key=>$trn){
+                $index = $trn['Training']['name'];
+                
+                $tvalue[$index][] = $trn;
+                $tkeysort[$index] = $trn['Training']['name'];
+                
+                $training = array_merge($training,$tvalue);
+            }
+            
+            unset($account['TrainingMembership']);
+            
+            array_multisort($tkeysort, SORT_ASC, $training);
+            
+            #pr($training);
+            #exit;
+        }
         
         $users = array();
         
@@ -280,17 +323,25 @@ class AccountsController extends AppController {
         if(!empty($account['User'])){
             array_multisort($keysort, SORT_ASC, $users);
         }
-        #pr($users);
-        #exit;
+        $assets = $account['Asset'];
+        
         unset($account['User']);
+        unset($account['Asset']);
+        
+        #pr($account);
+        #exit;
         
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
         
         $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
         $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
+        #pr($users);
+        #exit;
         
         $this->set('account', $account);
+        $this->set('assets', $assets);
         $this->set('employees', $users);
+        $this->set('trainings', $training);
         
         $this->set('userList', $userList);
         $this->set('status', $this->Setting->pickList('status'));

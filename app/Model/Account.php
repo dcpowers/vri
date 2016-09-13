@@ -60,6 +60,15 @@ class Account extends AppModel {
     );
     
     public $hasMany = array(
+        'TrainingMembership'=> array(
+            'conditions' => '',
+            'fields' => '',
+            'order' => '',
+            'group' => array(
+                'TrainingMembership.training_id',
+                'TrainingMembership.account_id',
+            )
+        ),
         'AccountDepartment',
         'DepartmentUser',
         'User',
@@ -109,5 +118,24 @@ class Account extends AppModel {
         ));
         
         return $ids;
+    }
+    
+    public function pickListById( $ids=null ) {
+        $dataArr = array();
+        
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$ids
+            ),
+            'order'=>$this->alias.'.name asc'
+        );
+
+        #pr($find_options);
+        #exit;
+        $recs = $this->find('list', $find_options );
+        
+        #pr($recs);
+        #exit;
+        return $recs;
     }
 }
