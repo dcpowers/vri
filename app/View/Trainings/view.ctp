@@ -26,7 +26,8 @@
             <div class="box box-warning">
                 <div class="box-body">
                     <?php
-                    $name = '../groupFiles/'.$training['Training']['image'];
+                    
+                    $name = '/files/'.$training['Training']['id'].'/'.$training['Training']['image'];
                     $image = (!empty($training['Training']['image'])) ? $name : 'noTraining.jpg' ;
                                                 
                     echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
