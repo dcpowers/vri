@@ -30,14 +30,41 @@ class DepartmentUser extends AppModel {
         )
     );
     
-    public function pick_list_dept(){
-        $items = $this->find('list', array(
-            'conditions' => array(),
+    public function pickListByDept($id=null){
+        $dataArr = array();
+        
+        $items = $this->find('all', array(
+            'conditions' => array(
+                $this->alias.'.department_id'=>$id
+            ),
             'contain'=>array(
+                'User'=>array(
+                    'fields'=>array(
+                        'User.id',
+                        'User.first_name',
+                        'User.last_name',
+                    ),
+                    'order'=>array(
+                        'User.first_name' => 'ASC',
+                        'User.last_name' => 'ASC'
+                    ),
+                    'AccountUser'=>array(
+                        'conditions'=>array(
+                            'AccountUser.account_id'=>AuthComponent::user('AccountUser.0.account_id'),
+                        )
+                    )
+                    
+                )
             ),
             'fields'=>array(),
         ));
-        return $users;
+        
+        foreach ( $items as $key=>$rec ) {
+            if(!empty($rec['User']['AccountUser'])){
+                $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
+            }
+        }
+        return $dataArr;
     }
     
     public function pick_list_user(){

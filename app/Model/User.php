@@ -442,8 +442,9 @@ class User extends AppModel {
             );
                 
             if($error == 0){
-                $name = rand ( 10000 , 99999 );
-                $uploadfile = AuthComponent::user('DetailUser.uploadDir'). "/" . $name;
+                $name = AuthComponent::user('id').'.png';
+                $uploadfile = '../webroot/img/profiles/'. $name;
+                
                 if (move_uploaded_file($file['tmp_name'], $uploadfile) == FALSE) {
                     $img = "";    
                 }else{
@@ -451,6 +452,8 @@ class User extends AppModel {
                 }
             }
             
+        }else{
+            $img = "";
         }
         
         return $img;

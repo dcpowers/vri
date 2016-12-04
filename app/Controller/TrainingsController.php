@@ -15,6 +15,8 @@ class TrainingsController extends AppController {
         'Training',
         'Setting',
         'TrainingCategory',
+        'TrainingClassroom',
+        'TrainingClassroomDetail',
         'TrnCat',
         'TrainingMembership',
         'Account',
@@ -99,6 +101,15 @@ class TrainingsController extends AppController {
             'contain'=>array(
                 'Training'=>array(
                     'TrainingFile'=>array(
+                    
+                    ),
+                    'TrainingClassroom'=>array(
+                        'conditions'=>array(
+                            'TrainingClassroom.account_id' => $account_ids
+                        ),
+                        'Instructor'=>array(),
+                        'TrainingClassroomDetail'=>array(),
+                        'order'=>array('TrainingClassroom.date' => 'DESC')
                     )
                 ),
                 'Department'=>array(
@@ -160,11 +171,86 @@ class TrainingsController extends AppController {
         
         $data = array();
         
+        $classRoom = array();
+        
         foreach($trainings as $key=>$item){
+            #pr($item);
+            #exit;
             if(empty($item['Training']['name'])){
                 unset($trainings[$key]);
+                break;
             }
+            
+            $classRoom = $item['Training']['TrainingClassroom'];
+            
+            foreach($item['Training']['TrainingClassroom'] as $c_key=> $c){
+                $totalCount = 0;
+                $attendCount = 0;
+                
+                if(!empty($c['TrainingClassroomDetail'])){
+                    foreach($c['TrainingClassroomDetail'] as $k=>$v){
+                        $totalCount++;
+                        if($v['did_attend'] == 1){
+                            $attendCount++;
+                        }
+                    }
+                    
+                    $trainings[$key]['Training']['TrainingClassroom'][$c_key]['total'] = $totalCount;
+                    $trainings[$key]['Training']['TrainingClassroom'][$c_key]['attend'] = $attendCount;
+                }
+                
+                
+            }
+            #unset($trainings[$key]['Training']['TrainingClassroom']);
+            
+            $training = $this->TrainingMembership->find('all', array(
+                'conditions' => array(     
+                    'TrainingMembership.training_id' => $item['Training']['id'],
+                    'TrainingMembership.account_id' => AuthComponent::user('AccountUser.0.account_id'),
+                ),
+                'contain'=>array(
+                ),
+            ));
+            
+            $this->request->data[$key]['Training']['department_id'] = array();
+            $this->request->data[$key]['Training']['user_id'] = array();
+            
+            foreach($training as $trn){
+                $this->request->data[$key]['Training']['is_required'] = $trn['TrainingMembership']['is_required'];
+                $this->request->data[$key]['Training']['renewal'] = $trn['TrainingMembership']['renewal'];
+                $this->request->data[$key]['Training']['training_id'] = $item['Training']['id'];
+                $this->request->data[$key]['Training']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
+                
+                if(!empty($trn['TrainingMembership']['department_id'])){
+                    $this->request->data[$key]['Training']['department_id'][] = $trn['TrainingMembership']['department_id'];
+                }
+                
+                if(!empty($trn['TrainingMembership']['user_id'])){
+                    $this->request->data[$key]['Training']['user_id'][] = $trn['TrainingMembership']['user_id'];
+                }
+            }
+            
         }
+        
+        
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+        
+        $depts = $this->Department->pickListById($department_ids);
+        $accts = $this->Account->pickListById($account_ids);
+        $users = $this->AccountUser->pickList($account_ids);
+        
+        $this->set('account_ids', $account_ids);
+        $this->set('department_ids', $department_ids);
+        $this->set('user_ids', $user_ids);
+        #pr($trainings);
+        #exit;
+        
+        $this->set('accts', $accts);
+        $this->set('depts', $depts);
+        $this->set('users', $users);
+        #$this->set('classRoom', $classRoom);
         
         $this->set('trainings', $trainings);
         $this->set('settings', $this->TrainingMembership->required());
@@ -425,8 +511,6 @@ class TrainingsController extends AppController {
                 }
             }
             
-            #pr($this->request->data);
-            #exit;
             //delete all records, recreate
             $this->TrainingMembership->deleteAll(
                 array(
@@ -501,6 +585,97 @@ class TrainingsController extends AppController {
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);    
+    }
+    
+    public function roster($trn_id = null){
+        if ($this->request->is('post') || $this->request->is('put')) {
+        }
+        
+        
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+        
+        $depts = $this->Department->pickListById($department_ids);
+        $accts = $this->Account->pickListById($account_ids);
+        $users = $this->AccountUser->pickList($account_ids);
+        
+        $this->set('account_ids', $account_ids);
+        $this->set('department_ids', $department_ids);
+        $this->set('user_ids', $user_ids);
+        
+        $this->set('accts', $accts);
+        $this->set('depts', $depts);
+        $this->set('users', $users);
+        $this->set('training_id', $trn_id);
+        
+    }
+    
+    public function createClassroom($trn_id = null, $name=null){
+        
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if(empty($this->request->data['TrainingClassroom']['date'])){
+                $this->request->data['TrainingClassroom']['date'] = strtotime('now');
+            }else{
+                $this->request->data['TrainingClassroom']['date'] = date('Y-m-d', strtotime($this->request->data['TrainingClassroom']['date']));
+            }
+            
+            if(empty($this->request->data['TrainingClassroomDetail']['user_id'])){
+                 $this->Flash->alertBox(
+                    'Please Build a Roster!',
+                    array(
+                        'params' => array(
+                            'class'=>'alert-danger'
+                        )
+                    )
+                );
+                
+                return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
+                
+            }
+            
+            foreach($this->request->data['TrainingClassroomDetail']['user_id'] as $k=>$r){
+                $this->request->data['TrainingClassroomDetail'][$k]['user_id'] = $r;
+                $this->request->data['TrainingClassroomDetail'][$k]['did_attend'] = $this->request->data['TrainingClassroomDetail']['did_attend'];
+            }
+            unset($this->request->data['TrainingClassroomDetail']['user_id'], $this->request->data['TrainingClassroomDetail']['did_attend']);
+            
+            if ($this->TrainingClassroom->saveAll($this->request->data)) {
+                $this->Flash->alertBox(
+                    'Training Classroom Has Been Create',
+                    array( 'params' => array( 'class'=>'alert-success' ))
+                );
+            }else{
+                $this->Flash->alertBox(
+                    'There Was An Error, Please Try Again!',
+                    array( 'params' => array( 'class'=>'alert-danger' ))
+                );
+            }
+            
+            return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
+        }
+        
+        
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+        
+        $depts = $this->Department->pickListById($department_ids);
+        $accts = $this->Account->pickListById($account_ids);
+        $users = $this->AccountUser->pickList($account_ids);
+        
+        $this->set('account_ids', $account_ids);
+        $this->set('department_ids', $department_ids);
+        $this->set('user_ids', $user_ids);
+        
+        $this->set('accts', $accts);
+        $this->set('depts', $depts);
+        $this->set('users', $users);
+        
+        $this->set('training_id', $trn_id);
+        $this->set('name', $name.' [ '.date('m/d/Y', strtotime('now')).' ]');
+        $this->set('account_id', AuthComponent::user('AccountUser.0.account_id'));
+        
     }
     
     public function upload(){

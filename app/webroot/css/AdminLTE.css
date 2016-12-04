@@ -1220,6 +1220,7 @@ a:focus {
   position: absolute;
   right: 0;
   left: auto;
+  top: 49px
 }
 @media (max-width: 991px) {
   .navbar-custom-menu > .navbar-nav {

@@ -2,15 +2,12 @@
     <?php echo $this->element( 'dashboard/_safety' ); ?>
     
     <div class="row">
-        <div class="col-md-2">
-            Profile Info
+        <div class="col-md-4">
+            <?php echo $this->element( 'dashboard/_profile' ); ?>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-8">
             <?php echo $this->element( 'dashboard/_trainings' ); ?>
-            <?php echo $this->element( 'dashboard/_improvements' ); ?>
-        </div>
-        <div class="col-md-3">
-            
+            <?php echo $this->element( 'dashboard/_improvements' ); ?>    
         </div>
     </div>
 </div>

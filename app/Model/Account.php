@@ -71,6 +71,7 @@ class Account extends AppModel {
         ),
         'AccountDepartment',
         'DepartmentUser',
+        'AccountUser',
         'User',
         'Asset'
     );

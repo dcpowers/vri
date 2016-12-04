@@ -48,7 +48,7 @@
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <dl>
                                 <dt>Employee Status:</dt>
                                 <dd>
@@ -56,6 +56,43 @@
                                     echo $this->Form->input( 'is_active', array(
                                         'options'=>$status,
                                         'class'=>'chzn-select form-control',
+                                        'required'=>false,
+                                        'label'=>false,
+                                        'between' => '<div class="input-group">',
+                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+                                    ));
+                                    ?>
+                                </dd>
+                            </dl>
+                            <dl>                                    
+                                <dt>Current Account(s):</dt>
+                                <dd>
+                                    <?php
+                                    $this->request->data['AccountUser']['account_id'] = Set::extract( $this->request->data['AccountUser'], '/account_id' );
+                                    
+                                    echo $this->Form->input( 'AccountUser.account_id', array(
+                                        'options'=>$accounts,
+                                        'class'=>'chzn-select form-control',
+                                        'required'=>false,
+                                        'label'=>false,
+                                        'multiple'=>false,
+                                        'between' => '<div class="input-group">',
+                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+                                    ));
+                                    ?>
+                                </dd>
+                            </dl>
+                            
+                            <dl>
+                                <dt>Current Department(s):</dt>
+                                <dd>
+                                    <?php
+                                    $this->request->data['DepartmentUser']['department_id'] = Set::extract( $this->request->data['DepartmentUser'], '/department_id' );
+                                    
+                                    echo $this->Form->input( 'DepartmentUser.department_id', array(
+                                        'options'=>$departments,
+                                        'class'=>'chzn-select form-control',
+                                        'multiple'=>true,
                                         'required'=>false,
                                         'label'=>false,
                                         'between' => '<div class="input-group">',
@@ -81,28 +118,7 @@
                                     ?>
                                 </dd>
                             </dl>
-                            <dl>    
-                                <dt>Pay Status:</dt>
-                                <dd>
-                                    <?php
-                                    echo $this->Form->input( 'PayStatus', array(
-                                        'required'=>false,
-                                        'label'=>false,
-                                    ));
-                                    ?>
-                                </dd>
-                            </dl>
-                            <dl>    
-                                <dt>All Pay Id:</dt>
-                                <dd>
-                                    <?php
-                                    echo $this->Form->input( 'AllPayId', array(
-                                        'required'=>false,
-                                        'label'=>false,
-                                    ));
-                                    ?>
-                                </dd>
-                            </dl>
+                            
                             <dl>    
                                 <dt>Permissions (Role ):</dt>
                                 <dd>
@@ -120,9 +136,9 @@
                                 </dd>
                             </dl>
                         </div>
-                        <div class="col-md-9">
+                        <div class="col-md-8">
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-8">
                                     <dl>
                                         <dt>First Name:</dt>
                                         <dd>
@@ -171,7 +187,7 @@
                                     </dl>
                                 </div>
                                                     
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <?php
                                     $doh = (!empty($user['User']['doh'])) ? date('F d, Y', strtotime($user['User']['doh'])) : 'N/A' ;
                                     $dob = (!empty($user['User']['dob'])) ? date('F d, Y', strtotime($user['User']['dob'])) : 'N/A' ;
@@ -204,40 +220,28 @@
                                             ?>
                                         </dd>
                                     </dl>
-                                    <dl>                                    
-                                        <dt>Current Account(s):</dt>
-                                        <dd>
-                                            <?php
-                                            $this->request->data['AccountUser']['account_id'] = Set::extract( $this->request->data['AccountUser'], '/account_id' );
-                                            echo $this->Form->input( 'AccountUser.account_id', array(
-                                                'options'=>$accounts,
-                                                'class'=>'chzn-select form-control',
-                                                'required'=>false,
-                                                'label'=>false,
-                                                'multiple'=>true,
-                                                'between' => '<div class="input-group">',
-                                                'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
-                                            ));
-                                            ?>
-                                        </dd>
-                                    </dl>
-                                    <dl>
-                                        <dt>Current Department(s):</dt>
-                                        <dd>
-                                            <?php
-                                            $this->request->data['DepartmentUser']['department_id'] = Set::extract( $this->request->data['DepartmentUser'], '/department_id' );
-                                            echo $this->Form->input( 'DepartmentUser.department_id', array(
-                                                'options'=>$departments,
-                                                'class'=>'chzn-select form-control',
-                                                'multiple'=>true,
-                                                'required'=>false,
-                                                'label'=>false,
-                                                'between' => '<div class="input-group">',
-                                                'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
-                                            ));
-                                            ?>
-                                        </dd>
-                                    </dl>
+                                    <dl>    
+                                <dt>Pay Status:</dt>
+                                <dd>
+                                    <?php
+                                    echo $this->Form->input( 'PayStatus', array(
+                                        'required'=>false,
+                                        'label'=>false,
+                                    ));
+                                    ?>
+                                </dd>
+                            </dl>
+                            <dl>    
+                                <dt>All Pay Id:</dt>
+                                <dd>
+                                    <?php
+                                    echo $this->Form->input( 'AllPayId', array(
+                                        'required'=>false,
+                                        'label'=>false,
+                                    ));
+                                    ?>
+                                </dd>
+                            </dl>
                                 </div>
                             </div>
                         </div>
@@ -256,7 +260,8 @@
         </div>
     </div>
     <?php
-        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+        $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
     ?>
     <script type="text/javascript">
         jQuery(document).ready( function($) {
@@ -281,6 +286,29 @@
                 $.ajax({
                     type: 'post',
                     url: '<?=$groupRequest_url?>/' + $(this).val() + '.json',
+                    dataType: "html",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#DepartmentUserDepartmentId').html(response);
+                        $('#DepartmentUserDepartmentId' ).val('').trigger( 'chosen:updated' );
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    },
+                    complete: function(){
+                        $('#overlay').remove();
+                    },
+                });
+            
+                $.ajax({
+                    type: 'post',
+                    url: '<?=$userRequest_url?>/' + $(this).val() + '.json',
                     dataType: "html",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

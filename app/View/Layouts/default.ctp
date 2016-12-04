@@ -103,7 +103,7 @@
             
             
             <?php echo $this->Html->css('https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');?>
-            <?php echo $this->Html->css('//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');?>
+            <?php echo $this->Html->css('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');?>
             <?php echo $this->Html->css('//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css');?>
         <?php $this->end('csslib'); ?>
         <!---- /csslib ---->
@@ -124,7 +124,6 @@
         <![endif]-->
     </head>
     <body class="hold-transition layout-top-nav skin-black">
-        
         <div class="wrapper bg-white">
             <?php echo $this->element('header'); ?>
             <?php echo $this->element('menu'); ?>
@@ -143,9 +142,11 @@
                 <div class="pull-right hidden-xs">
                     Footer stuff here
                 </div>
-                <strong>Copyright Stuff Here!! All rights reserved.
+                <strong><?php echo $this->element('copyright'); ?></strong>
             </footer>
+            
             <?php echo $this->element('sidebar'); ?>
+            
         </div>
         <!-- Large Model -->
         <div class="modal fade bs-example-modal-lg" tabindex="-1" id="myLgModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">

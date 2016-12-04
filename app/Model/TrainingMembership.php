@@ -52,7 +52,8 @@ class TrainingMembership extends AppModel {
         )
     );
     
-    public function getRequiredTraining($account_ids = null,$department_ids = null, $user_ids = null ){
+    public function getAllTraining($account_ids = null, $department_ids = null, $userId = null ){
+        
         
         $training_ids = $this->find('all', array(
             'conditions'=>array(
@@ -70,7 +71,7 @@ class TrainingMembership extends AppModel {
                     ),
                     array(
                         'AND'=>array(
-                            'TrainingMembership.user_id' => $user_ids,
+                            'TrainingMembership.user_id' => $userId,
                             'TrainingMembership.is_manditory' => 1
                         )
                     ),

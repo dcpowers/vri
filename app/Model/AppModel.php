@@ -48,5 +48,8 @@ class AppModel extends Model {
         return array(1 => 'Yes', 0 => 'No');  
     }
     
+    function empPayStatus(){
+        return array( 1 => 'Full Time', 2 => 'Part Time', 3=>'Not eligible for Safety Awards', 4 => 'Salary', 5 => 'PRN' );
+    }
     
 }

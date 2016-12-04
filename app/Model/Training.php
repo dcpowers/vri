@@ -68,6 +68,7 @@ class Training extends AppModel {
     
     public $hasMany = array(
         'TrainingMembership',
+        'TrainingClassroom',
         'TrainingRecord',
         'TrnCat',
         'TrainingFile',

@@ -30,7 +30,7 @@ class AccountUser extends AppModel {
         )
     );
     
-    public function pickList($account_id=null){
+    public function pickList($account_id=null, $dept_id = null){
         $dataArr = array();
         
         $items = $this->find('all', array(

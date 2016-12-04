@@ -10,7 +10,7 @@
                     array('escape'=>false, 'class'=>'navbar-brand')
                 );    
                 ?>
-                
+                    
                 <?php
                 echo $this->Form->button('<i class="fa fa-bars"></i>', array(
                     'type' => 'button',
@@ -23,20 +23,41 @@
             
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
+                    <!-- Control Sidebar Toggle Button -->
+                    <?php
+                    if(AuthComponent::user('Role.permission_level') >= 50){
+                        ?>
+                        <li>
+                            <!--<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>-->
+                            <?php
+                            echo $this->Html->link(
+                                '<i class="fa fa-cogs"></i>',
+                                array('controller'=>'settings', 'action'=>''),
+                                array('escape'=>false, 'class'=>'dropdown-toggle', 'data-toggle'=>'dropdown')
+                            );
+                            ?>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                    
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <?php
+                        $image = (file_exists('img/profiles/'.$current_user['id'].'.png')) ? '/img/profiles/'.$current_user['id'].'.png' : '<i class="glyphicon glyphicon-user"></i>' ;
+                        
                         echo $this->Html->link(
-                            '<i class="glyphicon glyphicon-user"></i><span class="hidden-xs">'.$current_user['first_name'].' '. $current_user['last_name'].' </span>',
+                            '<i class="glyphicon glyphicon-user"></i><span class="hidden-xs">'.$current_user['first_name'].' '. $current_user['last_name']. ' </span><span class="fa fa-chevron-down"></span>',
                             '#',
                             array('escape'=>false, 'class'=>'dropdown-toggle', 'data-toggle'=>'dropdown')
                         );    
                         ?>
+                        
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
                                 <?php
-                                $image = file_exists('/img/profiles/'.$current_user['id'].'.png') ? '/img/profiles/'.$current_user['last_name'].'.png' : '/img/profiles/noImage.png' ;
+                                $image = (file_exists('img/profiles/'.$current_user['id'].'.png')) ? '/img/profiles/'.$current_user['id'].'.png' : '/img/profiles/noImage.png' ;
                                 echo $this->Html->image($image, array('class'=>'img-circle', 'alt'=>$current_user['last_name']));
                                 ?>
                                 <p>
@@ -67,6 +88,7 @@
                                     );    
                                     ?>
                                 </div>
+                                
                                 <div class="pull-right">
                                     <?php
                                     echo $this->Html->link(
@@ -78,11 +100,6 @@
                                 </div>
                             </li>
                         </ul>
-                    </li>
-                    
-                    <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                     </li>
                 </ul>
             </div>

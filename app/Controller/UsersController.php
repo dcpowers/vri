@@ -403,12 +403,11 @@ class UsersController extends AppController {
                     'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
                 'TrainingRecord'=>array(
-                    'Training'=>array(),
-                    'Trainer'=>array(),
-                    'order'=>array( 
-                        'TrainingRecord.date'=>'DESC',
-                        'TrainingRecord.expires_on'=>'DESC' 
-                    )    
+                    'Training'=>array(
+                        'fields'=>array(
+                            'Training.name'
+                        )
+                    )
                 ),
                 'TrainingExempt'=>array()
             ),
@@ -426,14 +425,15 @@ class UsersController extends AppController {
         }
         unset($user['TrainingRecord']);
         
-        #pr($user);
-        #exit;
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
         
-        $requiredTraining = $this->TrainingMembership->getRequiredTraining($account_ids,$department_ids, $id);
+        $requiredTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids, $id);
         $records = $this->TrainingRecord->findRecords($requiredTraining, $id);
         
+        if ($this->request->is('requested')) {
+            return array($requiredTraining, $records);
+        }
         $this->set('user', $user);
         $this->set('records', $records);
         $this->set('requiredTraining', $requiredTraining);
@@ -590,5 +590,130 @@ class UsersController extends AppController {
         
         $this->set(compact('data'));
     }
+    
+    public function updateDeptList($id = null){
+        $data = $this->Department->pickListById($id);
+        
+        $this->set(compact('data'));
+    }
+    
+    public function userListByDept($id = null){
+        $data = $this->DepartmentUser->pickListByDept($id);
+        
+        $this->set(compact('data'));
+    }
+    
+    public function profile(){
+        $this->User->id = AuthComponent::user('id');
+        if (!$this->User->exists()) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+        
+        if ($this->request->is('post') || $this->request->is('put')) {
+            
+            if(!empty($this->request->data['User']['dob'])){
+                $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
+            }
+            
+            #pr($this->request->data);
+            #exit;
+            pr($this->request->data);
+            //update profile image if not empty
+            if(!empty($this->request->data['User']['file'])) {
+                $check = $this->User->uploadFile($this->request->data['User']['file']);
+                
+            }
+            #pr($check);
+            unset($this->request->data['User']['file']);
+            #pr($this->request->data);
+            #exit;
+            if($this->User->save($this->request->data)) {
+                 $this->Flash->alertBox(
+                    'Your profile has been saved', [
+                        'key' => 'profile',
+                        'params' => [ 'class'=>'alert-success' ]
+                    ]
+                );
+                
+                return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
+            }
+            
+            #debug($this->User->validationErrors); //show validationErrors
+            #debug($this->User->getDataSource()->getLog(false, false)); //show last sql query
+            #exit;
+            
+            $this->Flash->alertBox(
+                'Profile could not be saved. Please, try again.', [ 
+                    'key' => 'profile',
+                    'params' => [ 'class'=>'alert-danger' ]
+                ]
+            );
+            
+            return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
+            
+        } 
+        
+        $user = $this->request->data = $this->User->find('first', array(
+            'conditions' => array(
+                'User.id' => AuthComponent::user('id')
+            ),
+            'contain'=>array(
+                'AccountUser'=>array(
+                    'Account'=>array(
+                        'fields'=>array(
+                            'Account.id',
+                            'Account.name'
+                        )
+                    )
+                ),
+                'Role'=>array(
+                    'fields'=>array('Role.name', 'Role.lft')
+                ),
+                'Asset'=>array(
+                    'Manufacturer'=>array(
+                        'fields'=>array(
+                            'Manufacturer.id',
+                            'Manufacturer.name'
+                        )
+                    ),
+                    'fields'=>array(
+                        'Asset.id',
+                        'Asset.asset',
+                        'Asset.tag_number',
+                        'Asset.model',
+                    )
+                ),
+                'Supervisor'=>array(
+                    'fields'=>array('Supervisor.first_name', 'Supervisor.last_name')
+                ),
+                'DepartmentUser'=>array(
+                    'Department'=>array(
+                        'fields'=>array('Department.id','Department.name', 'Department.abr')
+                    )
+                ),
+                'Status'=>array(
+                    'fields'=>array('Status.name', 'Status.color', 'Status.icon')
+                ),
+                
+                'TrainingExempt'=>array()
+            ),
+        ));
+        
+        $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
+        $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
+        
+        $requiredTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids,AuthComponent::user('id'));
+        $records = $this->TrainingRecord->findRecords($requiredTraining, AuthComponent::user('id'));
+        
+        if ($this->request->is('requested')) {
+            return $this->request->data;
+        }
+        
+        $this->set('user', $user);
+        $this->set('records', $records);
+        $this->set('payStatus', $this->User->empPayStatus());
+    }
+    
+    
 
 }

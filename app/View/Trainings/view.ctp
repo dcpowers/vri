@@ -1,6 +1,7 @@
 <?php
     #pr($trnCat);
     #exit; 
+    http://motherless.com/u/DreamWitness?t=v
 ?>
 <?php
     echo $this->Form->create('Training', array(
