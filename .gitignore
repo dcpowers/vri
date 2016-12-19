@@ -8,6 +8,7 @@
 /build
 /dist
 /tags
+/app/webroot/files/*
 *.mo
 
 # IDE and editor specific files #
