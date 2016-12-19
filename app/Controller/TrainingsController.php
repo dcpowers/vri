@@ -10,7 +10,7 @@ class TrainingsController extends AppController {
     //public $components = array('Search.Prg');
     #public $helpers = array( 'Tree' );
     //Search Plugin
-    
+
     var $uses = array(
         'Training',
         'Setting',
@@ -23,33 +23,33 @@ class TrainingsController extends AppController {
         'AccountUser',
         'Department',
         'DepartmentUser',
-        'AccountDepartment' 
+        'AccountDepartment'
     );
-    
+
     public $components = array( 'RequestHandler', 'Paginator');
-    
+
     public $presetVars = array(
         array('field' => 'q', 'type' => 'value')
     );
-    
+
     public $paginate = array(
         'order' => array(
             'Training.name' => 'asc'
         ),
         'limit'=>50
     );
-    
+
     public function pluginSetup() {
         $user = AuthComponent::user();
-        
+
         //These Two Lines are Required
         parent::pluginSetup();
         Configure::write('App.Name', 'Training');
     }
-    
+
     public function beforeFilter() {
         parent::beforeFilter();
-        
+
         $this->set('title_for_layout', 'Training');
         /*
         $this->set('breadcrumbs', array(
@@ -57,13 +57,13 @@ class TrainingsController extends AppController {
         ));
         */
     }
-    
+
     public function index() {
-        
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         #pr($account_ids);
         #pr($department_ids);
         #pr($user_ids);
@@ -101,7 +101,7 @@ class TrainingsController extends AppController {
             'contain'=>array(
                 'Training'=>array(
                     'TrainingFile'=>array(
-                    
+
                     ),
                     'TrainingClassroom'=>array(
                         'conditions'=>array(
@@ -140,7 +140,7 @@ class TrainingsController extends AppController {
                 'TrainingMembership.account_id',
             )
         );
-        
+
         if(!empty($this->request->data['Search']['q'])){
             $training_ids = $this->Training->find('list', array(
                 'conditions' => array(
@@ -153,7 +153,7 @@ class TrainingsController extends AppController {
                 ),
                 'fields'=>array('Training.id', 'Training.id')
             ));
-            
+
             $options = array(
                 'conditions'=>array(
                     'AND'=>array(
@@ -161,16 +161,15 @@ class TrainingsController extends AppController {
                     )
                 )
             );
-            
+
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
         }
-        
-        $trainings = $this->Paginator->paginate('TrainingMembership');
-        
+
+		$trainings = $this->Paginator->paginate('TrainingMembership');
         $data = array();
-        
+
         $classRoom = array();
-        
+
         foreach($trainings as $key=>$item){
             #pr($item);
             #exit;
@@ -178,13 +177,13 @@ class TrainingsController extends AppController {
                 unset($trainings[$key]);
                 break;
             }
-            
+
             $classRoom = $item['Training']['TrainingClassroom'];
-            
+
             foreach($item['Training']['TrainingClassroom'] as $c_key=> $c){
                 $totalCount = 0;
                 $attendCount = 0;
-                
+
                 if(!empty($c['TrainingClassroomDetail'])){
                     foreach($c['TrainingClassroomDetail'] as $k=>$v){
                         $totalCount++;
@@ -192,78 +191,78 @@ class TrainingsController extends AppController {
                             $attendCount++;
                         }
                     }
-                    
+
                     $trainings[$key]['Training']['TrainingClassroom'][$c_key]['total'] = $totalCount;
                     $trainings[$key]['Training']['TrainingClassroom'][$c_key]['attend'] = $attendCount;
                 }
-                
-                
+
+
             }
             #unset($trainings[$key]['Training']['TrainingClassroom']);
-            
+
             $training = $this->TrainingMembership->find('all', array(
-                'conditions' => array(     
+                'conditions' => array(
                     'TrainingMembership.training_id' => $item['Training']['id'],
                     'TrainingMembership.account_id' => AuthComponent::user('AccountUser.0.account_id'),
                 ),
                 'contain'=>array(
                 ),
             ));
-            
+
             $this->request->data[$key]['Training']['department_id'] = array();
             $this->request->data[$key]['Training']['user_id'] = array();
-            
+
             foreach($training as $trn){
                 $this->request->data[$key]['Training']['is_required'] = $trn['TrainingMembership']['is_required'];
                 $this->request->data[$key]['Training']['renewal'] = $trn['TrainingMembership']['renewal'];
                 $this->request->data[$key]['Training']['training_id'] = $item['Training']['id'];
                 $this->request->data[$key]['Training']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
-                
+
                 if(!empty($trn['TrainingMembership']['department_id'])){
                     $this->request->data[$key]['Training']['department_id'][] = $trn['TrainingMembership']['department_id'];
                 }
-                
+
                 if(!empty($trn['TrainingMembership']['user_id'])){
                     $this->request->data[$key]['Training']['user_id'][] = $trn['TrainingMembership']['user_id'];
                 }
             }
-            
+
         }
-        
-        
+
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
         $users = $this->AccountUser->pickList($account_ids);
-        
+
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
         #pr($trainings);
         #exit;
-        
+
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);
         #$this->set('classRoom', $classRoom);
-        
+
         $this->set('trainings', $trainings);
         $this->set('settings', $this->TrainingMembership->required());
-        
+
     }
-    
+
     public function library($cat=null) {
-        
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-        
+
         #pr($training_ids);
         #exit;
         $this->Paginator->settings = array(
-            'conditions' => array(     
-                
+            'conditions' => array(
+
             ),
             'contain'=>array(
                 'Author'=>array(
@@ -308,7 +307,7 @@ class TrainingsController extends AppController {
             'limit' => 100,
             'order'=>array('Training.name'=> 'asc'),
         );
-        
+
         if(!empty($this->request->data['Search']['q'])){
             $option = array('conditions'=>array(
                 'OR'=>array(
@@ -316,25 +315,25 @@ class TrainingsController extends AppController {
                     array('Training.description LIKE' => '%'.$this->request->data['Search']['q'].'%' )
                 )
             ));
-            
+
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$option);
         }
-        
+
         if(!is_null($cat)){
             $training_ids = $this->TrnCat->getTrainingIds($cat);
-            
+
             $options = array(
                 'conditions'=>array(
                     'Training.id'=>$training_ids
                 )
             );
-            
+
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
         }
-        
+
         if(AuthComponent::user('Role.permission_level') <= 40){
             $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-            
+
             $options = array(
                 'conditions'=>array(
                     'OR'=> array(
@@ -344,19 +343,19 @@ class TrainingsController extends AppController {
                                 'Training.is_public'=>1,
                             ),
                         ),
-                        array( 
+                        array(
                             'Training.account_id' => $account_ids
                         ),
-                    ),    
+                    ),
                 )
             );
-            
+
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
-        }    
-        
+        }
+
         #pr($this->Paginator->settings);
         #exit;
-        
+
         $trainings = $this->Paginator->paginate('Training');
         #pr($trainings);
         #exit;
@@ -364,17 +363,17 @@ class TrainingsController extends AppController {
         $this->set('cat', $cat);
         $this->set('trnCat', $this->TrainingCategory->pickList());
     }
-    
+
     public function view($id=null){
         $options = array();
-        
+
         if(AuthComponent::user('Role.permission_level') <= 30){
             $option = array('conditions'=>array('TrainingRecord.User.account_id' => $this->Auth->user('account_id'), 'Role.lft >' => $this->Auth->user('Role.lft'), 'Role.rght <' => $this->Auth->user('Role.rght')));
             $options = array_merge_recursive($options,$option);
         }
-        
+
         $training = $this->request->data = $this->Training->find('first', array(
-            'conditions' => array(     
+            'conditions' => array(
                 'Training.id' => $id,
             ),
             'contain'=>array(
@@ -386,44 +385,44 @@ class TrainingsController extends AppController {
                 'TrainingMembership'=>array()
             ),
         ));
-        
+
         #pr($training);
         #exit;
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
         $users = $this->AccountUser->pickList($account_ids);
-        
+
         $this->set('training', $training);
         $this->set('trnCat', $this->TrainingCategory->pickList());
-        
+
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
-        
+
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);
-        
-    
+
+
     }
-    
+
     public function addToAccount($trn_id=null){
         $this->Training->id = $trn_id;
         if (!$this->Training->exists()) {
             throw new NotFoundException(__('Invalid Training'));
         }
-        
+
         $c=0;
         $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
         $this->request->data[$c]['TrainingMembership']['renewal'] = $this->request->data['Training']['renewal'];
         $this->request->data[$c]['TrainingMembership']['created_by'] = AuthComponent::user('id');
         $this->request->data[$c]['TrainingMembership']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
         $this->request->data[$c]['TrainingMembership']['is_required'] = $this->request->data['Training']['is_required'];
-                
+
         if(!empty($this->request->data['Training']['department_id'])){
             foreach($this->request->data['Training']['department_id'] as $dept){
                 $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
@@ -435,7 +434,7 @@ class TrainingsController extends AppController {
                 $c++;
             }
         }
-        
+
         if(!empty($this->request->data['Training']['user_id'])){
             foreach($this->request->data['Training']['user_id'] as $user){
                 $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
@@ -444,46 +443,46 @@ class TrainingsController extends AppController {
                 $this->request->data[$c]['TrainingMembership']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
                 $this->request->data[$c]['TrainingMembership']['is_required'] = $this->request->data['Training']['is_required'];
                 $this->request->data[$c]['TrainingMembership']['user_id'] = $user;
-                
+
                 $c++;
             }
         }
-        
+
         unset($this->request->data['Training']);
-        
+
         if ($this->TrainingMembership->saveAll($this->request->data)) {
             $this->Flash->alertBox(
                 'Training Has Been Added To Your Account',
                 array( 'params' => array( 'class'=>'alert-success' ))
             );
-            
+
             $this->redirect(array('controller'=>'Trainings', 'action'=>'index'));
         }else{
             $this->Flash->alertBox(
                 'Training Could Not Be Added To Your Account',
                 array( 'params' => array( 'class'=>'alert-danger' ))
             );
-            
+
             $this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
         }
     }
-    
+
     public function editAccount($trn_id=null){
         $this->Training->id = $trn_id;
         if (!$this->Training->exists()) {
             throw new NotFoundException(__('Invalid Record Id'));
         }
-        
+
         if ($this->request->is('post') || $this->request->is('put')) {
-            
+
             $c = 0;
-            
+
             $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
             $this->request->data[$c]['TrainingMembership']['renewal'] = $this->request->data['Training']['renewal'];
             $this->request->data[$c]['TrainingMembership']['created_by'] = AuthComponent::user('id');
             $this->request->data[$c]['TrainingMembership']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
             $this->request->data[$c]['TrainingMembership']['is_required'] = $this->request->data['Training']['is_required'];
-                    
+
             if(!empty($this->request->data['Training']['department_id'])){
                 foreach($this->request->data['Training']['department_id'] as $dept){
                     $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
@@ -495,7 +494,7 @@ class TrainingsController extends AppController {
                     $c++;
                 }
             }
-            
+
             if(!empty($this->request->data['Training']['user_id'])){
                 foreach($this->request->data['Training']['user_id'] as $user){
                     $this->request->data[$c]['TrainingMembership']['training_id'] = $this->Training->id;
@@ -504,22 +503,22 @@ class TrainingsController extends AppController {
                     $this->request->data[$c]['TrainingMembership']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
                     $this->request->data[$c]['TrainingMembership']['is_required'] = $this->request->data['Training']['is_required'];
                     $this->request->data[$c]['TrainingMembership']['user_id'] = $user;
-                    
+
                     $c++;
                 }
             }
-            
+
             //delete all records, recreate
             $this->TrainingMembership->deleteAll(
                 array(
-                    'TrainingMembership.training_id' => $trn_id, 
+                    'TrainingMembership.training_id' => $trn_id,
                     'TrainingMembership.account_id' => $this->request->data['Training']['account_id']
-                ), 
+                ),
                 false
             );
-            
+
             unset($this->request->data['Training']);
-        
+
             if ($this->TrainingMembership->saveAll($this->request->data)) {
                 $this->Flash->alertBox(
                     'Training Settings Have Been Updated',
@@ -531,93 +530,93 @@ class TrainingsController extends AppController {
                     array( 'params' => array( 'class'=>'alert-danger' ))
                 );
             }
-            
+
             $this->redirect(array('controller'=>'Trainings', 'action'=>'index'));
         }
-        
+
         $training = $this->TrainingMembership->find('all', array(
-            'conditions' => array(     
+            'conditions' => array(
                 'TrainingMembership.training_id' => $trn_id,
                 'TrainingMembership.account_id' => AuthComponent::user('AccountUser.0.account_id'),
             ),
             'contain'=>array(
             ),
         ));
-        
+
         //Get all
         #pr($training);
         #exit;
         $this->request->data['Training']['department_id'] = array();
         $this->request->data['Training']['user_id'] = array();
-        
+
         foreach($training as $trn){
             $this->request->data['Training']['is_required'] = $trn['TrainingMembership']['is_required'];
             $this->request->data['Training']['renewal'] = $trn['TrainingMembership']['renewal'];
             $this->request->data['Training']['training_id'] = $trn_id;
             $this->request->data['Training']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
-            
+
             if(!empty($trn['TrainingMembership']['department_id'])){
                 $this->request->data['Training']['department_id'][] = $trn['TrainingMembership']['department_id'];
             }
-            
+
             if(!empty($trn['TrainingMembership']['user_id'])){
                 $this->request->data['Training']['user_id'][] = $trn['TrainingMembership']['user_id'];
             }
         }
-        
+
         #pr($this->request->data);
         #exit;
-        
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
         $users = $this->AccountUser->pickList($account_ids);
-        
+
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
-        
+
         $this->set('accts', $accts);
         $this->set('depts', $depts);
-        $this->set('users', $users);    
+        $this->set('users', $users);
     }
-    
+
     public function roster($trn_id = null){
         if ($this->request->is('post') || $this->request->is('put')) {
         }
-        
-        
+
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
         $users = $this->AccountUser->pickList($account_ids);
-        
+
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
-        
+
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);
         $this->set('training_id', $trn_id);
-        
+
     }
-    
+
     public function createClassroom($trn_id = null, $name=null){
-        
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if(empty($this->request->data['TrainingClassroom']['date'])){
                 $this->request->data['TrainingClassroom']['date'] = strtotime('now');
             }else{
                 $this->request->data['TrainingClassroom']['date'] = date('Y-m-d', strtotime($this->request->data['TrainingClassroom']['date']));
             }
-            
+
             if(empty($this->request->data['TrainingClassroomDetail']['user_id'])){
                  $this->Flash->alertBox(
                     'Please Build a Roster!',
@@ -627,17 +626,17 @@ class TrainingsController extends AppController {
                         )
                     )
                 );
-                
+
                 return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
-                
+
             }
-            
+
             foreach($this->request->data['TrainingClassroomDetail']['user_id'] as $k=>$r){
                 $this->request->data['TrainingClassroomDetail'][$k]['user_id'] = $r;
                 $this->request->data['TrainingClassroomDetail'][$k]['did_attend'] = $this->request->data['TrainingClassroomDetail']['did_attend'];
             }
             unset($this->request->data['TrainingClassroomDetail']['user_id'], $this->request->data['TrainingClassroomDetail']['did_attend']);
-            
+
             if ($this->TrainingClassroom->saveAll($this->request->data)) {
                 $this->Flash->alertBox(
                     'Training Classroom Has Been Create',
@@ -649,33 +648,33 @@ class TrainingsController extends AppController {
                     array( 'params' => array( 'class'=>'alert-danger' ))
                 );
             }
-            
+
             return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
         }
-        
-        
+
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
-        
+
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
         $users = $this->AccountUser->pickList($account_ids);
-        
+
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
-        
+
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);
-        
+
         $this->set('training_id', $trn_id);
         $this->set('name', $name.' [ '.date('m/d/Y', strtotime('now')).' ]');
         $this->set('account_id', AuthComponent::user('AccountUser.0.account_id'));
-        
+
     }
-    
+
     public function upload(){
         $ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
         $arr_ext = array('jpg', 'jpeg', 'gif'); //set allowed extensions

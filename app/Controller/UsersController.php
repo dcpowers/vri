@@ -15,17 +15,17 @@ class UsersController extends AppController {
         'Account',
         'Department'
     );
-    
+
     public $profileUploadDir = 'img/profiles';
-    
+
     public function isAuthorized($user = null) {
         return true;
     }
-    
+
     #public $helpers = array('Session');
-    
+
     public $components = array('Search.Prg', 'RequestHandler', 'Paginator');
-    
+
     public function pluginSetup() {
         $user = AuthComponent::user();
         $role_names = Set::extract( AuthComponent::user(), '/AuthRole/name' );
@@ -42,7 +42,7 @@ class UsersController extends AppController {
 
     public function login() {
         if($this->Session->check('Auth.User')){
-            $this->redirect(array('controller'=>'Dashboard', 'action' => 'index'));      
+            $this->redirect(array('controller'=>'Dashboard', 'action' => 'index'));
         }
         if ($this->request->is('post')) {
             /**
@@ -52,23 +52,23 @@ class UsersController extends AppController {
             $checkuser = $this->User->find('first', array(
                 'conditions'=>array(
                     'User.username' => $this->request->data['User']['username'],
-                    'User.is_active' => 1, 
+                    'User.is_active' => 1,
                     'User.password_old' => md5($this->request->data['User']['password'])
                 ),
                 'contain'=>array(),
-                
+
             ));
-            
+
             #pr($checkuser);
-            
+
             if(!empty($checkuser)){
 
                 $this->request->data['User']['id'] = $checkuser['User']['id'];
                 $this->request->data['User']['password_old'] = null;
-                
+
                 $this->User->save($this->request->data);
             }
-            
+
             if ($this->Auth->login()) {
                 #set session info
                 #check if user account is active
@@ -83,7 +83,7 @@ class UsersController extends AppController {
                 ));
                 unset($user['User']);
                 $user = array_merge($this->Auth->user(), $user);
-                
+
                 #check user is active
                 if($user['is_active'] == 0){
                     #set flash and redirect back to home page
@@ -94,37 +94,37 @@ class UsersController extends AppController {
                             'class'=>'alert-danger'
                         )
                     ));
-                    
+
                     $this->redirect(array('controller'=>'users', 'action' => 'logout'));
                 }
-                
+
                 $this->Session->write('Auth.User', $user);
-                
+
                 #Successfull Login
                 $this->Flash->alertBox(
-                    'Welcome, '. $this->Auth->user('first_name').' '. $this->Auth->user('last_name'), 
+                    'Welcome, '. $this->Auth->user('first_name').' '. $this->Auth->user('last_name'),
                     array(
                         'params' => array(
                             'class'=>'alert-success'
                         )
                     )
                 );
-                
+
                 #pr('--');
                 #pr($user);
                 #pr('here');
                 #exit;
                 return $this->redirect(array('controller'=>'Dashboard', 'action' => 'index'));
             }
-            
+
             $this->Flash->alertBox('Invalid username or password, try again', array(
                 'params' => array(
                     'class'=>'alert-danger'
                 )
             ));
-            
+
         }
-        
+
         $this->layout = 'login';
     }
 
@@ -137,55 +137,45 @@ class UsersController extends AppController {
         $letters = range('A', 'Z');
         array_unshift($letters, "All");
         $this->set('letters', $letters);
-            
+
         $currentLetter = (is_null($letter)) ? 'All' : $letter ;
         $this->set('currentLetter', $currentLetter);
-        $this->set('activeLetters', $letters);
-        
+
         $deptClass= null;
         $accountClass= null;
         $roleClass= null;
-        
+
         $this->set('viewBy', $viewBy);
-        
+
         $options = array();
-        
+
         switch($viewBy){
             case 'account':
                 $option = array('order'=>array('Account.name' => 'asc'));
                 $options = array_merge_recursive($options,$option);
                 break;
-                
+
             case 'role':
                 $option = array('order'=>array('Role.lft' => 'asc'));
                 $options = array_merge_recursive($options,$option);
                 break;
-                
+
             case 'department':
                 $option = array('order'=>array('DepartmentUser.Department.name' => 'asc'));
                 $options = array_merge_recursive($options,$option);
                 break;
-                
+
             default:
                 $option = array('order'=>array('User.first_name' => 'asc', 'User.last_name' => 'asc'));
                 $options = array_merge_recursive($options,$option);
                 break;
         }
-        
+
         $this->Paginator->settings = array(
-            'conditions' => array(     
+            'conditions' => array(
                 #'Account.id !=' => ,
             ),
             'contain'=>array(
-                'AccountUser'=>array(
-                    'Account'=>array(
-                        'fields'=>array(
-                            'Account.id',
-                            'Account.name',
-                            'Account.abr'
-                        )
-                    )
-                ),
                 'Role'=>array(
                     'fields'=>array('Role.name', 'Role.lft')
                 ),
@@ -208,49 +198,28 @@ class UsersController extends AppController {
                 'User.email',
             ),
         );
-        
-        if($this->Auth->user('Role.permission_level') == 50){
-            $ids = array();
-            
-            $account_ids = $this->Account->myAccounts();
-            
-            foreach($account_ids as $id=>$name){
-                $user_id = $this->AccountUser->getAccountIds($id);
-                
-                $ids = array_merge_recursive($ids,$user_id);
-            }
-            
-            $option = array('conditions'=>array('User.id' => $ids));
-            $options = array_merge_recursive($options,$option);
-            
-            #pr($options);
-            #exit;
-        }
-        
-        if(AuthComponent::user('Role.permission_level') <= 40){
-            $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-            $user_ids = $this->AccountUser->getAccountIds($account_ids);
-            
-            $option = array('conditions'=>array('User.id' => $user_ids, 'Role.lft >' => $this->Auth->user('Role.lft'), 'Role.rght <' => $this->Auth->user('Role.rght')));
-            $options = array_merge_recursive($options,$option);
-        }
-        #pr($options);
-        #exit; 
-        if(!is_null($letter) && $letter != 'All'){
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+
+		$option = array('conditions'=>array('User.id' => $user_ids));
+        $options = array_merge_recursive($options,$option);
+
+		if(!is_null($letter) && $letter != 'All'){
             $option = array('conditions'=>array('User.first_name LIKE' => $letter.'%'));
             $options = array_merge_recursive($options,$option);
         }
-        
+
         if(!empty($this->request->data['Search']['q'])){
             $option = array('conditions'=>array('OR'=>array('User.first_name LIKE' => '%'.$this->request->data['Search']['q'].'%', 'User.last_name LIKE' => '%'.$this->request->data['Search']['q'].'%' )));
             $options = array_merge_recursive($options,$option);
         }
-        
+
         if(is_null($status)){
-            $status = 1;    
+            $status = 1;
         }
-        
-        if($status == 'All'){
+
+		if($status == 'All'){
             $option = array('conditions'=>array('User.is_active' => array(1,2)));
             $options = array_merge_recursive($options,$option);
             $this->set('status', 'All');
@@ -259,20 +228,19 @@ class UsersController extends AppController {
             $options = array_merge_recursive($options,$option);
             $this->set('status', $status);
         }
-        
-        $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
-        
+		$this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
         $users = $this->Paginator->paginate('User');
-        
+        #pr($this->Paginator->settings);
         #pr($users);
         #exit;
         $result = array();
-        
+
         $accountClass = null;
         $deptClass = null;
         $roleClass = null;
         $title = null;
-        
+        $letter = array();
+
         foreach($users as $item){
             switch($viewBy){
                 case 'account':
@@ -285,7 +253,7 @@ class UsersController extends AppController {
                                 $indexName = '--';
                                 $keysort[$indexName] = '--';
                             }
-                            
+
                             #pr($newItem);
                             #exit;
                             $value[$indexName][] = $item;
@@ -293,66 +261,68 @@ class UsersController extends AppController {
                     }else{
                         $indexName = '--';
                         $keysort[$indexName] = '--';
-                        
+
                         $value[$indexName][] = $item;
                     }
                     $accountClass = 'active';
                     $title = '<small>By Account</small>';
-                    
+
                     $value[$indexName][] = $item;
-                    
+
                     break;
-                
+
                 case 'role':
                     $indexName = $item['Role']['name'];
                     $keysort[$indexName] = $item['Role']['lft'];
                     $roleClass = 'active';
                     $title = '<small>By User Role</small>';
-                    
+
                     $value[$indexName][] = $item;
-                    
+
                     break;
-                
+
                 case 'department':
                     if(!empty($item['DepartmentUser'])){
                         foreach($item['DepartmentUser'] as $newItem){
                             $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
                             $keysort[$indexName] = $newItem['Department']['name'];
-                            
+
                             $value[$indexName][] = $item;
                         }
-                        
+
                     }else{
                         $indexName = '--';
                         $keysort[$indexName] = '--';
-                        
+
                         $value[$indexName][] = $item;
                     }
                     $deptClass = 'active';
                     $title = '<small>By Department</small>';
                     break;
-                
+
                 default:
                     $indexName = $item['User']['first_name'][0];
                     $keysort[$indexName] = $item['User']['first_name'][0];
                     $value[$indexName][] = $item;
                     break;
             }
-            
+			$letter[] = $item['User']['first_name'][0];
+
             $result = array_merge($result,$value);
         }
-        
+
         if(!empty($result)){
             array_multisort($keysort, SORT_ASC, $result);
         }
-        
+
         $this->set('users', $result);
-        
+
         //set all active classes
         $this->set('accountClass', $accountClass);
         $this->set('deptClass', $deptClass);
         $this->set('roleClass', $roleClass);
         $this->set('title', $title);
+		$this->set('activeLetters', $letter);
     }
 
     public function view($id = null) {
@@ -360,9 +330,9 @@ class UsersController extends AppController {
         if (!$this->User->exists()) {
             throw new NotFoundException(__('Invalid user'));
         }
-        
+
         $user = $this->request->data = $this->User->find('first', array(
-            'conditions' => array(     
+            'conditions' => array(
                 'User.id' => $id,
             ),
             'contain'=>array(
@@ -413,7 +383,7 @@ class UsersController extends AppController {
             ),
         ));
         $user['records'] = array();
-        
+
         foreach($user['TrainingRecord'] as $data){
             if(!empty($data['Training']['name'])){
                 $index = $data['Training']['name'];
@@ -424,13 +394,13 @@ class UsersController extends AppController {
             $user['records'][$index][] = $data;
         }
         unset($user['TrainingRecord']);
-        
+
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
-        
+
         $requiredTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids, $id);
         $records = $this->TrainingRecord->findRecords($requiredTraining, $id);
-        
+
         if ($this->request->is('requested')) {
             return array($requiredTraining, $records);
         }
@@ -442,13 +412,13 @@ class UsersController extends AppController {
     public function add($account_id=null) {
         if ($this->request->is('post')) {
             $error = false;
-            
+
             $this->User->set($this->request->data);
             if(!$this->User->validates()){
                 $validationErrors['User'] = $this->User->validationErrors;
                 $error = true;
             }
-            
+
             if($error == false){
                 $this->User->create();
                 /*if ($this->User->save($this->request->data)) {
@@ -459,17 +429,17 @@ class UsersController extends AppController {
             $this->Flash->error(
                 __('The user could not be saved. Please, try again.')
             );
-            
+
             $this->set( compact( 'validationErrors' ) );
         }
-        
+
         $this->set('status', $this->User->statusInt());
         $this->set('pickListByAccount', $this->AccountUser->pickList($account_id));
         $this->set('accounts', $this->Account->pickListActive());
         $this->set('departments', $this->Department->pickList());
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
-        
-        
+
+
     }
 
     public function edit($id = null) {
@@ -477,16 +447,16 @@ class UsersController extends AppController {
         if (!$this->User->exists()) {
             throw new NotFoundException(__('Invalid user'));
         }
-        
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if(!empty($this->request->data['User']['doh'])){
                 $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
             }
-            
+
             if(!empty($this->request->data['User']['dob'])){
                 $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
             }
-            
+
             $c = 0;
             $this->AccountUser->deleteAll(array('AccountUser.user_id' => $this->request->data['User']['id']), false);
             if(!empty($this->request->data['AccountUser']['account_id'])){
@@ -495,10 +465,10 @@ class UsersController extends AppController {
                     $this->request->data['AccountUser'][$c]['user_id'] = $this->request->data['User']['id'];
                     $c++;
                 }
-                
+
                 unset($this->request->data['AccountUser']['account_id']);
             }
-            
+
             $c = 0;
             $this->DepartmentUser->deleteAll(array('DepartmentUser.user_id' => $this->request->data['User']['id']), false);
             if(!empty($this->request->data['DepartmentUser']['department_id'])){
@@ -507,7 +477,7 @@ class UsersController extends AppController {
                     $this->request->data['DepartmentUser'][$c]['user_id'] = $this->request->data['User']['id'];
                     $c++;
                 }
-                
+
                 unset($this->request->data['DepartmentUser']['department_id']);
             }
             #pr($this->request->data);
@@ -515,7 +485,7 @@ class UsersController extends AppController {
             #exit;
             if($this->User->saveAll($this->request->data)) {
                  $this->Flash->alertBox(
-                    'The user has been saved', 
+                    'The user has been saved',
                     array(
                         'params' => array(
                             'class'=>'alert-success'
@@ -524,11 +494,11 @@ class UsersController extends AppController {
                 );
                 return $this->redirect(array('controller'=>'Users', 'action' => 'view', $this->request->data['User']['id']));
             }
-            
+
             #debug($this->User->validationErrors); //show validationErrors
             #debug($this->User->getDataSource()->getLog(false, false)); //show last sql query
             #exit;
-            
+
             $this->Flash->alertBox(
                 'The user could not be saved. Please, try again.',
                 array(
@@ -537,20 +507,20 @@ class UsersController extends AppController {
                     )
                 )
             );
-            
-        } 
-        
+
+        }
+
         $this->request->data = $this->User->findById($id);
         unset($this->request->data['User']['password']);
-        
+
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-        
+
         $this->set('status', $this->User->statusInt());
         $this->set('pickListByAccount', $this->AccountUser->pickList($account_ids));
         $this->set('accounts', $this->Account->pickListActive());
         $this->set('departments', $this->AccountDepartment->pickListByAccount($account_ids));
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
-    
+
     }
 
     public function delete($id = null) {
@@ -570,7 +540,7 @@ class UsersController extends AppController {
         $this->Flash->error(__('User was not deleted'));
         return $this->redirect(array('action' => 'index'));
     }
-    
+
     public function resetPassword($id = null){
         $this->request->data['User']['id'] = $id;
         $this->request->data['User']['ForcePassChange'] = 1;
@@ -580,48 +550,48 @@ class UsersController extends AppController {
         #pr($this->request->data);
         #exit;
         $this->User->save($this->request->data);
-        
-        
-        
+
+
+
     }
-    
+
     public function updateSupervisorList($id = null){
         $data = $this->AccountUser->pickList($id);
-        
+
         $this->set(compact('data'));
     }
-    
+
     public function updateDeptList($id = null){
         $data = $this->Department->pickListById($id);
-        
+
         $this->set(compact('data'));
     }
-    
+
     public function userListByDept($id = null){
         $data = $this->DepartmentUser->pickListByDept($id);
-        
+
         $this->set(compact('data'));
     }
-    
+
     public function profile(){
         $this->User->id = AuthComponent::user('id');
         if (!$this->User->exists()) {
             throw new NotFoundException(__('Invalid user'));
         }
-        
+
         if ($this->request->is('post') || $this->request->is('put')) {
-            
+
             if(!empty($this->request->data['User']['dob'])){
                 $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
             }
-            
+
             #pr($this->request->data);
             #exit;
             pr($this->request->data);
             //update profile image if not empty
             if(!empty($this->request->data['User']['file'])) {
                 $check = $this->User->uploadFile($this->request->data['User']['file']);
-                
+
             }
             #pr($check);
             unset($this->request->data['User']['file']);
@@ -634,25 +604,25 @@ class UsersController extends AppController {
                         'params' => [ 'class'=>'alert-success' ]
                     ]
                 );
-                
+
                 return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
             }
-            
+
             #debug($this->User->validationErrors); //show validationErrors
             #debug($this->User->getDataSource()->getLog(false, false)); //show last sql query
             #exit;
-            
+
             $this->Flash->alertBox(
-                'Profile could not be saved. Please, try again.', [ 
+                'Profile could not be saved. Please, try again.', [
                     'key' => 'profile',
                     'params' => [ 'class'=>'alert-danger' ]
                 ]
             );
-            
+
             return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
-            
-        } 
-        
+
+        }
+
         $user = $this->request->data = $this->User->find('first', array(
             'conditions' => array(
                 'User.id' => AuthComponent::user('id')
@@ -694,26 +664,26 @@ class UsersController extends AppController {
                 'Status'=>array(
                     'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
-                
+
                 'TrainingExempt'=>array()
             ),
         ));
-        
+
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
-        
+
         $requiredTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids,AuthComponent::user('id'));
         $records = $this->TrainingRecord->findRecords($requiredTraining, AuthComponent::user('id'));
-        
+
         if ($this->request->is('requested')) {
             return $this->request->data;
         }
-        
+
         $this->set('user', $user);
         $this->set('records', $records);
         $this->set('payStatus', $this->User->empPayStatus());
     }
-    
-    
+
+
 
 }
