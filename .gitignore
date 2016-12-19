@@ -9,7 +9,7 @@
 /dist
 /tags
 /app/webroot/files/*
-../Database/*
+/app/../Database/*
 ../backups/*
 *.mo
 
