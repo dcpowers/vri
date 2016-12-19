@@ -33,7 +33,7 @@
                             echo $this->Html->link(
                                 '<i class="fa fa-cogs"></i>',
                                 array('controller'=>'settings', 'action'=>''),
-                                array('escape'=>false, 'class'=>'dropdown-toggle', 'data-toggle'=>'dropdown')
+                                array('escape'=>false)
                             );
                             ?>
                         </li>

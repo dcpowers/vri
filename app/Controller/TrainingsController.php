@@ -153,9 +153,7 @@ class TrainingsController extends AppController {
                 ),
                 'fields'=>array('Training.id', 'Training.id')
             ));
-            pr($this->request->data);
-            pr($training_ids);
-            exit;
+            
             $options = array(
                 'conditions'=>array(
                     'AND'=>array(
