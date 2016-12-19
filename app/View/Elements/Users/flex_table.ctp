@@ -8,16 +8,16 @@
                     ?>
                     <li class="<?=$class?>">
                         <?php
-                        echo $this->Html->link( 
-                            $letter, 
-                            array( 
+                        echo $this->Html->link(
+                            $letter,
+                            array(
                                 'controller'=>'Users',
-                                'action'=>'index', 
+                                'action'=>'index',
                                 $letter,
                                 $status,
                                 $viewBy
-                            ), 
-                            array( 'escape'=>false) 
+                            ),
+                            array( 'escape'=>false)
                         );
                         ?>
                     </li>
@@ -26,7 +26,7 @@
                     ?>
                     <li class="disabled ">
                         <span>
-                            <span aria-hidden="true"><?=$letter?></span>
+                            <i aria-hidden="true" class="fa fa-ban fa-1x text-danger "></i>
                         </span>
                     </li>
                     <?php
@@ -35,10 +35,10 @@
             ?>
             <li>
             <?php
-                echo $this->Html->link( 
+                echo $this->Html->link(
                     'Clear Search By Letter',
-                    array('controller'=>'Users', 'action'=>'index', 'All', $status, $viewBy), 
-                    array( 'escape'=>false) 
+                    array('controller'=>'Users', 'action'=>'index', 'All', $status, $viewBy),
+                    array( 'escape'=>false)
                 );
                 ?>
             </li>
