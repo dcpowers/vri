@@ -29,10 +29,10 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php echo $this->element( 'Users/menu' );?>                
+            <?php echo $this->element( 'Users/menu' );?>
         </div>
     </div>
-    <?php 
+    <?php
     $assetCount = count($user['Asset']);
     ?>
     <div class="tabbable">
@@ -52,19 +52,19 @@
                             <dt>Employee Status:</dt>
                             <dd><?=$user['Status']['name']?></dd>
                         </dl>
-                        <dl>    
+                        <dl>
                             <dt>Supervisor:</dt>
                             <dd><?=$user['Supervisor']['first_name']?> <?=$user['Supervisor']['last_name']?></dd>
                         </dl>
-                        <dl>    
+                        <dl>
                             <dt>Pay Status:</dt>
                             <dd><?=$user['User']['PayStatus']?></dd>
                         </dl>
-                        <dl>    
+                        <dl>
                             <dt>All Pay Id:</dt>
                             <dd><?=$user['User']['AllPayID']?></dd>
                         </dl>
-                        <dl>    
+                        <dl>
                             <dt>Permissions (Role ):</dt>
                             <dd><?=$user['Role']['name']?></dd>
                         </dl>
@@ -76,11 +76,11 @@
                                     <dt>Name:</dt>
                                     <dd><?=$user['User']['first_name']?> <?=$user['User']['last_name']?></dd>
                                 </dl>
-                                <dl>    
+                                <dl>
                                     <dt>Username:</dt>
                                     <dd><?=$user['User']['username']?></dd>
                                 </dl>
-                                <dl>    
+                                <dl>
                                     <dt>Password:</dt>
                                     <dd id="password">
                                         <?php
@@ -88,17 +88,17 @@
                                             'Reset Password To: vanguard',
                                             array('controller'=>'Accounts', 'action'=>'view', $user['User']['id']),
                                             array('escape'=>false, 'id'=>'resetPassword')
-                                        );    
+                                        );
                                         ?>
                                     </dd>
                                 </dl>
-                                <dl>    
+                                <dl>
                                     <dt>E-Mail Address:</dt>
                                     <dd><?=$user['User']['email']?></dd>
                                 </dl>
-                                
+
                             </div>
-                                    
+
                             <div class="col-sm-6">
                                 <?php
                                 $doh = (!empty($user['User']['doh'])) ? date('F d, Y', strtotime($user['User']['doh'])) : 'N/A' ;
@@ -112,34 +112,40 @@
                                     <dt>Date Of Birth</dt>
                                     <dd><?=$dob?></dd>
                                 </dl>
-                                <dl>                                    
-                                    <dt>Current Account(s):</dt>
-                                    <dd>
-                                        <?php
-                                        if(!empty($user['AccountUser'])){
-                                            ?>
-                                            <ul>
-                                                <?php
-                                                foreach($user['AccountUser'] as $group){
-                                                    ?>
-                                                    <li>
-                                                        <?php 
-                                                        echo $this->Html->link(
-                                                            $group['Account']['name'],
-                                                            array('controller'=>'Accounts', 'action'=>'view', $group['Account']['id']),
-                                                            array('escape'=>false)
-                                                        );
-                                                        ?>
-                                                    </li>
-                                                    <?php
-                                                }
-                                                ?>
-                                            </ul>
-                                            <?php
-                                        }
-                                        ?>
-                                    </dd>
-                                </dl>
+								<?php
+								if(AuthComponent::user('Role.permission_level') >= 50){
+									?>
+		                            <dl>
+		                            	<dt>Current Account(s):</dt>
+		                                <dd>
+		                                	<?php
+		                                    if(!empty($user['AccountUser'])){
+		                                    	?>
+		                                        <ul>
+		                                        	<?php
+		                                            foreach($user['AccountUser'] as $group){
+		                                            	?>
+		                                                <li>
+		                                                	<?php
+		                                                    echo $this->Html->link(
+		                                                    	$group['Account']['name'],
+		                                                        array('controller'=>'Accounts', 'action'=>'view', $group['Account']['id']),
+		                                                        array('escape'=>false)
+		                                                    );
+		                                                    ?>
+		                                                </li>
+		                                                <?php
+		                                            }
+		                                            ?>
+		                                        </ul>
+		                                        <?php
+		                                    }
+		                                    ?>
+		                                </dd>
+		                            </dl>
+									<?php
+								}
+								?>
                                 <dl>
                                     <dt>Current Department(s):</dt>
                                     <dd>
@@ -166,9 +172,9 @@
                         </div>
                     </div>
                 </div>
-            
+
             </div>
-            
+
             <div class="tab-pane fade" id="records">
                 <div class="tabbable">
                     <ul class="nav nav-pills">
@@ -187,45 +193,45 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                
+
                                 <tbody>
                                     <?php
                                     #pr($requiredTraining );
                                     foreach($requiredTraining as $training){
                                         $status = null;
                                         #pr($records[$training['Training']['id']]);
-                                        
+
                                         if($records[$training['Training']['id']][0]['TrainingRecord']['in_progress'] == 1){
                                             $status = 'In Progress';
                                             $label = 'label label-primary';
                                         }
-                                        
+
                                         if($records[$training['Training']['id']][0]['TrainingRecord']['expired'] == 1){
                                             $status = 'Expired';
                                             $label = 'label label-danger';
                                         }
-                                        
+
                                         if($records[$training['Training']['id']][0]['TrainingRecord']['expiring'] == 1){
                                             $status = 'Expiring';
                                             $label = 'label label-warning';
                                         }
-                                        
+
                                         if($records[$training['Training']['id']][0]['TrainingRecord']['no_record'] == 1){
                                             $status = 'No Record Found';
                                             $label = 'label label-danger';
                                         }
-                                        
+
                                         $expires = (!empty($records[$training['Training']['id']][0]['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($records[$training['Training']['id']][0]['TrainingRecord']['expires_on'])) : '--' ;
                                         ?>
                                         <tr>
                                             <td>
-                                                <?php 
+                                                <?php
                                                 echo $this->Html->link(
                                                     $training['Training']['name'],
                                                     '#',
                                                     array('escape'=>false)
                                                 );
-                                                ?> 
+                                                ?>
                                             </td>
                                             <td>
                                                 <span class="<?=$label?>"><?=$status?></span>
@@ -235,7 +241,7 @@
                                         </tr>
                                         <?php
                                     }
-                                    
+
                                     if(empty($requiredTraining)){
                                         ?>
                                         <tr>
@@ -257,7 +263,7 @@
                                         <?=$title?>
                                     </h3>
                                 </div>
-                                
+
                                 <table class="table table-striped table-condensed" id="assetsTable">
                                     <thead>
                                         <tr class="tr-heading">
@@ -268,7 +274,7 @@
                                             <th></th>
                                         </tr>
                                     </thead>
-                                    
+
                                     <tbody>
                                         <?php
                                         #pr($user );
@@ -290,7 +296,7 @@
                                             </tr>
                                             <?php
                                         }
-                                        
+
                                         if(empty($record)){
                                             ?>
                                             <tr>
@@ -318,20 +324,20 @@
                             <th>Model</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         <?php
                         foreach($user['Asset'] as $asset){
                             ?>
                             <tr>
                                 <td>
-                                    <?php 
+                                    <?php
                                     echo $this->Html->link(
                                         $asset['asset'],
-                                        array('controller'=>'Assets', 'action'=>'view', $asset['id']),
-                                        array('escape'=>false)
+                                        array('controller'=>'Assets', 'action'=>'quickview', $asset['id']),
+                                        array('escape'=>false, 'data-toggle'=>'modal','data-target'=>'#myLgModal')
                                     );
-                                    ?> 
+                                    ?>
                                 </td>
                                 <td><?=$asset['tag_number']?></td>
                                 <td><?=$asset['Manufacturer']['name']?></td>
@@ -339,7 +345,7 @@
                             </tr>
                             <?php
                         }
-                        
+
                         if(empty($user['Asset'])){
                             ?>
                             <tr>
@@ -347,16 +353,16 @@
                             </tr>
                             <?php
                         }
-                        
+
                         ?>
                     </tbody>
-                </table>    
+                </table>
             </div>
             <div class="tab-pane fade" id="safety">
             </div>
         </div>
-    </div> 
-</div> 
+    </div>
+</div>
 
 <?php
     $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Accounts', 'action' => 'employeeView', $user['User']['id']));
@@ -367,7 +373,7 @@
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
-        
+
         $('.statusType').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -390,13 +396,13 @@
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                
+
             });
-            
+
             return false;
-            
+
         });
-        
+
         $('#resetPassword').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -419,13 +425,13 @@
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                
+
             });
-            
+
             return false;
-            
+
         });
-        
+
         $('.type').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -448,11 +454,11 @@
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                
+
             });
-            
+
             return false;
-            
+
         });
     });
 </script>

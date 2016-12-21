@@ -1,13 +1,13 @@
 <div class="dashboard index">
     <?php echo $this->element( 'dashboard/_safety' ); ?>
-    
+
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <?php echo $this->element( 'dashboard/_profile' ); ?>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
             <?php echo $this->element( 'dashboard/_trainings' ); ?>
-            <?php echo $this->element( 'dashboard/_improvements' ); ?>    
+            <?php echo $this->element( 'dashboard/_improvements' ); ?>
         </div>
     </div>
 </div>

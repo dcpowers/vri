@@ -1,6 +1,6 @@
 <?php
     #pr($trainings);
-    #exit; 
+    #exit;
 ?>
 <div class="training index">
     <div class="dashhead">
@@ -14,7 +14,7 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php echo $this->element( 'Trainings/menu' );?>                
+            <?php echo $this->element( 'Trainings/menu' );?>
         </div>
         <div class="flextable-item">
             <?php #echo $this->element( 'Trainings/status_filter' );?>
@@ -24,7 +24,7 @@
             <?php #echo $this->element( 'Trainings/search_filter', array('in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy) );?>
         </div>
     </div>
-    
+
     <table class="table table-striped table-condensed table-hover" id="trainingTable">
         <thead>
             <tr>
@@ -34,7 +34,7 @@
                 <th class="col-sm-2 text-center">Mandatory</th>
             </tr>
         </thead>
-                                                        
+
         <tbody>
             <?php
             #pr($trainings);
@@ -45,18 +45,26 @@
                 $manditory = ($trn['TrainingMembership']['is_manditory'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
                 ?>
                 <tr>
-                    <td><?=$trn['Training']['name']?></td>
+                    <td>
+						<?php
+                        echo $this->Html->link(
+                        	$trn['Training']['name'],
+                            array('controller'=>'Trainings', 'action'=>'details', $trn['Training']['id']),
+                            array('escape'=>false)
+                        );
+                        ?>
+					</td>
                     <td><?=$trn['Training']['description']?></td>
                     <td class="text-center"><?=$required?></td>
                     <td class="text-center"><?=$manditory?></td>
                 </tr>
                 <?php
             }
-            ?>                
+            ?>
         </tbody>
-    </table>                                        
-                                              
-    <?php echo $this->element( 'paginate' );?>
+    </table>
+
+
 </div>
 
 <?php
@@ -72,20 +80,20 @@ function human_filesize($bytes, $decimals = 2) {
         $("#myModal").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
-        
+
         $("#myModalBig").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
-        
+
         $(".modal-wide").on("show.bs.modal", function() {
             var height = $(window).height() - 200;
             $(this).find(".modal-body").css("max-height", height);
         });
-        
+
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
-        
+
         $(".chzn-select-noDeselect").chosen({
             allow_single_deselect: false
         });
