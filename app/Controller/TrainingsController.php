@@ -68,8 +68,8 @@ class TrainingsController extends AppController {
         #pr($department_ids);
         #pr($user_ids);
         #exit;
-        $this->Paginator->settings = array(
-            'conditions'=>array(
+        $trainings = $this->TrainingMembership->find('all',array(
+			'conditions'=>array(
                 'OR' => array(
                     array(
                         'AND'=>array(
@@ -100,29 +100,11 @@ class TrainingsController extends AppController {
             ),
             'contain'=>array(
                 'Training'=>array(
-                    'TrainingFile'=>array(
-
-                    ),
-                    'TrainingClassroom'=>array(
-                        'conditions'=>array(
-                            'TrainingClassroom.account_id' => $account_ids
-                        ),
-                        'Instructor'=>array(),
-                        'TrainingClassroomDetail'=>array(),
-                        'order'=>array('TrainingClassroom.date' => 'DESC')
-                    )
                 ),
                 'Department'=>array(
                     'fields'=>array(
                         'Department.id',
                         'Department.name'
-                    )
-                ),
-                'CreatedBy'=>array(
-                    'fields'=>array(
-                        'CreatedBy.id',
-                        'CreatedBy.first_name',
-                        'CreatedBy.last_name',
                     )
                 ),
                 'RequiredUser'=>array(
@@ -133,13 +115,15 @@ class TrainingsController extends AppController {
                     )
                 )
             ),
-            'limit' => 15,
             'order'=>array('Training.name'=> 'asc'),
             'group'=>array(
                 'TrainingMembership.training_id',
                 'TrainingMembership.account_id',
             )
-        );
+        ));
+
+		#pr($trainings);
+		#exit;
 
         if(!empty($this->request->data['Search']['q'])){
             $training_ids = $this->Training->find('list', array(
@@ -165,10 +149,11 @@ class TrainingsController extends AppController {
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
         }
 
-		$trainings = $this->Paginator->paginate('TrainingMembership');
-        $data = array();
+		#$trainings = $this->Paginator->paginate('TrainingMembership');
+        /*
+		$data = array();
 
-        $classRoom = array();
+		$classRoom = array();
 
         foreach($trainings as $key=>$item){
             #pr($item);
@@ -228,7 +213,7 @@ class TrainingsController extends AppController {
             }
 
         }
-
+        */
 
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
@@ -250,6 +235,102 @@ class TrainingsController extends AppController {
         #$this->set('classRoom', $classRoom);
 
         $this->set('trainings', $trainings);
+        $this->set('settings', $this->TrainingMembership->required());
+
+    }
+
+	public function details($id=null) {
+
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+
+        $trainings = $this->TrainingMembership->find('first', array(
+            'conditions'=>array(
+                'TrainingMembership.training_id' => $id,
+
+            ),
+            'contain'=>array(
+                'Training'=>array(
+                    'TrainingFile'=>array(
+
+                    ),
+					'TrainingClassroom'=>array(
+                        'conditions'=>array(
+                            'TrainingClassroom.account_id' => $account_ids
+                        ),
+                        'Instructor'=>array(),
+                        'TrainingClassroomDetail'=>array(),
+                        'order'=>array('TrainingClassroom.date' => 'DESC')
+                    )
+                ),
+                'Department'=>array(
+                    'fields'=>array(
+                        'Department.id',
+                        'Department.name'
+                    )
+                ),
+                'CreatedBy'=>array(
+                    'fields'=>array(
+                        'CreatedBy.id',
+                        'CreatedBy.first_name',
+                        'CreatedBy.last_name',
+                    )
+                ),
+                'RequiredUser'=>array(
+                    'fields'=>array(
+                        'RequiredUser.id',
+                        'RequiredUser.first_name',
+                        'RequiredUser.last_name',
+                    )
+                )
+            ),
+            'limit' => 15,
+            'order'=>array('Training.name'=> 'asc'),
+            'group'=>array(
+                'TrainingMembership.training_id',
+                'TrainingMembership.account_id',
+            )
+        ));
+
+		$classRooms = $this->TrainingClassroom->find('all', array(
+            'conditions'=>array(
+                'TrainingClassroom.account_id' => $account_ids,
+                'TrainingClassroom.training_id' => $id,
+			),
+            'contain'=>array(
+                'Training'=>array(
+
+                ),
+				'TrainingClassroomDetail'=>array(
+
+                ),
+            ),
+            'order'=>array('TrainingClassroom.date' => 'DESC'),
+        ));
+
+
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+
+        $depts = $this->Department->pickListById($department_ids);
+        $accts = $this->Account->pickListById($account_ids);
+        $users = $this->AccountUser->pickList($account_ids);
+
+        $this->set('account_ids', $account_ids);
+        $this->set('department_ids', $department_ids);
+        $this->set('user_ids', $user_ids);
+        #pr($trainings);
+        #exit;
+
+        $this->set('accts', $accts);
+        $this->set('depts', $depts);
+        $this->set('users', $users);
+        #$this->set('classRoom', $classRoom);
+
+        $this->set('trn', $trainings);
+        $this->set('classRooms', $classRooms);
         $this->set('settings', $this->TrainingMembership->required());
 
     }
@@ -627,13 +708,13 @@ class TrainingsController extends AppController {
                     )
                 );
 
-                return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
+                return $this->redirect(array('controller'=>'Trainings', 'action' => 'details', $trn_id ));
 
             }
 
             foreach($this->request->data['TrainingClassroomDetail']['user_id'] as $k=>$r){
                 $this->request->data['TrainingClassroomDetail'][$k]['user_id'] = $r;
-                $this->request->data['TrainingClassroomDetail'][$k]['did_attend'] = $this->request->data['TrainingClassroomDetail']['did_attend'];
+                $this->request->data['TrainingClassroomDetail'][$k]['did_attend'] = 1;
             }
             unset($this->request->data['TrainingClassroomDetail']['user_id'], $this->request->data['TrainingClassroomDetail']['did_attend']);
 
@@ -649,7 +730,7 @@ class TrainingsController extends AppController {
                 );
             }
 
-            return $this->redirect(array('controller'=>'Trainings', 'action' => 'index' ));
+            return $this->redirect(array('controller'=>'Trainings', 'action' => 'details', $trn_id ));
         }
 
 
