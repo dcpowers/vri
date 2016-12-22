@@ -16,6 +16,7 @@ class TrainingsController extends AppController {
         'Setting',
         'TrainingCategory',
         'TrainingClassroom',
+        'TrainingRecord',
         'TrainingClassroomDetail',
         'TrnCat',
         'TrainingMembership',
@@ -335,7 +336,7 @@ class TrainingsController extends AppController {
 
     }
 
-    public function library($cat=null) {
+	public function library($cat=null) {
 
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 
@@ -715,10 +716,22 @@ class TrainingsController extends AppController {
             foreach($this->request->data['TrainingClassroomDetail']['user_id'] as $k=>$r){
                 $this->request->data['TrainingClassroomDetail'][$k]['user_id'] = $r;
                 $this->request->data['TrainingClassroomDetail'][$k]['did_attend'] = 1;
+
+				$this->request->data['TrainingRecord'][$k]['user_id'] = $r;
+                $this->request->data['TrainingRecord'][$k]['training_id'] = $this->request->data['TrainingClassroom']['training_id'];
+                $this->request->data['TrainingRecord'][$k]['trainer_id'] = $this->request->data['TrainingClassroom']['instructor_id'];
+                $this->request->data['TrainingRecord'][$k]['date'] = $this->request->data['TrainingClassroom']['date'];
+				$this->request->data['TrainingRecord'][$k]['expires_on'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->request->data['TrainingClassroom']['date'])) . " + 365 day"));
             }
             unset($this->request->data['TrainingClassroomDetail']['user_id'], $this->request->data['TrainingClassroomDetail']['did_attend']);
 
-            if ($this->TrainingClassroom->saveAll($this->request->data)) {
+			if ($this->TrainingClassroom->saveAll($this->request->data)) {
+
+				foreach($this->request->data['TrainingRecord'] as $key=>$item){
+					$this->request->data['TrainingRecord'][$key] = $item;
+					$this->request->data['TrainingRecord'][$key]['classroom_id'] = $this->TrainingClassroom->id;
+				}
+				$this->TrainingRecord->saveAll($this->request->data['TrainingRecord']);
                 $this->Flash->alertBox(
                     'Training Classroom Has Been Create',
                     array( 'params' => array( 'class'=>'alert-success' ))
@@ -755,6 +768,28 @@ class TrainingsController extends AppController {
         $this->set('account_id', AuthComponent::user('AccountUser.0.account_id'));
 
     }
+
+	public function classroomDetails($id = null){
+    	$training = $this->TrainingRecord->find('all', array(
+            'conditions' => array(
+                'TrainingRecord.classroom_id' => $id,
+            ),
+            'contain'=>array(
+				'User'=>array(),
+				'Trainer' =>array(),
+				'Classroom' =>array()
+            ),
+        ));
+
+		foreach($training as $key=>$trn){
+        	$data['Classroom'] = $trn['Classroom'];
+			$data['Trainer'] = $trn['Trainer']['first_name'].' '. $trn['Trainer']['last_name'];
+			$data['User'][$key] = $trn['User'];
+        }
+
+		$this->set('data', $data);
+
+	}
 
     public function upload(){
         $ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
