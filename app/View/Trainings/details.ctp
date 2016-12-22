@@ -171,23 +171,20 @@
                         <tbody>
                         	<?php
                             foreach($trn['Training']['TrainingClassroom'] as $class){
-                            	#pr($class);
+								$count = count($class['TrainingClassroomDetail']);
 								?>
                                 <tr>
                                 	<td><?=$class['Instructor']['first_name']?> <?=$class['Instructor']['last_name']?></td>
                                     <td><?php echo date('M d, Y', strtotime($class['date'])); ?></td>
-                                    <td class="text-center"><?=$class['attend']?></td>
-                                    <td class="text-center"><?=$class['total']?></td>
-                                    <td>
-                                    	<?php
-										pr($trn);
-                                        echo $this->Html->link(
-                                        	'Roster',
-                                        	array('controller'=>'Trainings', 'action'=>'classroomDetails', $trn['Training']['id']),
-                                            array('escape'=>false, 'class'=>'btn btn-primary btn-xs', 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
+                                    <td class="text-center">
+										<?php
+										echo $this->Html->link(
+                                        	$count,
+                                        	array('controller'=>'Trainings', 'action'=>'classroomDetails', $class['id']),
+                                            array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
                                         );
-                                        ?>
-                                    </td>
+										?>
+									</td>
                                 </tr>
                                 <?php
                             }
