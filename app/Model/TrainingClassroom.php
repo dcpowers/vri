@@ -12,14 +12,14 @@ class TrainingClassroom extends AppModel {
     * @var string
     */
 	public $displayField = 'id';
-    
+
     public $actsAs = array('Containable', 'Multivalidatable');
     /**
      * belongsTo associations
      *
      * @var array
      */
-    public $belongsTo = array( 
+    public $belongsTo = array(
         'Training' => array(
             'className' => 'Training',
             'foreignKey' => 'training_id',
@@ -42,8 +42,9 @@ class TrainingClassroom extends AppModel {
             'order' => ''
         )
     );
-    
+
     public $hasMany = array(
         'TrainingClassroomDetail',
+        'TrainingRecord',
     );
 }
