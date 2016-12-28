@@ -64,7 +64,7 @@
                 $expires = (!empty($data[1][$training['Training']['id']]['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($data[1][$training['Training']['id']]['TrainingRecord']['expires_on'])) : '--' ;
 
 				if($keep == 0){
-					break;
+					continue;
 				}
                 ?>
                 <tr>
