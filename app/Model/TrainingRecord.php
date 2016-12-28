@@ -37,7 +37,7 @@ class TrainingRecord extends AppModel {
         ),
 		'Classroom' => array(
             'className' => 'TrainingClassroom',
-            'foreignKey' => 'classroom_id',
+            'foreignKey' => 'training_classroom_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
@@ -70,22 +70,35 @@ class TrainingRecord extends AppModel {
             ));
             #pr($records);
             #exit;
+			#pr($training);
+            #exit;
             if(empty($records)){
                 $data[$trnId]['TrainingRecord'] = $training['Training'];
                 $data[$trnId]['TrainingRecord']['in_progress'] = 0;
-                $data[$trnId]['TrainingRecord']['expired'] = 1;
                 $data[$trnId]['TrainingRecord']['expiring'] = 0;
                 $data[$trnId]['TrainingRecord']['no_record'] = 1;
-                $data[$trnId]['TrainingRecord']['is_required'] = 1;
+
+				if($training['TrainingMembership']['is_required'] == 1 || $training['TrainingMembership']['is_manditory'] == 1){
+					$data[$trnId]['TrainingRecord']['is_required'] = 1;
+					$data[$trnId]['TrainingRecord']['expired'] = 1;
+				}else{
+					$data[$trnId]['TrainingRecord']['is_required'] = 0;
+					$data[$trnId]['TrainingRecord']['expired'] = 0;
+				}
 
             }else{
                 $excludeIds[$training['Training']['id']] = $training['Training']['id'];
                 #pr($training);
                 #pr($records);
                 #exit;
-                $data[$trnId]['TrainingRecord'] = $training['Training'];
-                $data[$trnId]['TrainingRecord'] += $records['TrainingRecord'];
 
+                $data[$trnId]['TrainingRecord'] = $training['Training'];
+				$data[$trnId]['TrainingRecord'] += $records['TrainingRecord'];
+				$data[$trnId]['TrainingRecord']['id'] = $records['TrainingRecord']['id'];
+				#pr($records);
+				#pr($training);
+                #pr($data);
+				#exit;
                 $data[$trnId]['TrainingRecord']['no_record'] = 0;
                 $data[$trnId]['TrainingRecord']['is_required'] = 1;
 
@@ -118,7 +131,7 @@ class TrainingRecord extends AppModel {
             }
             #'expires_on <' =>  date(DATE_MYSQL_DATETIME, strtotime( '+' . $days . ' days', time() ) )
         }
-
+        /*
         $allrecords = $this->find('all', array(
             'conditions'=> array(
                 $this->alias.'.training_id !='=>$excludeIds,
@@ -175,6 +188,7 @@ class TrainingRecord extends AppModel {
                 }
             }
         }
+        */
         #pr($allrecords);
         #pr($data);
         #exit;
