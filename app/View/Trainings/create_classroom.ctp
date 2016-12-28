@@ -14,6 +14,7 @@
     echo $this->Form->hidden('training_id', array('value'=>$training_id));
     echo $this->Form->hidden('account_id', array('value'=>$account_id));
     echo $this->Form->hidden('name', array('value'=>$name));
+    echo $this->Form->hidden('renewal', array('value'=>$renewal));
 ?>
 
 <div class="modal-header modal-header-warning">

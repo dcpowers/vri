@@ -1,25 +1,25 @@
     <?php
     $doh = (!empty($this->request->data['User']['doh'])) ? date('F d, Y', strtotime($this->request->data['User']['doh'])) : 'N/A' ;
     $dob = (!empty($this->request->data['User']['dob'])) ? date('F d, Y', strtotime($this->request->data['User']['dob'])) : 'N/A' ;
-    
-    $jobClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'employees') ? 'active' : null;
-    $recordsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'records') ? 'active' : null;
-    $assetsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'assets') ? 'active' : null;
-    $safetyClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'safety') ? 'active' : null;
-    
-    $personalClass = (empty($this->params['pass'][1]) || $this->params['pass'][1] == 'accounts') ? 'active' : null;
-    
+
+	$jobClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'employees') ? 'active' : null;
+    $recordsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'records') ? 'active' : null;
+    $assetsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'assets') ? 'active' : null;
+    $safetyClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'safety') ? 'active' : null;
+
+    $personalClass = (empty($this->params['pass'][0]) || $this->params['pass'][0] == 'info') ? 'active' : null;
+
     $this->Html->css('bootstrap-fileupload.min.css', '', array('block' => 'csslib') );
     $this->Html->script('bootstrap-fileupload.js', array('block' => 'scriptsBottom'));
-    
+
     $today = date('Y-m-d h:i a');
-    
+
     $m = date('m', strtotime('now'));
     $d = date('d', strtotime('now'));
     $y = date('Y', strtotime('now'));
     $h = date('h', strtotime('now'));
     $i = date('i', strtotime('now'));
-    
+
     echo $this->Form->create('User', array(
         'type'=>'file',
         'url'=>array('controller'=>'Users', 'action'=>'profile'),
@@ -32,9 +32,9 @@
             'error'=>false
         )
     ));
-                                                                    
+
     echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id']));
-                                        
+
     ?>
     <style type="text/css">
         .headerDiv{
@@ -45,22 +45,22 @@
             right: 0px;
             min-width: 100% !important;
         }
-        
+
         .headerContent{
             color: #ffffff;
         }
-        
+
         .headerContent .fileupload {
             color: #000000;
         }
-        
-        h2.title{ 
+
+        h2.title{
             font-family: 'Sonsie One', cursive;
         }
-        
+
         .fileupload-new{ color: black; }
         .fileupload-exists{ color: black; }
-    
+
         .fileupload-exists a{ padding: 0px; }
     </style>
     <div style="margin-top: -7px">
@@ -83,25 +83,25 @@
                                 ?>
                                 </div>
                             </div>
-                            
+
                             <div class="effect3 thumbnail">
                                 <div class="fileupload-preview fileupload-exists thumbnail"></div>
                             </div>
-                            
+
 
                             <div class="text-center">
                                 <span class="btn btn-file">
                                     <span class="text-danger"><small>( 2mb Limit )</small></span><br />
                                     <span class="fileupload-new">Select Image</span>
-                                    <span class="fileupload-exists">Select New Image</span> 
+                                    <span class="fileupload-exists">Select New Image</span>
                                     <?php echo $this->Form->file('file'); ?>
                                 </span>
-                                
+
                                 <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-                                
+
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
                 <div class="col-md-10">
@@ -112,7 +112,7 @@
                             </h2>
                         </div>
                         <div class="col-md-12">
-                            
+
                             <div class="tabbable" style="margin-top: 20px;">
                                 <ul class="nav nav-tabs">
                                     <li class="<?=$personalClass?>"><a href="#info" data-toggle="tab"><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</a></li>
@@ -124,65 +124,65 @@
                                 <div class="tab-content">
                                     <div class="tab-pane fade <?=$personalClass?> in" id="info">
                                         <?php echo $this->Flash->render('profile') ?>
-                                        
+
                                         <h3><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</h3>
                                         <hr/>
                                         <label class="control-label text-danger" for="firstname">Name:</label>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <?php 
+                                                    <?php
                                                     echo $this->Form->input('first_name', array (
                                                         'type'=>'text',
-                                                        'id'=> 'first_name', 
+                                                        'id'=> 'first_name',
                                                         'placeholder'=>'Firstname',
                                                     ));
                                                     ?>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <?php 
+                                                    <?php
                                                     echo $this->Form->input('last_name', array (
                                                         'type'=>'text',
-                                                        'id'=> 'last_name', 
+                                                        'id'=> 'last_name',
                                                         'placeholder'=>'Lastname',
                                                     ));
                                                     ?>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="control-label">Username:</label>
-                                                    <?php 
+                                                    <?php
                                                     echo $this->Form->input('username', array (
                                                         'type'=>'text',
-                                                        'id'=> 'user_name', 
+                                                        'id'=> 'user_name',
                                                         'placeholder'=>'Username',
                                                     ));
                                                     ?>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="control-label">E-Mail Address:</label>
-                                                    <?php 
+                                                    <?php
                                                     echo $this->Form->input('email', array (
                                                         'type'=>'text',
-                                                        'id'=> 'email', 
+                                                        'id'=> 'email',
                                                         'placeholder'=>'E-Mail Address',
                                                     ));
-                                                    ?>    
+                                                    ?>
                                                 </div>
                                             </div>
                                         </div>
-                                            
-                                        
+
+
                                         <hr style="border: 1px #C0C0C0 solid; "/>
                                         <h3><i class="fa fa-suitcase fa-fw" aria-hidden="true"></i> Job</h3>
                                         <hr/>
@@ -192,13 +192,13 @@
                                                     <label class="control-label">Account:</label>
                                                     <p class="form-control-static"><?= $this->request->data['AccountUser'][0]['Account']['name']; ?></p>
                                                 </div>
-                                                
+
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label class="control-label">Department(s):</label>
                                                             <ul class="form-control-static list-unstyled" style="padding-top: 7px;">
-                                                                <?php 
+                                                                <?php
                                                                 foreach($this->request->data['DepartmentUser'] as $dept){
                                                                     ?>
                                                                     <li><?=$dept['Department']['name']?></li>
@@ -216,19 +216,19 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-sm-3">
                                                 <div class="well">
                                                     <div class="form-group">
                                                         <label class="control-label">Status:</label>
                                                         <p class="form-control-static"><?=$this->request->data['Status']['name']?></p>
                                                     </div>
-                                                    
+
                                                     <div class="form-group">
                                                         <label class="control-label">Permission (Role):</label>
                                                         <p class="form-control-static"><?=$this->request->data['Role']['name']?></p>
-                                                    </div>   
-                                                    
+                                                    </div>
+
                                                     <div class="form-group">
                                                         <label class="control-label">Date Of Hire:</label>
                                                         <p class="form-control-static"><?=$doh?></p>
@@ -236,7 +236,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <hr style="border: 1px #C0C0C0 solid; "/>
                                         <h3><i class="fa fa-gavel fa-fw" aria-hidden="true"></i> EEOC <small>( Equal Employment Opportunity Commission )</small></h3>
                                         <hr/>
@@ -261,82 +261,168 @@
                                             <?php echo $this->Form->button('<i class="fa fa-floppy-o fa-fw"></i><span class="text">Save</span>', array('type'=>'submit', 'div'=>false, 'label'=>false, 'class'=>'btn btn-primary')); ?>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="tab-pane fade <?=$recordsClass?> in" id="records">
-                                        <table class="table table-striped table-condensed" id="assetsTable">
-                                            <thead>
-                                                <tr class="tr-heading">
-                                                    <th class="col-md-6">Training</th>
-                                                    <th>Status</th>
-                                                    <th>Expires Date</th>
-                                                    <th class="text-center">Required</th>
-                                                </tr>
-                                            </thead>
-                                            
-                                            <tbody>
-                                                <?php
-                                                #pr($requiredTraining );
-                                                foreach($records as $t){
-                                                    
-                                                    $status = null;
-                                                    #pr($records[$training['Training']['id']]);
-                                                    $status = 'Current';
-                                                    $label = 'label label-success';
-                                                        
-                                                    if($t['TrainingRecord']['in_progress'] == 1){
-                                                        $status = 'In Progress';
-                                                        $label = 'label label-primary';
-                                                    }
-                                                    
-                                                    if($t['TrainingRecord']['expired'] == 1){
-                                                        $status = 'Expired';
-                                                        $label = 'label label-danger';
-                                                    }
-                                                    
-                                                    if($t['TrainingRecord']['expiring'] == 1){
-                                                        $status = 'Expiring';
-                                                        $label = 'label label-warning';
-                                                    }
-                                                    
-                                                    if($t['TrainingRecord']['no_record'] == 1){
-                                                        $status = 'No Record Found';
-                                                        $label = 'label label-danger';
-                                                    }
-                                                    
-                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-                                                    ?>
-                                                    <tr>
-                                                        <td>
-                                                            <?php 
-                                                            echo $this->Html->link(
-                                                                $t['TrainingRecord']['name'],
-                                                                '#',
-                                                                array('escape'=>false)
-                                                            );
-                                                            ?> 
-                                                        </td>
-                                                        <td>
-                                                            <span class="<?=$label?>"><?=$status?></span>
-                                                        </td>
-                                                        <td><?=$expires?></td>
-                                                        <td class="text-center"><?=$required?></td>
-                                                    </tr>
-                                                    <?php
-                                                }
-                                                
-                                                if(empty($data[0])){
-                                                    ?>
-                                                    <tr>
-                                                        <td colspan="4" class="text-center">No Records Found</td>
-                                                    </tr>
-                                                    <?php
-                                                }
-                                                ?>
-                                            </tbody>
-                                        </table>
+
+										<div class="tabbable" style="padding: 0px;">
+			                                <ul class="nav nav-pills">
+			                                    <li class="active"><a href="#mine" data-toggle="tab"><i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i> Required Training</a></li>
+			                                    <li><a href="#all" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i>All Available Training</a></li>
+			                                </ul>
+
+			                                <div class="tab-content" style="border: 0px;">
+			                                    <div class="tab-pane fade active in" id="mine">
+                                                    <table class="table table-striped table-condensed" id="assetsTable">
+			                                            <thead>
+			                                                <tr class="tr-heading">
+			                                                    <th class="col-md-6">Training</th>
+			                                                    <th>Status</th>
+			                                                    <th>Expires Date</th>
+			                                                    <th class="text-center">Required</th>
+			                                                </tr>
+			                                            </thead>
+
+			                                            <tbody>
+			                                                <?php
+			                                                #pr($requiredTraining );
+			                                                foreach($records as $t){
+
+			                                                    $status = null;
+			                                                    #pr($records[$training['Training']['id']]);
+			                                                    $status = 'Current';
+			                                                    $label = 'label label-success';
+
+			                                                    if($t['TrainingRecord']['in_progress'] == 1){
+			                                                        $status = 'In Progress';
+			                                                        $label = 'label label-primary';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['expired'] == 1){
+			                                                        $status = 'Expired';
+			                                                        $label = 'label label-danger';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['expiring'] == 1){
+			                                                        $status = 'Expiring';
+			                                                        $label = 'label label-warning';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['no_record'] == 1){
+			                                                        $status = 'No Record Found';
+			                                                        $label = 'label label-danger';
+			                                                    }
+
+			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
+			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
+			                                                    ?>
+			                                                    <tr>
+			                                                        <td>
+			                                                            <?php
+			                                                            echo $this->Html->link(
+			                                                                $t['TrainingRecord']['name'],
+			                                                                '#',
+			                                                                array('escape'=>false)
+			                                                            );
+			                                                            ?>
+			                                                        </td>
+			                                                        <td>
+			                                                            <span class="<?=$label?>"><?=$status?></span>
+			                                                        </td>
+			                                                        <td><?=$expires?></td>
+			                                                        <td class="text-center"><?=$required?></td>
+			                                                    </tr>
+			                                                    <?php
+			                                                }
+
+			                                                if(empty($data[0])){
+			                                                    ?>
+			                                                    <tr>
+			                                                        <td colspan="4" class="text-center">No Records Found</td>
+			                                                    </tr>
+			                                                    <?php
+			                                                }
+			                                                ?>
+			                                            </tbody>
+			                                        </table>
+												</div>
+												<div class="tab-pane fade" id="all">
+													<table class="table table-striped table-condensed" id="assetsTable">
+			                                            <thead>
+			                                                <tr class="tr-heading">
+			                                                    <th class="col-md-6">Training</th>
+			                                                    <th>Status</th>
+			                                                    <th>Expires Date</th>
+			                                                    <th class="text-center">Required</th>
+			                                                </tr>
+			                                            </thead>
+
+			                                            <tbody>
+			                                                <?php
+			                                                #pr($requiredTraining );
+			                                                foreach($allRecords as $t){
+
+			                                                    $status = null;
+			                                                    #pr($records[$training['Training']['id']]);
+			                                                    $status = 'Current';
+			                                                    $label = 'label label-success';
+
+			                                                    if($t['TrainingRecord']['in_progress'] == 1){
+			                                                        $status = 'In Progress';
+			                                                        $label = 'label label-primary';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['expired'] == 1){
+			                                                        $status = 'Expired';
+			                                                        $label = 'label label-danger';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['expiring'] == 1){
+			                                                        $status = 'Expiring';
+			                                                        $label = 'label label-warning';
+			                                                    }
+
+			                                                    if($t['TrainingRecord']['no_record'] == 1){
+			                                                        $status = 'No Record Found';
+			                                                        $label = 'label label-danger';
+			                                                    }
+
+			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
+			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
+			                                                    ?>
+			                                                    <tr>
+			                                                        <td>
+			                                                            <?php
+			                                                            echo $this->Html->link(
+			                                                                $t['TrainingRecord']['name'],
+			                                                                '#',
+			                                                                array('escape'=>false)
+			                                                            );
+			                                                            ?>
+			                                                        </td>
+			                                                        <td>
+			                                                            <span class="<?=$label?>"><?=$status?></span>
+			                                                        </td>
+			                                                        <td><?=$expires?></td>
+			                                                        <td class="text-center"><?=$required?></td>
+			                                                    </tr>
+			                                                    <?php
+			                                                }
+
+			                                                if(empty($data[0])){
+			                                                    ?>
+			                                                    <tr>
+			                                                        <td colspan="4" class="text-center">No Records Found</td>
+			                                                    </tr>
+			                                                    <?php
+			                                                }
+			                                                ?>
+			                                            </tbody>
+			                                        </table>
+												</div>
+											</div>
+										</div>
                                     </div>
-                                    
+
                                     <div class="tab-pane fade <?=$assetsClass?> in" id="assets">
                                         <table class="table table-striped table-condensed" id="assetsTable">
                                             <thead>
@@ -347,20 +433,20 @@
                                                     <th>Model</th>
                                                 </tr>
                                             </thead>
-                                            
+
                                             <tbody>
                                                 <?php
                                                 foreach($user['Asset'] as $asset){
                                                     ?>
                                                     <tr>
                                                         <td>
-                                                            <?php 
+                                                            <?php
                                                             echo $this->Html->link(
                                                                 $asset['asset'],
                                                                 array('controller'=>'Assets', 'action'=>'view', $asset['id']),
                                                                 array('escape'=>false)
                                                             );
-                                                            ?> 
+                                                            ?>
                                                         </td>
                                                         <td><?=$asset['tag_number']?></td>
                                                         <td><?=$asset['Manufacturer']['name']?></td>
@@ -368,7 +454,7 @@
                                                     </tr>
                                                     <?php
                                                 }
-                                                
+
                                                 if(empty($user['Asset'])){
                                                     ?>
                                                     <tr>
@@ -376,25 +462,25 @@
                                                     </tr>
                                                     <?php
                                                 }
-                                                
+
                                                 ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                    
+
                                     <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
                                         <?php #pr(); ?>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <?php echo $this->Form->end(); ?>
-            
+
         </div>
     </div>
     <?php echo $this->Form->end(); ?>
@@ -409,7 +495,7 @@
                     up: "fa fa-arrow-up",
                     down: "fa fa-arrow-down",
                     close: "fa fa-trash",
-                    
+
                 }
             });
         });

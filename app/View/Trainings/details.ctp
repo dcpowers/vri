@@ -163,24 +163,27 @@
                     	<thead>
                         	<tr>
                             	<th class="col-sm-4">Instructor</th>
-                                <th class="col-sm-4">Date</th>
+                                <th class="col-sm-4">Class Date</th>
                                 <th class="col-sm-4 text-center">Total</th>
                             </tr>
                         </thead>
 
                         <tbody>
                         	<?php
-                            foreach($trn['Training']['TrainingClassroom'] as $class){
+							foreach($classRooms as $class){
+
 								$count = count($class['TrainingClassroomDetail']);
+
+								$instructor = (empty($class['Instructor']['first_name']) || empty($class['Instructor']['last_name'])) ? 'Undefined' : $class['Instructor']['first_name'].' '.$class['Instructor']['last_name'] ;
 								?>
                                 <tr>
-                                	<td><?=$class['Instructor']['first_name']?> <?=$class['Instructor']['last_name']?></td>
-                                    <td><?php echo date('M d, Y', strtotime($class['date'])); ?></td>
+                                	<td><?=$instructor?></td>
+                                    <td><?php echo date('M d, Y', strtotime($class['TrainingClassroom']['date'])); ?></td>
                                     <td class="text-center">
 										<?php
 										echo $this->Html->link(
                                         	$count,
-                                        	array('controller'=>'Trainings', 'action'=>'classroomDetails', $class['id']),
+                                        	array('controller'=>'Trainings', 'action'=>'classroomDetails', $class['TrainingClassroom']['id']),
                                             array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
                                         );
 										?>
@@ -199,7 +202,7 @@
                     <div role="tabpanel" class="tab-pane fade" id="<?=$trn['Training']['id']?>settings">
                     	<?php
                         echo $this->Form->create('Training', array(
-                        	'url' => array('controller'=>'Trainings', 'action'=>'editAccount', $this->request->data[$key]['Training']['training_id']),
+                        	'url' => array('controller'=>'Trainings', 'action'=>'editAccount', $trn['TrainingMembership']['training_id']),
                             'role'=>'form',
                             'class'=>'form-horizontal',
                             'inputDefaults' => array(
@@ -210,8 +213,8 @@
                             )
                         ));
 
-                        echo $this->Form->hidden('training_id', array('value'=>$this->request->data[$key]['Training']['training_id']));
-                        echo $this->Form->hidden('account_id', array('value'=>$this->request->data[$key]['Training']['account_id']));
+                        echo $this->Form->hidden('training_id', array('value'=>$trn['TrainingMembership']['training_id']));
+                        echo $this->Form->hidden('account_id', array('value'=>$trn['TrainingMembership']['account_id']));
 
                         ?>
 
@@ -220,7 +223,7 @@
                         		<div class="checkbox">
                                 	<label>
                                     	<?php
-										$checked = ($this->request->data[$key]['Training']['is_required'] == 1) ? 1 : 0 ;
+										$checked = ($trn['TrainingMembership']['is_required'] == 1) ? 1 : 0 ;
                                         echo $this->Form->checkbox('is_required', array('checked'=>$checked));
                                         ?>
                                         Is Required Training
@@ -240,12 +243,12 @@
                                 echo $this->Form->input('renewal', array (
                                 	'options'=>$renewal,
                                     'type'=>'select',
-                                    'value'=>$this->request->data[$key]['Training']['renewal'],
+                                    'value'=>$trn['TrainingMembership']['renewal'],
                                     'class'=>'form-select chzn-select',
                                 ));
                                 ?>
                                 <label> Months </label><br />
-                                <small>Use "0" If Only Needed Once. </small>
+                                <small>Use "0" If Only Needed Once. Will Show Expiring In 50 Years On Training Records.</small>
                             </div>
                         </div>
 
@@ -257,7 +260,7 @@
                                 	'options'=>$depts,
                                     'type'=>'select',
                                     'empty'=>true,
-                                    'value'=>$this->request->data[$key]['Training']['department_id'],
+                                    'value'=>$trn['TrainingMembership']['department_id'],
                                     'multiple'=>true,
                                     'class'=>'form-select chzn-select',
                                     'data-placeholder'=>'Select Department(s)'
@@ -275,7 +278,7 @@
                                 	'options'=>$users,
                                     'type'=>'select',
                                     'empty'=>true,
-                                    'value'=>$this->request->data[$key]['Training']['user_id'],
+                                    'value'=>$trn['TrainingMembership']['user_id'],
                                     'multiple'=>true,
                                     'class'=>'form-select chzn-select',
                                     'data-placeholder'=>'Select User(s)'
@@ -301,6 +304,40 @@
                 }
                 ?>
                 <div role="tabpanel" class="tab-pane fade" id="<?=$trn['Training']['id']?>records">
+                    <table class="table table-striped table-condensed" id="trainingTable">
+                        <thead>
+                            <tr>
+                                <th class="col-sm-4">User</th>
+                                <th class="col-sm-4">Status</th>
+                                <th class="col-sm-4 text-center">Expires On</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php
+
+                            foreach($records as $v){
+								$expires = (is_null($v['expires_on'])) ? null : date('M d, Y', strtotime($v['expires_on'])) ;
+                                ?>
+                                <tr>
+                                    <td>
+										<?php
+										echo $this->Html->link(
+                                        	$v['User']['first_name'].' '.$v['User']['last_name'],
+                                        	array('controller'=>'Users', 'action'=>'view', $v['User']['id']),
+                                            array('escape'=>false)
+                                        );
+
+										?>
+									</td>
+									<td><span class="label label-<?=$v['tblrow']?>"><?=$v['status']?></span></td>
+                                    <td class="text-center"><?=$expires?></td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
