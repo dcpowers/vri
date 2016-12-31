@@ -18,6 +18,7 @@ class TrainingsController extends AppController {
         'TrainingCategory',
         'TrainingClassroom',
         'TrainingRecord',
+        'TrainingFile',
         'TrainingClassroomDetail',
         'TrnCat',
         'TrainingMembership',
@@ -702,7 +703,6 @@ class TrainingsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
         }
 
-
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
@@ -833,6 +833,35 @@ class TrainingsController extends AppController {
 		$this->set('data', $data);
 
 	}
+
+	public function deleteFile($id = null, $trn_id = null){
+		$file = $this->TrainingFile->find('first', array(
+            'conditions' => array(
+                'TrainingFile.id' => $id
+            ),
+            'contain'=>array(
+            ),
+            'fields'=>array('TrainingFile.file')
+        ));
+
+		if(unlink('../webroot/files/'.$trn_id.'/'.$file['TrainingFile']['file'])){
+			$this->TrainingFile->delete($id);
+		}
+
+		$training = $this->request->data = $this->Training->find('first', array(
+            'conditions' => array(
+                'Training.id' => $trn_id
+            ),
+            'contain'=>array(
+                'TrainingFile'=>array()
+            ),
+
+        ));
+		$trainingFiles = $training['TrainingFile'];
+
+        $this->set(compact('trainingFiles'));
+
+    }
 
 	public function deleteRecord($id = null, $type = null, $user_id = null){
         $this->TrainingRecord->delete($id);
@@ -968,12 +997,128 @@ class TrainingsController extends AppController {
         $this->set(compact('user_id'));
     }
 
-    public function upload(){
-        $ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
-        $arr_ext = array('jpg', 'jpeg', 'gif'); //set allowed extensions
+	public function add(){
+		if ($this->request->is('post') || $this->request->is('put')) {
+			$files = $this->request->data['Training']['files'];
+			unset($this->request->data['Training']['files']);
 
-        //only process if the extension is valid
-        if(in_array($ext, $arr_ext)){
+			if(empty($this->request->data['Training']['name'])){
+				$this->Flash->alertBox(
+                    'Please Enter A Name',
+                    array( 'params' => array( 'class'=>'alert-danger' ))
+                );
+
+				$this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
+			}
+
+			$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+            $this->request->data['Training']['account_id'] = $account_ids[0];
+            $this->request->data['Training']['author_id'] = AuthComponent::user('id');
+
+			if ($this->Training->save($this->request->data)) {
+				if(!empty($files)){
+					foreach($files as $file){
+						$this->upload($file, $this->Training->id, 'add');
+					}
+
+				}
+                $this->Flash->alertBox(
+                    'Training Has Been Added',
+                    array( 'params' => array( 'class'=>'alert-success' ))
+                );
+            }else{
+                $this->Flash->alertBox(
+                    'There Was An Error, Please Try Again!',
+                    array( 'params' => array( 'class'=>'alert-danger' ))
+                );
+            }
+
+            $this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
+
+		}
+	}
+
+	public function edit($id = null){
+		if ($this->request->is('post') || $this->request->is('put')) {
+        	$files = $this->request->data['Training']['files'];
+			unset($this->request->data['Training']['files']);
+
+			if(empty($this->request->data['Training']['name'])){
+				$this->Flash->alertBox(
+                    'Please Enter A Name',
+                    array( 'params' => array( 'class'=>'alert-danger' ))
+                );
+
+				$this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
+			}
+
+			$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+            $this->request->data['Training']['account_id'] = $account_ids[0];
+            $this->request->data['Training']['author_id'] = AuthComponent::user('id');
+
+			if ($this->Training->save($this->request->data)) {
+				if(!empty($files)){
+                    foreach($files as $file){
+						$this->upload($file, $this->request->data['Training']['id'], 'edit');
+					}
+                }
+				$this->Flash->alertBox(
+                    'Training Has Been Added',
+                    array( 'params' => array( 'class'=>'alert-success' ))
+                );
+            }else{
+                $this->Flash->alertBox(
+                    'There Was An Error, Please Try Again!',
+                    array( 'params' => array( 'class'=>'alert-danger' ))
+                );
+            }
+
+            $this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
+		}
+
+		$training = $this->request->data = $this->Training->find('first', array(
+            'conditions' => array(
+                'Training.id' => $id
+            ),
+            'contain'=>array(
+                'TrainingFile'=>array()
+            ),
+
+        ));
+
+		#pr($this->request->data);
+		#exit;
+
+	}
+
+	public function upload($file=null, $id=null, $type=null){
+		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
+        $arr_ext = array('jpg', 'jpeg', 'gif', 'mp4', 'ppt', 'zip', 'pdf'); //set allowed extensions
+
+		if($file['error'] == 0 && in_array($ext, $arr_ext)){
+			$c = uniqid (rand(), true);;
+			$name = $c.'.'.$ext;
+            $dir = '../webroot/files/'.$id;
+
+			$uploadfile = $dir.'/'. $name;
+
+			if (!is_dir($dir)) {
+			    mkdir($dir, 0777, true);
+			}
+
+			$this->request->data['TrainingFile']['human_name'] = $file['name'];
+			$this->request->data['TrainingFile']['file'] = $name;
+			$this->request->data['TrainingFile']['file_type'] = $ext;
+			$this->request->data['TrainingFile']['file_size'] = $file['size'];
+			$this->request->data['TrainingFile']['training_id'] = $id;
+			if (move_uploaded_file($file['tmp_name'], $uploadfile) == TRUE) {
+				$this->TrainingFile->saveAll($this->request->data['TrainingFile']);
+
+				return true;
+            }else{
+            	return false;
+            }
         }
+
     }
 }
