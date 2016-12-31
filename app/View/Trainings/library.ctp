@@ -39,7 +39,8 @@
 
                 <th class="col-md-4">Description</th>
 
-                <th class="col-md-4">Categories</th>
+                <th class="col-md-3">Categories</th>
+                <th class="col-md-1"></th>
             </tr>
         </thead>
 
@@ -51,8 +52,8 @@
                 ?>
                 <tr>
                     <td>
-                        <?php
-                        echo $this->Html->link(
+						<?php
+						echo $this->Html->link(
                             $trn['Training']['name'],
                             array('controller'=>'Trainings', 'action'=>'view', $trn['Training']['id']),
                             array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal' )
@@ -88,51 +89,23 @@
                         ?>
                     </td>
 
-                    <!--
-
                     <td>
                         <ul class="list-inline">
-                            <li>
-                                <?php
-                                echo $this->Html->link(
-                                    '<i class="fa fa-plus fa-fw"></i>',
-                                    array('controller'=>'Trainings', 'action'=>'addToAccount', $trn['Training']['id']),
-                                    array('escape'=>false, 'class'=>'btn btn-success btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Add Training To Account')
-                                );
-                                ?>
-                            </li>
-                            <?php
-                            if(!empty($trn['TrainingMembership'][0]['id'])){
-                                ?>
-                                <li>
-                                    <?php
-                                    echo $this->Html->link(
-                                        '<i class="fa fa-minus fa-fw"></i>',
-                                        array('controller'=>'Trainings', 'action'=>'removeFromAccount', $trn['TrainingMembership'][0]['id']),
-                                        array('escape'=>false, 'class'=>'btn btn-danger btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Remove Training From Account')
-                                    );
-                                    ?>
-                                </li>
-                                <?php
-                            }
-
-                            if(AuthComponent::user('Role.permission_level') >= 60 || in_array($trn['Training']['account_id'], $account_ids)){
-                                ?>
-                                <li>
-                                    <?php
-                                    echo $this->Html->link(
+							<li>
+	                            <?php
+								if(AuthComponent::user('Role.permission_level') >= 60 || $trn['Training']['author_id'] == AuthComponent::user('id')){
+	                                echo $this->Html->link(
                                         '<i class="fa fa-pencil fa-fw"></i>',
                                         array('controller'=>'Trainings', 'action'=>'edit', $trn['Training']['id']),
-                                        array('escape'=>false, 'class'=>'btn btn-primary btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Edit Training')
+                                        array('escape'=>false, 'class'=>'btn btn-primary btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Edit Training', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                     );
-                                    ?>
-                                </li>
-                                <?php
-                            }
-                            ?>
+                                }else{
+									echo '&nbsp;';
+								}
+                            	?>
+							</li>
                         </ul>
                     </td>
-                    -->
                 </tr>
                 <?php
 

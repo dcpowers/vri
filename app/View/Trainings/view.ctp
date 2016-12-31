@@ -1,11 +1,11 @@
 <?php
     #pr($trnCat);
-    #exit; 
+    #exit;
     http://motherless.com/u/DreamWitness?t=v
 ?>
 <?php
     echo $this->Form->create('Training', array(
-    'url' => array('controller'=>'Trainings', 'action'=>'addToAccount', $training['Training']['id']), 
+    'url' => array('controller'=>'Trainings', 'action'=>'addToAccount', $training['Training']['id']),
     'role'=>'form',
     'class'=>'form-horizontal',
     'inputDefaults' => array(
@@ -27,10 +27,10 @@
             <div class="box box-warning">
                 <div class="box-body">
                     <?php
-                    
+
                     $name = '/files/'.$training['Training']['id'].'/'.$training['Training']['image'];
                     $image = (!empty($training['Training']['image'])) ? $name : 'noTraining.jpg' ;
-                                                
+
                     echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
                     ?>
                 </div>
@@ -41,7 +41,7 @@
                         <dt>Status:</dt>
                         <dd><?=$training['Status']['name']?></dd>
                     </dl>
-                                
+
                     <dl>
                         <dt>Last Update:</dt>
                         <dd><?php echo date('F d, Y', strtotime($training['Training']['modified'])); ?></dd>
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-sm-9">
             <div class="box box-warning">
                 <div class="box-body">
@@ -77,14 +77,14 @@
                         <dt>Name:</dt>
                         <dd><?=$training['Training']['name']?></dd>
                     </dl>
-                                                
+
                     <dl>
                         <dt>Description:</dt>
                         <dd><?=$training['Training']['description']?></dd>
                     </dl>
                 </div>
             </div>
-            
+
             <div class="box box-warning">
                 <div class="box-header">
                     <h3 class="box-title">Training Files</h3>
@@ -103,11 +103,11 @@
                                 <th>Runtime</th>
                             </tr>
                         </thead>
-                        
+
                         <tbody>
                             <?php
                             foreach($training['TrainingFile'] as $file){
-                                
+
                                 $filePath = filesize(WWW_ROOT .'/files/'.$training['Training']['id'].'/'.$file['file']);
                                 $fileSize = human_filesize($filePath);
                                 ?>
@@ -119,19 +119,19 @@
                                 </tr>
                                 <?php
                             }
-                            ?>                
+                            ?>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
+
             <div class="box box-warning">
                 <div class="box-body">
                     <div class="form-group">
                         <div class="col-sm-offset-4 col-sm-8">
                             <div class="checkbox">
                                 <label>
-                                    <?php 
+                                    <?php
                                     echo $this->Form->checkbox('is_required', array());
                                     ?>
                                     Is Required Training
@@ -139,14 +139,14 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="col-sm-4 control-label" for="name">Renewal In Months:</label>
                         <div class="col-sm-8">
                             <?php
                             for($i=0; $i<=48; $i++){
                                 $renewal[$i] = $i;
-                            } 
+                            }
                             echo $this->Form->input('renewal', array (
                                 'options'=>$renewal,
                                 'type'=>'select',
@@ -157,11 +157,11 @@
                             <small>Use "0" If Only Needed Once. </small>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="col-sm-4 control-label" for="name">Training For These Department(s) Only:</label>
                         <div class="col-sm-8">
-                            <?php 
+                            <?php
                             echo $this->Form->input('department_id', array (
                                 'options'=>$depts,
                                 'type'=>'select',
@@ -177,7 +177,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label" for="name">Training For These User(s) Only:</label>
                         <div class="col-sm-8">
-                            <?php 
+                            <?php
                             echo $this->Form->input('user_id', array (
                                 'options'=>$users,
                                 'type'=>'select',
@@ -188,9 +188,9 @@
                             ));
                             ?>
                             <small>Leave Empty If Training Is For Everyone Or You Have Selected Department(s) Above</small>
-                        </div>    
+                        </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="col-sm-offset-4 col-sm-8">
                             <?php
@@ -216,22 +216,14 @@
 </div>
 
 <div class="modal-footer">
-    <?php 
+    <?php
     echo $this->Form->button(
         '<i class="fa fa-times fa-fw"></i> Close',
         array('class'=>'btn btn-default pull-left', 'data-dismiss'=>'modal')
-    ); 
-    
-    if(AuthComponent::user('Role.permission_level') >= 60 || in_array($training['Training']['account_id'], $account_ids)){
-        echo $this->Html->link(
-            '<i class="fa fa-pencil fa-fw"></i> Edit Training',
-            array('controller'=>'Trainings', 'action'=>'edit', $training['Training']['id']),
-            array('escape'=>false, 'class'=>'btn btn-primary')
-        );
-    }
+    );
     ?>
 </div>
-<?php echo $this->Form->end();?>     
+<?php echo $this->Form->end();?>
 <?php
 function human_filesize($bytes, $decimals = 2) {
     $sz = 'BKMGTP';

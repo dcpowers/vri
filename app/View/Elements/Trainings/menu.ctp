@@ -15,15 +15,15 @@
                 'Are You Sure You Want To Delete This Asset?'
             );
             break;
-        
+
         case 'library':
             echo $this->Html->link(
                 '<i class="fa fa-plus fa-fw"></i> Upload New Training',
-                array(),
-                array( 'escape'=>false, 'class'=>'btn btn-success btn-sm' )
+                array('controller'=>'Trainings', 'action'=>'add'),
+                array( 'escape'=>false, 'class'=>'btn btn-success btn-sm', 'data-toggle'=>'modal', 'data-target'=>'#myModal' )
             );
             break;
-            
+
         default:
             if(AuthComponent::user('Role.permission_level') >= 30){
                 echo $this->Html->link(
@@ -33,6 +33,6 @@
                 );
             }
             break;
-        
+
     }
     ?>
