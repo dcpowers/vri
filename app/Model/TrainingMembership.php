@@ -84,7 +84,13 @@ class TrainingMembership extends AppModel {
                 )
             ),
 			'contain'=>array(
-				'Training'=>array()
+				'Training'=>array(
+					'TrainingFile'=>array(
+						'conditions'=>array(
+							'TrainingFile.file_type'=>'mp4'
+						)
+					)
+				)
 			)
 
 		));
@@ -138,7 +144,13 @@ class TrainingMembership extends AppModel {
                 )
             ),
 			'contain'=>array(
-				'Training'=>array()
+				'Training'=>array(
+					'TrainingFile'=>array(
+						'conditions'=>array(
+							'TrainingFile.file_type'=>'mp4'
+						)
+					)
+				)
 			)
 
 		));
