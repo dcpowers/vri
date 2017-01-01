@@ -31,7 +31,7 @@
         	<?php
             #pr($requiredTraining );
             foreach($data[0] as $training){
-            	$status = null;
+                $status = null;
                 #pr($records[$training['Training']['id']]);
                 $status = 'Current';
                 $label = 'label label-success';
@@ -70,11 +70,15 @@
                 <tr>
                 	<td>
                     	<?php
-                        echo $this->Html->link(
-                        	$training['Training']['name'],
-                            '#',
-                            array('escape'=>false)
-                        );
+						if(!empty($training['Training']['TrainingFile'])){
+                        	echo $this->Html->link(
+                        		$training['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
+                            	array('controller'=>'Trainings', 'action'=>'play', $training['Training']['id']),
+                            	array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                        	);
+						}else{
+							echo $training['Training']['name'];
+						}
                         ?>
                     </td>
 

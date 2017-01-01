@@ -285,7 +285,7 @@
 			                                            <tbody>
 			                                                <?php
 			                                                #pr($requiredTraining );
-			                                                foreach($records as $t){
+			                                                foreach($records as $key=>$t){
 
 			                                                    $status = null;
 			                                                    #pr($records[$training['Training']['id']]);
@@ -317,13 +317,17 @@
 			                                                    ?>
 			                                                    <tr>
 			                                                        <td>
-			                                                            <?php
-			                                                            echo $this->Html->link(
-			                                                                $t['TrainingRecord']['name'],
-			                                                                '#',
-			                                                                array('escape'=>false)
-			                                                            );
-			                                                            ?>
+																		<?php
+																		if(!empty($t['TrainingRecord']['TrainingFile'])){
+                        													echo $this->Html->link(
+                        														$t['TrainingRecord']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
+                            													array('controller'=>'Trainings', 'action'=>'play', $key),
+                            													array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                        													);
+																		}else{
+																			echo $t['TrainingRecord']['name'];
+																		}
+																		?>
 			                                                        </td>
 			                                                        <td>
 			                                                            <span class="<?=$label?>"><?=$status?></span>
@@ -359,9 +363,8 @@
 			                                            <tbody>
 			                                                <?php
 			                                                #pr($requiredTraining );
-			                                                foreach($allRecords as $t){
-
-			                                                    $status = null;
+			                                                foreach($allRecords as $key=>$t){
+                                                                $status = null;
 			                                                    #pr($records[$training['Training']['id']]);
 			                                                    $status = 'Current';
 			                                                    $label = 'label label-success';
@@ -392,12 +395,16 @@
 			                                                    <tr>
 			                                                        <td>
 			                                                            <?php
-			                                                            echo $this->Html->link(
-			                                                                $t['TrainingRecord']['name'],
-			                                                                '#',
-			                                                                array('escape'=>false)
-			                                                            );
-			                                                            ?>
+																		if(!empty($t['TrainingRecord']['TrainingFile'])){
+                        													echo $this->Html->link(
+                        														$t['TrainingRecord']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
+                            													array('controller'=>'Trainings', 'action'=>'play', $key),
+                            													array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                        													);
+																		}else{
+																			echo $t['TrainingRecord']['name'];
+																		}
+																		?>
 			                                                        </td>
 			                                                        <td>
 			                                                            <span class="<?=$label?>"><?=$status?></span>
