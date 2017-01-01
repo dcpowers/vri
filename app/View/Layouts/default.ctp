@@ -177,16 +177,19 @@
         <script type="text/javascript">
             jQuery(document).ready( function($) {
                 $("#myModal").on('hidden.bs.modal', function(){
-                    $(this).data('bs.modal', null);
-                });
+                    $('div.modal-body').html('');
+					$(this).data('bs.modal', null);
+				});
 
                 $("#myLgModal").on('hidden.bs.modal', function(){
+					$('div.modal-body').html('');
                     $(this).data('bs.modal', null);
-                });
+				});
 
                 $("#mySmModal").on('hidden.bs.modal', function(){
-                    $(this).data('bs.modal', null);
-                });
+                    $('div.modal-body').html('');
+					$(this).data('bs.modal', null);
+				});
             });
         </script>
         <?php echo $this->fetch('scriptsBottom'); ?>
