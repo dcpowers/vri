@@ -747,7 +747,7 @@ class TrainingsController extends AppController {
 
 			$renewalDate = (!isset($this->request->data['TrainingClassroom']['renewal'])) ? 12 : $this->request->data['TrainingClassroom']['renewal'];
 
-			$renewalDate = ($renewalDate == 0) ? 600 : $renewalDate;
+			$renewalDate = ($renewalDate == 0) ? 240 : $renewalDate;
 
 			foreach($this->request->data['TrainingClassroomDetail']['user_id'] as $k=>$r){
 
@@ -759,7 +759,7 @@ class TrainingsController extends AppController {
                 $this->request->data['TrainingRecord'][$k]['trainer_id'] = $this->request->data['TrainingClassroom']['instructor_id'];
                 $this->request->data['TrainingRecord'][$k]['date'] = $this->request->data['TrainingClassroom']['date'];
 				$this->request->data['TrainingRecord'][$k]['expires_on'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->request->data['TrainingClassroom']['date'])) . " + ". $renewalDate ." months"));
-				$this->request->data['TrainingRecord'][$k]['completed_on'] = $this->request->data['TrainingClassroom']['date'];;
+				$this->request->data['TrainingRecord'][$k]['completed_on'] = $this->request->data['TrainingClassroom']['date'];
             }
             unset($this->request->data['TrainingClassroomDetail']['user_id'], $this->request->data['TrainingClassroomDetail']['did_attend']);
             #pr($renewalDate);
@@ -1093,7 +1093,7 @@ class TrainingsController extends AppController {
 
 	public function upload($file=null, $id=null, $type=null){
 		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
-        $arr_ext = array('jpg', 'jpeg', 'gif', 'mp4', 'ppt', 'zip', 'pdf'); //set allowed extensions
+        $arr_ext = array('jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf'); //set allowed extensions
 
 		if($file['error'] == 0 && in_array($ext, $arr_ext)){
 			$c = uniqid (rand(), true);;
@@ -1121,4 +1121,81 @@ class TrainingsController extends AppController {
         }
 
     }
+
+	public function play($id=null){
+		$this->Training->id = $id;
+        if (!$this->Training->exists()) {
+            throw new NotFoundException(__('Invalid Training'));
+        }
+
+        $training = $this->request->data = $this->Training->find('first', array(
+            'conditions' => array(
+                'Training.id' => $id
+            ),
+            'contain'=>array(
+                'TrainingFile'=>array()
+            ),
+
+        ));
+
+		$arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
+
+		$poster = null;
+		$video = null;
+
+		foreach($training['TrainingFile'] as $v){
+            if($v['file_type'] == 'mp4'){
+				$video = $v['file'];
+			}
+
+			if(in_array($v['file_type'], $arr_ext)){
+				$poster = $v['file'];
+			}
+		}
+		unset($training['TrainingFile']);
+
+		$this->set('trn', $training);
+		$this->set('poster', $poster);
+		$this->set('video', $video);
+	}
+
+	public function signoff($id=null){
+		$trn = $this->TrainingMembership->find('first', array(
+            'conditions' => array(
+                'TrainingMembership.training_id' => $id
+            ),
+            'contain'=>array(
+
+            ),
+
+        ));
+		$renewalDate = (!isset($trn['TrainingMembership']['renewal'])) ? 12 : $trn['TrainingMembership']['renewal'];
+        $renewalDate = ($renewalDate == 0) ? 240 : $renewalDate;
+		$date = date("Y-m-d", strtotime('now'));
+
+		$this->request->data['TrainingRecord']['user_id'] = AuthComponent::user('id');
+        $this->request->data['TrainingRecord']['training_id'] = $id;
+        $this->request->data['TrainingRecord']['trainer_id'] = 145;
+        $this->request->data['TrainingRecord']['date'] = $date;
+		$this->request->data['TrainingRecord']['expires_on'] = date("Y-m-d", strtotime($date . " + ". $renewalDate ." months"));
+		$this->request->data['TrainingRecord']['completed_on'] = $date;
+		$this->request->data['TrainingRecord']['started_on'] = $date;
+
+		if ($this->TrainingRecord->save($this->request->data)) {
+			$this->Flash->alertBox(
+            	'Your Training Has Been Updated',
+            	array( 'params' => array( 'class'=>'alert-success' ))
+            );
+        }else{
+        	$this->Flash->alertBox(
+            	'There Was An Error, Please Try Again!',
+                array( 'params' => array( 'class'=>'alert-danger' ))
+            );
+        }
+
+        return $this->redirect(array('controller'=>'Dashboard'));
+
+		pr($id);
+		exit;
+	}
 }
