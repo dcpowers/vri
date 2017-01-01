@@ -844,9 +844,13 @@ class TrainingsController extends AppController {
             'fields'=>array('TrainingFile.file')
         ));
 
-		if(unlink('../webroot/files/'.$trn_id.'/'.$file['TrainingFile']['file'])){
-			$this->TrainingFile->delete($id);
+		$file = '../webroot/files/'.$trn_id.'/'.$file['TrainingFile']['file'];
+
+		if (file_exists($file)) {
+			unlink($file);
 		}
+
+		$this->TrainingFile->delete($id);
 
 		$training = $this->request->data = $this->Training->find('first', array(
             'conditions' => array(
