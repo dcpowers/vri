@@ -150,7 +150,7 @@
 
         </div>
         <!-- Large Model -->
-        <div class="modal fade bs-example-modal-lg" tabindex="-1" id="myLgModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
+        <div class="modal fade bs-example-modal-lg" tabindex="-1" id="myLgModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                 </div> <!-- /.model-content -->
@@ -158,7 +158,7 @@
         </div> <!-- /.model -->
 
         <!-- Normal Size -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="myModal" aria-labelledby="myRegularModalLabel" aria-hidden="false">
+        <div class="modal fade" tabindex="-1" role="dialog" id="myModal" aria-labelledby="myRegularModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog">
                 <div class="modal-content">
 
@@ -167,7 +167,7 @@
         </div> <!-- /.model -->
 
         <!-- Small Model -->
-        <div class="modal fade bs-example-modal-sm" tabindex="-1" id="mySmModal" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="false">
+        <div class="modal fade bs-example-modal-sm" tabindex="-1" id="mySmModal" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                 </div> <!-- /.model-content -->
