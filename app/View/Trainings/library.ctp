@@ -97,7 +97,7 @@
 	                                echo $this->Html->link(
                                         '<i class="fa fa-pencil fa-fw"></i>',
                                         array('controller'=>'Trainings', 'action'=>'edit', $trn['Training']['id']),
-                                        array('escape'=>false, 'class'=>'btn btn-primary btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Edit Training', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                                        array('escape'=>false, 'class'=>'btn btn-primary btn-xs', 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Edit Training', 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
                                     );
                                 }else{
 									echo '&nbsp;';

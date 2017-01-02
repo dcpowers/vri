@@ -30,8 +30,9 @@
             <tr>
                 <th class="col-sm-4">Name</th>
                 <th class="col-sm-4">Description</th>
-                <th class="col-sm-2 text-center">Required</th>
-                <th class="col-sm-2 text-center">Mandatory</th>
+                <th class="col-sm-1 text-center">Required</th>
+                <th class="col-sm-1 text-center">Mandatory</th>
+                <th class="col-sm-2 text-center">Mandatory For</th>
             </tr>
         </thead>
 
@@ -41,8 +42,9 @@
             #exit;
             $c=0;
             foreach($trainings as $key=>$trn){
-                $required = ($trn['TrainingMembership']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-                $manditory = ($trn['TrainingMembership']['is_manditory'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
+				#pr($trn);
+                $required = (isset($trn['TrainingMembership']['is_required']) && $trn['TrainingMembership']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
+                $manditory = (isset($trn['TrainingMembership']['is_manditory']) && $trn['TrainingMembership']['is_manditory'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
                 ?>
                 <tr>
                     <td>
@@ -57,6 +59,47 @@
                     <td><?=$trn['Training']['description']?></td>
                     <td class="text-center"><?=$required?></td>
                     <td class="text-center"><?=$manditory?></td>
+                    <td>
+						<?php
+						if(!empty($trn['ReqDept'])){
+							?>
+							<dl>
+  								<dt>Departments:</dt>
+                                <?php
+								foreach($trn['ReqDept'] as $b){
+									?>
+									<dd><?=$b['name']?></dd>
+									<?php
+								}
+								?>
+							</dl>
+							<?php
+						}
+
+						if(!empty($trn['ReqUser'])){
+							?>
+							<dl>
+								<dt>Users:</dt>
+								<?php
+								foreach($trn['ReqUser'] as $b){
+									?>
+									<dd><?=$b['first_name']?> <?=$b['last_name']?></dd>
+									<?php
+								}
+								?>
+							</dl>
+							<?php
+						}
+
+						if((isset($trn['TrainingMembership']['is_manditory']) && $trn['TrainingMembership']['is_manditory'] == 1) && empty($trn['ReqDept']) && empty($trn['ReqUser'])){
+							?>
+							<dl>
+								<dt>Everyone</dt>
+							</dl>
+							<?php
+						}
+						?>
+					</td>
                 </tr>
                 <?php
             }
