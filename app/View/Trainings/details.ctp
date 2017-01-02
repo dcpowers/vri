@@ -134,11 +134,34 @@
 														$arr_ext = array('mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt');
 
 														if(AuthComponent::user('Role.permission_level') >= 30 && in_array($file['file_type'], $arr_ext)){
-															echo $this->Html->link(
-																'<i class="fa fa-download fa-fw fa-lg"></i>',
-                                    							array('controller'=>'Trainings', 'action'=>'download', $file['id']),
-                                    							array('escape'=>false)
-                                							);
+                                                            ?>
+															<ul class="list-inline">
+																<li>
+																	<?php
+																	echo $this->Html->link(
+																		'<i class="fa fa-download fa-fw fa-lg"></i>',
+                                    									array('controller'=>'Trainings', 'action'=>'download', $file['id']),
+                                    									array('escape'=>false)
+                                									);
+																	?>
+																</li>
+																<?php
+																if($file['file_type'] == 'mp4'){
+																	?>
+																	<li>
+																		<?php
+																		echo $this->Html->link(
+																			'<i class="fa fa-play-circle fa-fw fa-lg"></i>',
+                                    										array('controller'=>'Trainings', 'action'=>'play', $file['training_id']),
+                                    										array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                                										);
+																		?>
+																	</li>
+																	<?php
+																}
+																?>
+															</ul>
+															<?php
 														}
 														?>
 													</td>
