@@ -20,7 +20,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-plus fa-fw"></i> Upload New Training',
                 array('controller'=>'Trainings', 'action'=>'add'),
-                array( 'escape'=>false, 'class'=>'btn btn-success btn-sm', 'data-toggle'=>'modal', 'data-target'=>'#myModal' )
+                array( 'escape'=>false, 'class'=>'btn btn-success btn-sm', 'data-toggle'=>'modal', 'data-target'=>'#myLgModal' )
             );
             break;
 

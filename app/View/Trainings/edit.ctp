@@ -135,11 +135,15 @@
 				                        <td><?=$fileSize?></td>
 				                        <td>
 											<?php
-			                                echo $this->Html->link(
-			                    				'<i class="fa fa-trash text-warning fa-2x" aria-hidden="true"></i>',
-						                        '#',
-						                        array('class'=>'trnRecord', 'data-value'=>$file['id'], 'data-file'=>$file['file'], 'escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'left', 'title'=>'Delete File')
-						                    );
+											if(AuthComponent::user('Role.permission_level') >= 60 ){
+				                                echo $this->Html->link(
+			                    					'<i class="fa fa-trash text-warning fa-2x" aria-hidden="true"></i>',
+							                        '#',
+							                        array('class'=>'trnRecord', 'data-value'=>$file['id'], 'data-file'=>$file['file'], 'escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'left', 'title'=>'Delete File')
+							                    );
+											}else{
+												echo '&nbsp;';
+											}
 											?>
 										</td>
 				                    </tr>

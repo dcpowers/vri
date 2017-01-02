@@ -129,7 +129,19 @@
                                                     <td><?=$fileSize?></td>
                                                     <td><?=$file['runtime']?></td>
                                                     <td><?php echo date('M d, Y', strtotime($file['modified'])); ?></td>
-                                                    <td></td>
+                                                    <td>
+														<?php
+														$arr_ext = array('mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt');
+
+														if(AuthComponent::user('Role.permission_level') >= 30 && in_array($file['file_type'], $arr_ext)){
+															echo $this->Html->link(
+																'<i class="fa fa-download fa-fw fa-lg"></i>',
+                                    							array('controller'=>'Trainings', 'action'=>'download', $file['id']),
+                                    							array('escape'=>false)
+                                							);
+														}
+														?>
+													</td>
                                                 </tr>
                                                 <?php
                                             }
