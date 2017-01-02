@@ -10,43 +10,44 @@ class ImprovementsController extends AppController {
     //public $components = array('Search.Prg');
     #public $helpers = array( 'Tree' );
     //Search Plugin
-    
+
     var $uses = array(
-        'Improvement', 
+        'Improvement',
         'Setting',
     );
-    
+
     public $components = array( 'RequestHandler', 'Paginator');
-    
+
     public $presetVars = array(
         array('field' => 'q', 'type' => 'value')
     );
-    
+
     public $paginate = array(
         'order' => array(
             'Improvement.name' => 'asc'
         ),
         'limit'=>50
     );
-    
+
     public function pluginSetup() {
         $user = AuthComponent::user();
-        
+
         //These Two Lines are Required
         parent::pluginSetup();
         Configure::write('App.Name', 'Improvements');
     }
-    
+
     public function beforeFilter() {
         parent::beforeFilter();
-        
+
         $this->set('title_for_layout', 'Improvements');
-        
+        /*
         $this->set('breadcrumbs', array(
             array('title'=>'Improvements', 'link'=>array('controller'=>'Improvements', 'action'=>'index')),
         ));
+		*/
     }
-    
+
     public function index() {
         $improvements['new'] = $this->Improvement->find('all', array(
             'conditions' => array(
@@ -61,7 +62,7 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.priority'=> 'asc'),
         ));
-        
+
         $improvements['accepted'] = $this->Improvement->find('all', array(
             'conditions' => array(
                 'Improvement.is_active'=>1,
@@ -76,7 +77,7 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.priority'=> 'asc'),
         ));
-        
+
         $improvements['completed'] = $this->Improvement->find('all', array(
             'conditions' => array(
                 'Improvement.is_active' => 1,
@@ -91,7 +92,7 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.completed_date'=> 'DESC'),
         ));
-        
+
         $improvements['not accepted'] = $this->Improvement->find('all', array(
             'conditions' => array(
                 'Improvement.is_active'=>2,
@@ -104,28 +105,28 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.priority'=> 'asc'),
         ));
-        
+
         $this->set('improvements', $improvements);
-        
+
     }
-    
+
     public function view($id=null, $pageStatus = null, $viewBy = null){
         $this->Account->id = $id;
         if (!$this->Account->exists()) {
             throw new NotFoundException(__('Invalid Account Id'));
         }
-        
+
         $deptClass= null;
         $superClass= null;
         $roleClass= null;
-        
+
         $aStatusClass = null;
         $iStatusClass = null;
         $allStatusClass = null;
-        
+
         $viewBy = (is_null($viewBy)) ? 'department' : $viewBy ;
         $this->set('viewBy', $viewBy);
-        
+
         if(is_null($pageStatus) || $pageStatus == 1){
             $pageStatus = 1;
             $setStatus = 1;
@@ -135,16 +136,16 @@ class ImprovementsController extends AppController {
             $setStatus = 2;
             $iStatusClass = 'active';
         }
-        
+
         if($pageStatus == 'all'){
             $pageStatus = array(1,2);
             $setStatus = 'all';
             $allStatusClass = 'active';
         }
-        
+
         $this->set('pageStatus', $setStatus);
-        
-        
+
+
         $account = $this->request->data = $this->Account->find('first', array(
             'conditions' => array(
                 'Account.id' => $id
@@ -191,16 +192,16 @@ class ImprovementsController extends AppController {
                         'User.first_name'=>'asc',
                         'User.last_name'=>'asc',
                     ),
-                    
-                )   
+
+                )
             ),
-            
+
         ));
-        
+
         $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
-        
+
         $users = array();
-        
+
         foreach($account['User'] as $data){
             switch($viewBy){
                 case 'supervisor':
@@ -213,13 +214,13 @@ class ImprovementsController extends AppController {
                     }
                     $superClass = 'active';
                     break;
-                
+
                 case 'role':
                     $indexName = $data['Role']['name'];
                     $keysort[$indexName] = $data['Role']['lft'];
                     $roleClass = 'active';
                     break;
-                
+
                 case 'department':
                 default:
                     if(array_key_exists('name', $data['Department'])){
@@ -231,11 +232,11 @@ class ImprovementsController extends AppController {
                     }
                     $deptClass = 'active';
                     break;
-                
+
             }
-            
+
             $value[$indexName][] = $data;
-            
+
             $users = array_merge($users,$value);
         }
         #pr($users);
@@ -245,35 +246,35 @@ class ImprovementsController extends AppController {
         #pr($users);
         #exit;
         unset($account['User']);
-        
+
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
-        
+
         $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
         $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
-        
+
         $this->set('account', $account);
         $this->set('employees', $users);
-        
+
         $this->set('userList', $userList);
         $this->set('status', $this->Setting->pickList('status'));
         $this->set('departments', $this->Department->pickList());
-        
+
         //set all active classes
         $this->set('superClass', $superClass);
         $this->set('deptClass', $deptClass);
         $this->set('roleClass', $roleClass);
-        
+
         $this->set('aStatusClass', $aStatusClass);
         $this->set('iStatusClass', $iStatusClass);
         $this->set('allStatusClass', $allStatusClass);
-        
-        
+
+
         $this->set('breadcrumbs', array(
             array('title'=>'Accounts', 'link'=>array('controller'=>'Accounts', 'action'=>'index')),
             array('title'=>'View/Edit: '.$account['Account']['name'], 'link'=>array('controller'=>'Accounts', 'action'=>'view', $id)),
         ));
     }
-    
+
     public function getDashboard() {
         $improvements['new'] = $this->Improvement->find('all', array(
             'conditions' => array(
@@ -288,7 +289,7 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.priority'=> 'asc'),
         ));
-        
+
         $improvements['accepted'] = $this->Improvement->find('all', array(
             'conditions' => array(
                 'Improvement.is_active'=>1,
@@ -303,7 +304,7 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.priority'=> 'asc'),
         ));
-        
+
         $improvements['completed'] = $this->Improvement->find('all', array(
             'conditions' => array(
                 'Improvement.is_active' => 1,
@@ -318,25 +319,25 @@ class ImprovementsController extends AppController {
             ),
             'order'=>array('Improvement.completed_date'=> 'DESC'),
         ));
-        
+
         return $improvements;
-        
+
     }
-    
+
     public function edit(){
         if ($this->request->is('post') || $this->request->is('put')) {
             $error = false;
             $validationErrors = array();
-            
+
             $this->request->data['Account']['is_active'] = (empty($this->request->data['Account']['is_active'])) ? 1 : $this->request->data['Account']['is_active'] ;
-            
+
             $this->request->data['Account']['EVS'] = (empty($this->request->data['Account']['EVS'])) ? 0 : $this->request->data['Account']['EVS'] ;
             $this->request->data['Account']['CE'] = (empty($this->request->data['Account']['CE'])) ? 0 : $this->request->data['Account']['CE'] ;
             $this->request->data['Account']['Food'] = (empty($this->request->data['Account']['Food'])) ? 0 : $this->request->data['Account']['Food'] ;
             $this->request->data['Account']['POM'] = (empty($this->request->data['Account']['POM'])) ? 0 : $this->request->data['Account']['POM'] ;
             $this->request->data['Account']['LAU'] = (empty($this->request->data['Account']['LAU'])) ? 0 : $this->request->data['Account']['LAU'] ;
             $this->request->data['Account']['SEC'] = (empty($this->request->data['Account']['SEC'])) ? 0 : $this->request->data['Account']['SEC'] ;
-            
+
             foreach($this->request->data['AccountDepartment'] as $item){
                 foreach($item as $key=>$val){
                     $this->request->data['AccountDepartment'][$key]['account_id'] = $this->request->data['Account']['id'];
@@ -348,7 +349,7 @@ class ImprovementsController extends AppController {
             #exit;
             if ($this->Account->saveAll($this->request->data)) {
                 $this->Flash->alertBox(
-                    'The Account: "'.$this->request->data['Account']['name'].'" has been saved', 
+                    'The Account: "'.$this->request->data['Account']['name'].'" has been saved',
                     array(
                         'params' => array(
                             'class'=>'alert-success'
@@ -358,31 +359,31 @@ class ImprovementsController extends AppController {
                 $this->redirect(array('controller'=>'Accounts', 'action'=>'index'));
             } else {
                 $this->Flash->alertBox(
-                    'The Account could not be saved. Please, try again.', 
+                    'The Account could not be saved. Please, try again.',
                     array(
                         'params' => array(
                             'class'=>'alert-success'
                         )
                     )
-                );    
-                
+                );
+
                 $this->set( compact( 'validationErrors' ) );
-                
+
                 $id = $this->request->data['Account']['id'];
-                
+
                 $this->redirect(array('controller'=>'Accounts', 'action'=>'view', $id));
             }
         }
     }
-    
+
     public function add(){
         if ($this->request->is('post') || $this->request->is('put')) {
             $error = false;
-            
+
             $this->request->data['Improvement']['created_by'] = AuthComponent::user('id');
             $this->request->data['Improvement']['created_date'] = date('Y-m-d', strtotime('now'));
             $this->request->data['Improvement']['is_active'] = 1;
-            
+
             if(empty($this->request->data['Improvement']['idea'])){
                 $error = true;
             }
@@ -418,22 +419,22 @@ class ImprovementsController extends AppController {
                     )
                 );
             }
-            
+
             $this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
         }
-        
-        
+
+
     }
-    
+
     public function delete($id = null, $empDelete = null) {
         $this->Improvement->id = $id;
 
         if (!$this->Improvement->exists()) {
             throw new NotFoundException(__('Invalid record'));
         }
-        
+
         $this->request->data['Improvement']['id'] = $id;
-        
+
         if ($this->Improvement->delete()) {
             #Audit::log('Group record added', $this->request->data );
             //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
@@ -455,21 +456,21 @@ class ImprovementsController extends AppController {
                 )
             );
         }
-        
+
         $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
     }
-    
+
     public function accept($id=null, $priority=null){
         $this->Improvement->id = $id;
 
         if (!$this->Improvement->exists()) {
             throw new NotFoundException(__('Invalid record'));
         }
-        
+
         $this->request->data['Improvement']['id'] = $id;
         $this->request->data['Improvement']['priority'] = $priority;
         $this->request->data['Improvement']['accepted_date'] = date('Y-m-d', strtotime('now'));
-        
+
         if ($this->Improvement->saveAll($this->request->data)) {
             #Audit::log('Group record added', $this->request->data );
             //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
@@ -491,21 +492,21 @@ class ImprovementsController extends AppController {
                 )
             );
         }
-        
+
         $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
-        
+
     }
-    
+
     public function reject($id=null){
         $this->Improvement->id = $id;
 
         if (!$this->Improvement->exists()) {
             throw new NotFoundException(__('Invalid record'));
         }
-        
+
         $this->request->data['Improvement']['id'] = $id;
         $this->request->data['Improvement']['is_active'] = 2;
-        
+
         if ($this->Improvement->saveAll($this->request->data)) {
             #Audit::log('Group record added', $this->request->data );
             //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
@@ -527,8 +528,8 @@ class ImprovementsController extends AppController {
                 )
             );
         }
-        
+
         $this->redirect(array('controller'=>'Improvements', 'action'=>'index'));
-        
+
     }
 }
