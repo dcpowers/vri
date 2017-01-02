@@ -103,25 +103,31 @@ class TrainingsController extends AppController {
             ),
             'contain'=>array(
                 'Training'=>array(
-                ),
-                'Department'=>array(
+				),
+				'ReqAcct'=>array(
+	            	'fields'=>array(
+	                	'ReqAcct.id',
+						'ReqAcct.name'
+	                )
+	            ),
+                'ReqDept'=>array(
                     'fields'=>array(
-                        'Department.id',
-                        'Department.name'
+                        'ReqDept.id',
+                        'ReqDept.name'
                     )
                 ),
-                'RequiredUser'=>array(
+                'ReqUser'=>array(
                     'fields'=>array(
-                        'RequiredUser.id',
-                        'RequiredUser.first_name',
-                        'RequiredUser.last_name',
+                        'ReqUser.id',
+                        'ReqUser.first_name',
+                        'ReqUser.last_name',
                     )
                 )
             ),
             'order'=>array('Training.name'=> 'asc'),
             'group'=>array(
-                'TrainingMembership.training_id',
-                'TrainingMembership.account_id',
+                #'TrainingMembership.training_id',
+                #'TrainingMembership.account_id',
             )
         ));
 
@@ -141,84 +147,98 @@ class TrainingsController extends AppController {
                 'fields'=>array('Training.id', 'Training.id')
             ));
 
-            $options = array(
-                'conditions'=>array(
-                    'AND'=>array(
+			$trainings = $this->TrainingMembership->find('all',array(
+				'conditions'=>array(
+					'AND'=>array(
                         'TrainingMembership.training_id'=>$training_ids
-                    )
-                )
-            );
-
-            $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
+                    ),
+	                'OR' => array(
+	                    array(
+	                        'AND'=>array(
+	                            'TrainingMembership.account_id' => $account_ids,
+	                        )
+	                    ),
+	                    array(
+	                        'AND'=>array(
+	                            'TrainingMembership.department_id' => $department_ids,
+	                            'TrainingMembership.is_manditory' => 1
+	                        )
+	                    ),
+	                    array(
+	                        'AND'=>array(
+	                            'TrainingMembership.user_id' => $user_ids,
+	                            'TrainingMembership.is_manditory' => 1
+	                        )
+	                    ),
+	                    array(
+	                        'AND'=>array(
+	                            'TrainingMembership.account_id' => null,
+	                            'TrainingMembership.department_id' => null,
+	                            'TrainingMembership.user_id' => null,
+	                            'TrainingMembership.is_manditory' => 1
+	                        )
+	                    ),
+	                )
+	            ),
+	            'contain'=>array(
+	                'Training'=>array(
+					),
+	                'ReqDept'=>array(
+	                    'fields'=>array(
+	                        'ReqDept.id',
+	                        'ReqDept.name'
+	                    )
+	                ),
+                    'ReqAcct'=>array(
+	                    'fields'=>array(
+	                        'ReqAcct.id',
+	                        'ReqAcct.name'
+	                    )
+	                ),
+					'ReqUser'=>array(
+	                    'fields'=>array(
+	                        'ReqUser.id',
+	                        'ReqUser.first_name',
+	                        'ReqUser.last_name',
+	                    )
+	                )
+	            ),
+	            'order'=>array('Training.name'=> 'asc', 'TrainingMembership.is_manditory'=> 'DESC'),
+	            'group'=>array(
+	                #'TrainingMembership.training_id',
+	                #'TrainingMembership.account_id',
+	            )
+	        ));
         }
 
-		#$trainings = $this->Paginator->paginate('TrainingMembership');
-        /*
+		#pr($trainings);
+		#exit;
 		$data = array();
-
-		$classRoom = array();
-
         foreach($trainings as $key=>$item){
-            #pr($item);
-            #exit;
-            if(empty($item['Training']['name'])){
-                unset($trainings[$key]);
-                break;
-            }
 
-            $classRoom = $item['Training']['TrainingClassroom'];
+			$data[$item['TrainingMembership']['training_id']]['Training'] = $item['Training'];
 
-            foreach($item['Training']['TrainingClassroom'] as $c_key=> $c){
-                $totalCount = 0;
-                $attendCount = 0;
+			if($item['TrainingMembership']['is_required'] == 1){
+                #$data[$item['TrainingMembership']['training_id']]['TrainingMembership'] = null;
+				$data[$item['TrainingMembership']['training_id']]['TrainingMembership']['is_required'] = 1;
+			}
 
-                if(!empty($c['TrainingClassroomDetail'])){
-                    foreach($c['TrainingClassroomDetail'] as $k=>$v){
-                        $totalCount++;
-                        if($v['did_attend'] == 1){
-                            $attendCount++;
-                        }
-                    }
+			if($item['TrainingMembership']['is_manditory'] == 1){
+				#$data[$item['TrainingMembership']['training_id']]['TrainingMembership'] = null;
+				$data[$item['TrainingMembership']['training_id']]['TrainingMembership']['is_manditory'] = 1;
+			}
 
-                    $trainings[$key]['Training']['TrainingClassroom'][$c_key]['total'] = $totalCount;
-                    $trainings[$key]['Training']['TrainingClassroom'][$c_key]['attend'] = $attendCount;
-                }
+			if(!empty($item['ReqDept']['id'])){
+				$data[$item['TrainingMembership']['training_id']]['ReqDept'][] = $item['ReqDept'];
+			}
 
-
-            }
-            #unset($trainings[$key]['Training']['TrainingClassroom']);
-
-            $training = $this->TrainingMembership->find('all', array(
-                'conditions' => array(
-                    'TrainingMembership.training_id' => $item['Training']['id'],
-                    'TrainingMembership.account_id' => AuthComponent::user('AccountUser.0.account_id'),
-                ),
-                'contain'=>array(
-                ),
-            ));
-
-            $this->request->data[$key]['Training']['department_id'] = array();
-            $this->request->data[$key]['Training']['user_id'] = array();
-
-            foreach($training as $trn){
-                $this->request->data[$key]['Training']['is_required'] = $trn['TrainingMembership']['is_required'];
-                $this->request->data[$key]['Training']['renewal'] = $trn['TrainingMembership']['renewal'];
-                $this->request->data[$key]['Training']['training_id'] = $item['Training']['id'];
-                $this->request->data[$key]['Training']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
-
-                if(!empty($trn['TrainingMembership']['department_id'])){
-                    $this->request->data[$key]['Training']['department_id'][] = $trn['TrainingMembership']['department_id'];
-                }
-
-                if(!empty($trn['TrainingMembership']['user_id'])){
-                    $this->request->data[$key]['Training']['user_id'][] = $trn['TrainingMembership']['user_id'];
-                }
-            }
-
+			if(!empty($item['ReqUser']['id'])){
+				$data[$item['TrainingMembership']['training_id']]['ReqUser'][] = $item['ReqUser'];
+			}
         }
-        */
-
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        #pr($data);
+		#exit;
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
 
@@ -229,15 +249,13 @@ class TrainingsController extends AppController {
         $this->set('account_ids', $account_ids);
         $this->set('department_ids', $department_ids);
         $this->set('user_ids', $user_ids);
-        #pr($trainings);
-        #exit;
 
         $this->set('accts', $accts);
         $this->set('depts', $depts);
         $this->set('users', $users);
         #$this->set('classRoom', $classRoom);
 
-        $this->set('trainings', $trainings);
+        $this->set('trainings', $data);
         $this->set('settings', $this->TrainingMembership->required());
 
     }
@@ -1044,6 +1062,7 @@ class TrainingsController extends AppController {
 
 	public function edit($id = null){
 		if ($this->request->is('post') || $this->request->is('put')) {
+
         	$files = $this->request->data['Training']['files'];
 			unset($this->request->data['Training']['files']);
 
@@ -1060,7 +1079,72 @@ class TrainingsController extends AppController {
             $this->request->data['Training']['account_id'] = $account_ids[0];
             $this->request->data['Training']['author_id'] = AuthComponent::user('id');
 
-			if ($this->Training->save($this->request->data)) {
+			$memTest = $this->request->data['TrainingMembership'];
+            unset($this->request->data['TrainingMembership']);
+			if(!empty($memTest['account_id']) || !empty($memTest['department_id']) || !empty($memTest['user_id']) || $memTest['is_manditory'] == 1){
+
+				$this->TrainingMembership->deleteAll(array('TrainingMembership.training_id' => $this->request->data['Training']['id'], 'TrainingMembership.is_manditory' => 1), false);
+
+				$i = 0;
+                if($memTest['is_manditory'] == 1){
+					$this->request->data['TrainingMembership']['training_id'] = $this->request->data['Training']['id'];
+					$this->request->data['TrainingMembership']['account_id'] = null;
+					$this->request->data['TrainingMembership']['department_id'] = null;
+					$this->request->data['TrainingMembership']['user_id'] = null;
+					$this->request->data['TrainingMembership']['renewal'] = $this->request->data['TrainingMembership']['renewal'];
+					$this->request->data['TrainingMembership']['is_manditory'] = 1;
+					$this->request->data['TrainingMembership']['created_by'] = AuthComponent::user('id');
+				}else{
+
+					if(!empty($memTest['account_id'])){
+						foreach($memTest['account_id'] as $v){
+
+							$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+	                    }
+					}
+
+					if(!empty($memTest['department_id'])){
+						foreach($memTest['department_id'] as $v){
+							$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+						}
+					}
+
+					if(!empty($memTest['user_id'])){
+						foreach($memTest['user_id'] as $v){
+							$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+						}
+					}
+
+					#pr($this->request->data);
+					#exit;
+				}
+            }
+
+			if ($this->Training->saveAll($this->request->data)) {
 				if(!empty($files)){
                     foreach($files as $file){
 						$this->upload($file, $this->request->data['Training']['id'], 'edit');
@@ -1085,10 +1169,56 @@ class TrainingsController extends AppController {
                 'Training.id' => $id
             ),
             'contain'=>array(
-                'TrainingFile'=>array()
+                'TrainingFile'=>array(),
+                'TrainingMembership'=>array(
+					'conditions'=>array(
+						'TrainingMembership.is_manditory'=>1
+					)
+				),
             ),
 
         ));
+
+		if(AuthComponent::user('Role.permission_level') >= 60 ){
+			$trnAccount = $this->TrainingMembership->find('all', array(
+	            'conditions' => array(
+	                'TrainingMembership.training_id' => $id
+	            ),
+	            'contain'=>array(
+	                'ReqAcct'=>array(
+	            		'fields'=>array(
+	                		'ReqAcct.id',
+							'ReqAcct.name'
+		                )
+		            ),
+	                'ReqDept'=>array(
+	                    'fields'=>array(
+	                        'ReqDept.id',
+	                        'ReqDept.name'
+	                    )
+	                ),
+	                'ReqUser'=>array(
+	                    'fields'=>array(
+	                        'ReqUser.id',
+	                        'ReqUser.first_name',
+	                        'ReqUser.last_name',
+	                    )
+	                )
+	            ),
+            ));
+            #pr($trnAccount);
+			#exit;
+			$this->set('trnAccount', $trnAccount);
+
+			$this->set('account_ids', Set::extract( $training['TrainingMembership'], '/account_id' ));
+			$this->set('department_ids', Set::extract( $training['TrainingMembership'], '/department_id' ));
+			$this->set('user_ids', Set::extract( $training['TrainingMembership'], '/user_id' ));
+
+			$this->set('accts', $this->Account->pickListActive());
+        	$this->set('depts', $this->Department->pickList());
+        	$this->set('users', $this->User->pickListActive());
+		}
+
 
 		#pr($this->request->data);
 		#exit;
