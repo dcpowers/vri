@@ -1,6 +1,6 @@
 <?php
     #pr($improvements);
-    #exit; 
+    #exit;
 ?>
 <div class="improvement index bg-white">
     <div class="dashhead">
@@ -18,7 +18,7 @@
     </div>
     <?php
     $nextPriority = count($improvements['accepted']) + 1;
-    
+
     foreach($improvements as $title=>$improvementType){
         ?>
         <div class="hr-divider">
@@ -29,13 +29,13 @@
         <table class="table table-striped" id="accountsTable">
             <thead>
                 <tr class="tr-heading">
-                    <th class="col-md-6">Idea</th>
-                    <th class="col-md-1">Accepted Date</th>
-                    <th class="col-md-1">Completed Date</th>
+                    <th class="col-md-2">Idea</th>
+                    <th class="col-md-2">Accepted Date</th>
+                    <th class="col-md-2">Completed Date</th>
                     <th class="col-md-1">Created By</th>
-                    <th class="col-md-1">Created Date</th>
+                    <th class="col-md-2">Created Date</th>
                     <th class="col-md-1">Priority</th>
-                    <th class="col-md-1"></th>
+                    <th class="col-md-2"></th>
                 </tr>
             </thead>
             <tbody>
@@ -45,33 +45,33 @@
                     #pr($data);
                     #exit;
                     $buttons = array();
-                    
+
                     $created = (empty($data['Improvement']['created_date'])) ? null : date('M d, Y', strtotime($data['Improvement']['created_date']));
                     $createdBy = (empty($data['CreatedBy']['id'])) ? null : $data['CreatedBy']['first_name'].' '. $data['CreatedBy']['last_name'];
-                    
+
                     $approved = (empty($data['Improvement']['accepted_date'])) ? null : date('M d, Y', strtotime($data['Improvement']['accepted_date']));
                     $showApproveButton = (empty($data['Improvement']['accepted_date'])) ? true : false;
-                    
+
                     $completed = (empty($data['Improvement']['completed_date'])) ? null : date('M d, Y',strtotime($data['Improvement']['completed_date']));
                     $showCompleteButton = (empty($data['Improvement']['completed_date']) && !empty($data['Improvement']['accepted_date'])) ? true : false;
-                    
+
                     $priority = (empty($data['Improvement']['completed_date']) && !empty($data['Improvement']['accepted_date'])) ? true : false;
-                    
+
                     if($showApproveButton == true && $data['Improvement']['is_active'] != 2){
                         $buttons[] = $this->Html->link(
                             '<i class="fa fa-thumbs-up fa-fw"></i>',
                             array('controller'=>'Improvements', 'action'=>'accept', $data['Improvement']['id'], $nextPriority),
                             array('escape'=>false, 'class'=>'btn btn-primary btn-xs')
                         );
-                        
+
                         $buttons[] = $this->Html->link(
                             '<i class="fa fa-thumbs-down fa-fw"></i>',
                             array('controller'=>'Improvements', 'action'=>'reject', $data['Improvement']['id']),
                             array('escape'=>false, 'class'=>'btn btn-warning btn-xs')
                         );
-                        
+
                     }
-                    
+
                     if($showCompleteButton == true && $data['Improvement']['is_active'] != 2){
                         $buttons[] = $this->Html->link(
                             '<i class="fa fa-thumbs-up fa-fw"></i>',
@@ -79,7 +79,7 @@
                             array('escape'=>false, 'class'=>'btn btn-primary btn-xs')
                         );
                     }
-                    
+
                     $buttons[] = $this->Html->link(
                         '<i class="fa fa-trash fa-fw"></i>',
                         array('controller'=>'Improvements', 'action'=>'delete', $data['Improvement']['id']),
@@ -128,11 +128,11 @@
         $("#myModal").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
-        
+
         $("#myModalBig").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
-        
+
         $(".modal-wide").on("show.bs.modal", function() {
           var height = $(window).height() - 200;
           $(this).find(".modal-body").css("max-height", height);
