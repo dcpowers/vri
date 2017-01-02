@@ -22,21 +22,21 @@ class TrainingMembership extends AppModel {
 
     public $belongsTo = array(
         'Training',
-        'Department' => array(
+        'ReqDept' => array(
             'className' => 'Department',
             'foreignKey' => 'department_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
-        'Account' => array(
+        'ReqAcct' => array(
             'className' => 'Account',
             'foreignKey' => 'account_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
-        'RequiredUser' => array(
+        'ReqUser' => array(
             'className' => 'User',
             'foreignKey' => 'user_id',
             'conditions' => '',
