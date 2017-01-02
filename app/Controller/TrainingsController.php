@@ -1,5 +1,7 @@
 <?php
 App::uses('AppController', 'Controller');
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
 /**
  * Groups Controller
  *
@@ -1037,14 +1039,78 @@ class TrainingsController extends AppController {
             $this->request->data['Training']['account_id'] = $account_ids[0];
             $this->request->data['Training']['author_id'] = AuthComponent::user('id');
 
-			if ($this->Training->save($this->request->data)) {
-				if(!empty($files)){
-					foreach($files as $file){
-						$this->upload($file, $this->Training->id, 'add');
+			$memTest = $this->request->data['TrainingMembership'];
+            unset($this->request->data['TrainingMembership']);
+			if(!empty($memTest['account_id']) || !empty($memTest['department_id']) || !empty($memTest['user_id']) || $memTest['is_manditory'] == 1){
+
+				#$this->TrainingMembership->deleteAll(array('TrainingMembership.training_id' => $this->request->data['Training']['id'], 'TrainingMembership.is_manditory' => 1), false);
+
+				$i = 0;
+                if($memTest['is_manditory'] == 1){
+					$this->request->data['TrainingMembership']['training_id'] = $this->request->data['Training']['id'];
+					$this->request->data['TrainingMembership']['account_id'] = null;
+					$this->request->data['TrainingMembership']['department_id'] = null;
+					$this->request->data['TrainingMembership']['user_id'] = null;
+					$this->request->data['TrainingMembership']['renewal'] = $this->request->data['TrainingMembership']['renewal'];
+					$this->request->data['TrainingMembership']['is_manditory'] = 1;
+					$this->request->data['TrainingMembership']['created_by'] = AuthComponent::user('id');
+				}else{
+
+					if(!empty($memTest['account_id'])){
+						foreach($memTest['account_id'] as $v){
+
+							#$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+	                    }
 					}
 
+					if(!empty($memTest['department_id'])){
+						foreach($memTest['department_id'] as $v){
+							#$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+						}
+					}
+
+					if(!empty($memTest['user_id'])){
+						foreach($memTest['user_id'] as $v){
+							#$this->request->data['TrainingMembership'][$i]['training_id'] = $this->request->data['Training']['id'];
+							$this->request->data['TrainingMembership'][$i]['account_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['department_id'] = null;
+							$this->request->data['TrainingMembership'][$i]['user_id'] = $v;
+							$this->request->data['TrainingMembership'][$i]['renewal'] = $memTest['renewal'];
+							$this->request->data['TrainingMembership'][$i]['is_manditory'] = 1;
+							$this->request->data['TrainingMembership'][$i]['created_by'] = AuthComponent::user('id');
+
+							$i++;
+						}
+					}
+
+					#pr($this->request->data);
+					#exit;
 				}
-                $this->Flash->alertBox(
+            }
+
+			if ($this->Training->saveAll($this->request->data)) {
+				if(!empty($files)){
+                    foreach($files as $file){
+						$this->upload($file, $this->Training->id, 'edit');
+					}
+                }
+				$this->Flash->alertBox(
                     'Training Has Been Added',
                     array( 'params' => array( 'class'=>'alert-success' ))
                 );
@@ -1057,6 +1123,15 @@ class TrainingsController extends AppController {
 
             $this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
 
+		}
+
+		if(AuthComponent::user('Role.permission_level') >= 60 ){
+
+			$this->set('trnAccount', array());
+
+			$this->set('accts', $this->Account->pickListActive());
+        	$this->set('depts', $this->Department->pickList());
+        	$this->set('users', $this->User->pickListActive());
 		}
 	}
 
@@ -1227,7 +1302,7 @@ class TrainingsController extends AppController {
 
 	public function upload($file=null, $id=null, $type=null){
 		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
-        $arr_ext = array('jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf'); //set allowed extensions
+        $arr_ext = array('jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt'); //set allowed extensions
 
 		if($file['error'] == 0 && in_array($ext, $arr_ext)){
 			$c = uniqid (rand(), true);;
@@ -1332,4 +1407,40 @@ class TrainingsController extends AppController {
 		pr($id);
 		exit;
 	}
+
+	public function download($id = null) {
+
+        $v = $this->TrainingFile->find('first', array(
+            'conditions' => array(
+                'TrainingFile.id' => $id,
+            ),
+            'fields' => array(
+				'TrainingFile.file',
+				'TrainingFile.training_id',
+				'TrainingFile.human_name',
+				'TrainingFile.file_type',
+			)
+        ));
+
+		$file = $v['TrainingFile']['file'];
+        $id = $v['TrainingFile']['training_id'];
+        $name = $v['TrainingFile']['human_name'];
+        #$type = $v['TrainingFile']['file_type'];
+        #pr($v);
+		#exit;
+        if(!is_null($id) && !empty($file)){
+			#$this->response->type('application/vnd.ms-powerpointtd>');
+
+            $this->response->file( 'webroot/files/'. $id .'/'. $file, array(
+                'download' => true,
+                'name' => $name,
+            ));
+
+            return $this->response;
+        }
+
+        $this->Session->setFlash(__('Please select a file to download'), 'alert-box', array('class'=>'alert-danger'));
+        $this->redirect(array('controller'=>'Trainings', 'action' => 'index'));
+
+    }
 }
