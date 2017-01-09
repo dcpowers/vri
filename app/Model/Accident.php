@@ -29,51 +29,47 @@ class Accident extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'Manager' => array(
-            'className' => 'User',
-            'foreignKey' => 'manager_id',
+        'Account' => array(
+            'className' => 'Account',
+            'foreignKey' => 'account_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
-        'Coordinator' => array(
-            'className' => 'User',
-            'foreignKey' => 'coordinator_id',
+        'Dept' => array(
+            'className' => 'Department',
+            'foreignKey' => 'department_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
-        'RegionalAdmin' => array(
+        'User' => array(
             'className' => 'User',
-            'foreignKey' => 'regional_admin_id',
+            'foreignKey' => 'user_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''
         ),
-        'Status' => array(
-            'className' => 'Setting',
-            'foreignKey' => 'is_active',
+		'CreatedBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'created_by',
             'conditions' => '',
-            'fields' => '',
+            'fields' => array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name',),
+            'order' => ''
+        ),
+		'ChangeBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'change_by',
+            'conditions' => '',
+            'fields' => array('ChangeBy.id', 'ChangeBy.first_name', 'ChangeBy.last_name',),
             'order' => ''
         ),
     );
 
     public $hasMany = array(
-        'TrainingMembership'=> array(
-            'conditions' => '',
-            'fields' => '',
-            'order' => '',
-            'group' => array(
-                'TrainingMembership.training_id',
-                'TrainingMembership.account_id',
-            )
-        ),
-        'AccountDepartment',
-        'DepartmentUser',
-        'AccountUser',
-        'User',
-        'Asset'
+		'AccidentArea',
+        'AccidentCost',
+        'AccidentFile',
     );
 
 

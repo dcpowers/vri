@@ -30,26 +30,49 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
-    protected function currentUser() {
-        $user = $this->Auth->user();
-        
-        return $user[$this->Auth->userModel]; # Return the complete user array
+    public function currentUser1234() {
+        $user = AuthComponent::user();
+
+        return $user; # Return the complete user array
     }
-    
-    function statusInt() {  
-        return array(1 => 'Active', 2 => 'Inactive');  
+
+	public function getUserIds(){
+		switch(AuthComponent::user('Role.permission_level')){
+			case 70:
+			case 60:
+				$user_ids = $this->User->adminPickList();
+				return $user_ids;
+				#exit;
+				break;
+
+			case 50:
+			case 40:
+			case 30:
+				$account_ids = $this->Account->pickListActive();
+				$user_ids = $this->AccountUser->getAccountIds($account_ids);
+				return $user_ids;
+				break;
+
+			case 20:
+			case 10:
+				break;
+		}
+	}
+
+    function statusInt() {
+        return array(1 => 'Active', 2 => 'Inactive');
     }
-    
-    function yesNo() {  
-        return array(1 => 'Yes', 2 => 'No');  
+
+    function yesNo() {
+        return array(1 => 'Yes', 2 => 'No');
     }
-    
-    function required() {  
-        return array(1 => 'Yes', 0 => 'No');  
+
+    function required() {
+        return array(1 => 'Yes', 0 => 'No');
     }
-    
+
     function empPayStatus(){
         return array( 1 => 'Full Time', 2 => 'Part Time', 3=>'Not eligible for Safety Awards', 4 => 'Salary', 5 => 'PRN' );
     }
-    
+
 }

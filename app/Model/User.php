@@ -347,7 +347,7 @@ class User extends AppModel {
         return $dataArr;
     }
 
-    public function pickListByRole( $role_ids = null ) {
+	public function pickListByRole( $role_ids = null ) {
         $dataArr = array();
 
         $find_options = array(
@@ -393,6 +393,7 @@ class User extends AppModel {
         $find_options = array(
             'conditions'=>array(
             ),
+			'contain'=>array(),
             'order'=>$this->alias.'.first_name asc'
         );
 
@@ -404,6 +405,24 @@ class User extends AppModel {
             $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
         }
         return $dataArr;
+    }
+
+	public function adminPickList() {
+        $dataArr = array();
+
+        $find_options = array(
+            'conditions'=>array(
+            ),
+			'contain'=>array(),
+            #'order'=>$this->alias.'.first_name asc'
+			'fields'=>array('User.id', 'User.id')
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('list', $find_options );
+
+		return $recs;
     }
 
 	public function pickListActive() {
