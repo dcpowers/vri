@@ -28,7 +28,7 @@
                 <div class="box-body">
                     <?php
 
-                    $name = '/files/'.$training['Training']['id'].'/'.$training['Training']['image'];
+                    $name = '/files/training/'.$training['Training']['id'].'/'.$training['Training']['image'];
                     $image = (!empty($training['Training']['image'])) ? $name : 'noTraining.jpg' ;
 
                     echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
@@ -108,7 +108,7 @@
                             <?php
                             foreach($training['TrainingFile'] as $file){
 
-                                $filePath = filesize(WWW_ROOT .'/files/'.$training['Training']['id'].'/'.$file['file']);
+                                $filePath = filesize(WWW_ROOT .'/files/training/'.$training['Training']['id'].'/'.$file['file']);
                                 $fileSize = human_filesize($filePath);
                                 ?>
                                 <tr>

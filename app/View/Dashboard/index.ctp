@@ -4,6 +4,7 @@
     <div class="row">
         <div class="col-md-3">
             <?php echo $this->element( 'dashboard/_profile' ); ?>
+			<?php echo $this->element( 'dashboard/_accident' ); ?>
         </div>
         <div class="col-md-9">
             <?php echo $this->element( 'dashboard/_trainings' ); ?>

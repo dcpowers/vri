@@ -125,7 +125,7 @@
             					<?php
 				                foreach($this->request->data['TrainingFile'] as $file){
 
-                					$filePath = filesize(WWW_ROOT .'/files/'.$this->request->data['Training']['id'].'/'.$file['file']);
+                					$filePath = filesize(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']);
 				                    $fileSize = human_filesize($filePath);
 
 									?>

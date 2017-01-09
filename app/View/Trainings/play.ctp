@@ -5,8 +5,8 @@
 
 <div class="modal-body">
 	<?php
-	$v = '/files/'.$trn['Training']['id'].'/'.$video;
-    $p = '/files/'.$trn['Training']['id'].'/'.$poster;
+	$v = '/files/training/'.$trn['Training']['id'].'/'.$video;
+    $p = '/files/training/'.$trn['Training']['id'].'/'.$poster;
 
 	echo $this->Html->media(
 		array($v),

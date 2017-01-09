@@ -1,19 +1,19 @@
 <?php
     $data = $this->requestAction('/Improvements/getDashboard/');
-    
+
     $new = $data['new'];
     $newCount = count($new);
-    
+
     $accepted = $data['accepted'];
     $acceptedCount = count($accepted);
-    
+
     $completed = $data['completed'];
     $completedCount = count($completed);
-    
-    unset($data); 
+
+    unset($data);
 ?>
 
-<div class="box box-success" style="border-left: 1px solid #00A65A; border-right: 1px solid #00A65A;">
+<div class="box box-info" style="border-left: 1px solid #00C0EF; border-right: 1px solid #00C0EF;">
     <div class="box-header">
         <h3 class="box-title">Suggestions/Improvements</h3>
         <div class="box-tools pull-right">
@@ -23,14 +23,14 @@
                 array('controller'=>'Improvements', 'action'=>'add'),
                 array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
             );
-            
+
             if(AuthComponent::user('Role.permission_level') >= 60){
                 echo $this->Html->link(
                     '<i class="fa fa-wrench fa-fw"></i> <span>Manage</span>',
                     array('controller'=>'Improvements', 'action'=>'index'),
                     array('escape'=>false)
                 );
-                
+
             }
             ?>
         </div>
@@ -47,7 +47,7 @@
                     );
                     ?>
                 </li>
-                
+
                 <li role="presentation">
                     <?php
                     echo $this->Html->link(
@@ -57,7 +57,7 @@
                     );
                     ?>
                 </li>
-                
+
                 <li role="presentation">
                     <?php
                     echo $this->Html->link(
@@ -80,7 +80,7 @@
                         ?>
                     </ol>
                 </div>
-                
+
                 <div role="tabpanel" class="tab-pane fade" id="complete">
                     <ul style="margin-top: 15px;">
                         <?php
@@ -92,7 +92,7 @@
                         ?>
                     </ul>
                 </div>
-                
+
                 <div role="tabpanel" class="tab-pane fade" id="new">
                     <ul style="margin-top: 15px;">
                         <?php
