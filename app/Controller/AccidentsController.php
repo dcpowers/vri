@@ -16,7 +16,10 @@ class AccidentsController extends AppController {
         'AccidentCost',
         'AccidentArea',
         'AccidentFile',
-		'User'
+		'User',
+        'AccountDepartment',
+        'AccountUser',
+        'AccidentAreaLov'
 
     );
 
@@ -450,61 +453,11 @@ class AccidentsController extends AppController {
             }
         }
 
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids) ){
-            //get children ids of the super id
-            $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
-            $group_ids = $this->Group->getChildren($group_id);
-            //get all users in those groups
-            $active_user_ids = $this->User->activeUserList($group_ids);
-
-            $search_ids = array();
-            foreach($active_user_ids as $key=>$activeId){
-                $search_ids[$key] = $activeId['pro_users']['id'];
-            }
-
-            $users = $this->User->find('list', array(
-                'conditions' => array(
-                    'User.id'=>$search_ids,
-                ),
-                'contain' => array(
-
-                ),
-                'fields'=>array('User.id', 'User.fullname')
-            ));
-
-            //if they are already a supervisor, remove them from user list
-            foreach($users as $key=>$user){
-               $group = $this->Group->find('first', array(
-                    'conditions' => array(
-                        'Group.supervisor_id'=>$key
-                    ),
-                    'contain' => array(
-
-                    ),
-                    'fields'=>array('Group.id')
-                ));
-                if(!empty($group)){
-                    unset($users[$key]);
-                }
-
-            }
-
-            if(empty($users)){ $users = "No Users Found"; }
-
-            $this->set( 'userList', $users );
-            $this->set( 'id', $id );
-
-            //grab list of states for form
-            $states = $this->State->getListState();
-            $this->set('states', $states);
-
-            $this->set('breadcrumbs', array(
-                array('title'=>'Account Settings', 'link'=>array('controller'=>'groups', 'action'=>'index', 'member'=>true ) ),
-                array('title'=>'Organizational Layout', 'link'=>array('controller'=>'groups', 'action'=>'orgLayout', 'member'=>true ) ),
-                array('title'=>'New Group', 'link'=>array('controller'=>'groups', 'action'=>'group_add', 'member'=>true, $id ) ),
-            ));
-            //$this->layout = 'blank_nojs';
-        }
+        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $this->set('userList', $this->AccountUser->pickList($account_ids));
+        $this->set('areas', $this->AccidentAreaLov->pickList());
     }
 
     public function delete($id = null, $empDelete = null) {
@@ -564,7 +517,7 @@ class AccidentsController extends AppController {
 			'1'=>array(
 				'title' => 'New Accident',
 				'controller'=>'Accidents',
-				'action'=>'new'
+				'action'=>'add'
 			),
 			'2'=>array(
 				'title' => 'Employee Statement',
