@@ -12,12 +12,12 @@ class AccidentsController extends AppController {
     //Search Plugin
 
     var $uses = array(
-        'User',
-        'AccountDepartment',
-        'Account',
-        'Setting',
-        'Department',
-        'AuthRole'
+        'Accident',
+        'AccidentCost',
+        'AccidentArea',
+        'AccidentFile',
+		'User'
+
     );
 
     public $components = array( 'RequestHandler', 'Paginator', 'Session');
@@ -28,7 +28,7 @@ class AccidentsController extends AppController {
 
     public $paginate = array(
         'order' => array(
-            'Account.name' => 'asc'
+            'Accident.name' => 'asc'
         ),
         'limit'=>50
     );
@@ -38,49 +38,38 @@ class AccidentsController extends AppController {
 
         //These Two Lines are Required
         parent::pluginSetup();
-        Configure::write('App.Name', 'Accounts');
+        Configure::write('App.Name', 'Accidents');
     }
 
     public function beforeFilter() {
         parent::beforeFilter();
 
-        $this->set('title_for_layout', 'Accounts');
+        $this->set('title_for_layout', 'Accidents');
     }
 
     public function index($status=null) {
-        $options = array();
+        $user_ids = $this->Accident->getUserIds();
 
-        if($this->Auth->user('Role.permission_level') == 50){
-            $option = array('conditions'=>array('Account.regional_admin_id' => $this->Auth->user('id')));
-            $options = array_merge_recursive($options,$option);
-        }
+		#$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
 
-        #$this->User->virtualFields['Manager.manager_name'] = 'CONCAT(Manager.first_name, " " , Manager.last_name)';
-
-        $this->Paginator->settings = array(
+		$this->Paginator->settings = array(
             'conditions' => array(
-                #'Account.id' => $search_ids,
+                'Accident.user_id' => $user_ids,
+                'Accident.is_active' => 1,
             ),
             'contain'=>array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
-                ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
-                ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
-                ),
-                'Status'=>array(),
-                'User'=>array(
-                    'conditions'=>array('User.is_active' => 1),
-                    'fields'=>array('User.id')
-                )
+            	'Account'=>array(
+					'fields'=>array('Account.abr', 'Account.name')
+				),
+				'Dept'=>array(
+					'fields'=>array('Dept.name')
+				)
             ),
             'limit' => 50,
-            'order'=>array('Account.name'=> 'asc'),
+            'order'=>array('Accident.id'=> 'asc'),
         );
 
+		$options = array();
         if(!empty($this->request->data['Search']['q'])){
             $option = array('conditions'=>array(
                 'OR'=>array(
@@ -91,270 +80,66 @@ class AccidentsController extends AppController {
             $options = array_merge_recursive($options,$option);
         }
 
-        if(is_null($status)){
-            $status = 1;
-        }
-
-        if($status == 'All'){
-            $option = array('conditions'=>array('Account.is_active' => array(1,2)));
-            $options = array_merge_recursive($options,$option);
-            $this->set('status', 'All');
-        }else{
-            $option = array('conditions'=>array('Account.is_active' => $status));
-            $options = array_merge_recursive($options,$option);
-            $this->set('status', $status);
-        }
-
-        $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
+		$this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
 
         #pr($this->Paginator->settings);
         #exit;
-        #$accounts = $this->Paginator->paginate('Account');
-        #pr($accounts);
-        #exit;
 
-        $this->set('accounts', $this->Paginator->paginate('Account'));
+		$result = array();
+
+        $accounts = $this->Paginator->paginate('Accident');
+		foreach($accounts as $key=>$t){
+			$indexName = $t['Account']['name'] .' ( '. $t['Account']['abr'] .' )';
+            $keysort[$indexName] = $t['Account']['name'];
+
+			unset($t['Account']);
+            $value[$indexName][] = $t;
+
+			$result = array_merge($result,$value);
+
+		}
+		if(!empty($result)){
+            array_multisort($keysort, SORT_ASC, $result);
+        }
+        #pr($result);
+		#exit;
+        $this->set('accidents', $result);
 
     }
 
-    public function view($id=null, $pageStatus = null, $viewBy = null){
-        $this->Account->id = $id;
-        if (!$this->Account->exists()) {
-            throw new NotFoundException(__('Invalid Account Id'));
+    public function view($id=null){
+        $this->Accident->id = $id;
+        if (!$this->Accident->exists()) {
+            throw new NotFoundException(__('Invalid Accident Id'));
         }
 
-        $deptClass= null;
-        $superClass= null;
-        $roleClass= null;
-
-        $aStatusClass = null;
-        $iStatusClass = null;
-        $allStatusClass = null;
-
-        $viewBy = (is_null($viewBy)) ? 'department' : $viewBy ;
-        $this->set('viewBy', $viewBy);
-
-        if(is_null($pageStatus) || $pageStatus == 1){
-            $pageStatus = 1;
-            $setStatus = 1;
-            $aStatusClass = 'active';
-        }else if($pageStatus == 2){
-            $pageStatus = 2;
-            $setStatus = 2;
-            $iStatusClass = 'active';
-        }
-
-        if($pageStatus == 'all'){
-            $pageStatus = array(1,2);
-            $setStatus = 'all';
-            $allStatusClass = 'active';
-        }
-
-        $this->set('pageStatus', $setStatus);
-
-        $account = $this->request->data = $this->Account->find('first', array(
+        $accident = $this->request->data = $this->Accident->find('first', array(
             'conditions' => array(
-                'Account.id' => $id
+                'Accident.id' => $id
             ),
             'contain' => array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
+                'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name', 'Account.abr')
                 ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
-                ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
-                ),
-                'Status'=>array(),
-                'Asset'=>array(
-                    'Manufacturer'=>array(
-                        'fields'=>array('Manufacturer.id', 'Manufacturer.name')
-                    ),
-                    'Vendor'=>array(
-                        'fields'=>array('Vendor.id', 'Vendor.name')
-                    ),
-                    'AssignedTo'=>array(
-                        'fields'=>array('AssignedTo.id', 'AssignedTo.first_name', 'AssignedTo.last_name')
-                    ),
-                    'AssetType'=>array(
-                        'fields'=>array('AssetType.id', 'AssetType.name')
-                    ),
-                    'order'=>array('Asset.asset_type_id'=> 'asc', 'Asset.asset' => 'asc'),
-                ),
-                'AccountDepartment'=>array(
-                    'Department'=>array(
-                        'fields'=>array(
-                            'Department.name'
-                        )
-                    )
+                'Dept'=>array(
+                    'fields'=>array('Dept.id', 'Dept.name')
                 ),
                 'User'=>array(
-                    'conditions'=>array(
-                        'User.is_active'=>$pageStatus
-                    ),
-                    'Status'=>array(
-                        'fields'=>array('Status.name', 'Status.color', 'Status.icon')
-                    ),
-                    'Supervisor'=>array(
-                        'Status'=>array(
-                            'fields'=>array('Status.name', 'Status.color')
-                        )
-                    ),
-                    'Role'=>array(
-                        'fields'=>array('Role.name', 'Role.lft')
-                    ),
-                    'DepartmentUser'=>array(
-                        'Department'=>array(
-                            'fields'=>array('Department.name', 'Department.abr')
-                        )
-                    ),
-                    'fields'=>array(
-                        'User.id',
-                        'User.first_name',
-                        'User.last_name',
-                        'User.username',
-                        'User.email',
-                    ),
-                    'order'=>array(
-                        'User.first_name'=>'asc',
-                        'User.last_name'=>'asc',
-                    ),
+                    'fields'=>array('User.id', 'User.first_name', 'User.last_name', 'User.doh')
                 ),
-                'TrainingMembership'=>array(
-                    'Training'=>array(
-                        'fields'=>array(
-                            'Training.id',
-                            'Training.name'
-                        )
-                    ),
-                    'Department'=>array(
-                        'fields'=>array(
-                            'Department.name'
-                        )
-                    ),
-                    'RequiredUser'=>array(
-                        'fields'=>array(
-                            'RequiredUser.first_name',
-                            'RequiredUser.last_name'
-                        )
-                    ),
-
-
-                )
+                'CreatedBy'=>array(),
+                'ChangeBy'=>array(),
+                'AccidentArea'=>array(
+					'AccidentAreaLov'
+				),
+                'AccidentCost'=>array(),
+                'AccidentFile'=>array()
             ),
 
         ));
-
-        #pr($account);
-        #exit;
-        $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
-
-        $training = array();
-        #pr($account['TrainingMembership']);
-        #exit;
-        if(!empty($account['TrainingMembership'])){
-            foreach($account['TrainingMembership'] as $key=>$trn){
-                $index = $trn['Training']['name'];
-
-                $tvalue[$index][] = $trn;
-                $tkeysort[$index] = $trn['Training']['name'];
-
-                $training = array_merge($training,$tvalue);
-            }
-
-            unset($account['TrainingMembership']);
-
-            array_multisort($tkeysort, SORT_ASC, $training);
-
-            #pr($training);
-            #exit;
-        }
-
-        $users = array();
-
-        foreach($account['User'] as $data){
-            switch($viewBy){
-                case 'supervisor':
-                    if(array_key_exists('first_name', $data['Supervisor'])){
-                        $indexName = $data['Supervisor']['first_name'].' '. $data['Supervisor']['last_name'].'<small> [ '.$data['Supervisor']['Status']['name'].' ]</small>';
-                        $keysort[$indexName] = $data['Supervisor']['first_name'];
-                    }else{
-                        $indexName = '--';
-                        $keysort[$indexName] = '--';
-                    }
-                    $superClass = 'active';
-                    $value[$indexName][] = $data;
-                    break;
-
-                case 'role':
-                    $indexName = $data['Role']['name'];
-                    $keysort[$indexName] = $data['Role']['lft'];
-                    $roleClass = 'active';
-                    $value[$indexName][] = $data;
-                    break;
-
-                case 'department':
-                default:
-                    if(!empty($data['DepartmentUser'])){
-                        foreach($data['DepartmentUser'] as $newItem){
-                            $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
-                            $keysort[$indexName] = $newItem['Department']['name'];
-
-                            $value[$indexName][] = $data;
-                        }
-
-                    }else{
-                        $indexName = '--';
-                        $keysort[$indexName] = '--';
-                        $value[$indexName][] = $data;
-                    }
-                    $deptClass = 'active';
-                    break;
-
-            }
-
-            #$value[$indexName][] = $data;
-
-            $users = array_merge($users,$value);
-        }
-        #pr($users);
-        #exit;
-        if(!empty($account['User'])){
-            array_multisort($keysort, SORT_ASC, $users);
-        }
-        $assets = $account['Asset'];
-
-        unset($account['User']);
-        unset($account['Asset']);
-
-        #pr($account);
-        #exit;
-
-        $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
-
-        $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
-        $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
-        #pr($users);
-        #exit;
-
-        $this->set('account', $account);
-        $this->set('assets', $assets);
-        $this->set('employees', $users);
-        $this->set('trainings', $training);
-
-        $this->set('userList', $userList);
-        $this->set('status', $this->Setting->pickList('status'));
-        $this->set('departments', $this->Department->pickList());
-
-        //set all active classes
-        $this->set('superClass', $superClass);
-        $this->set('deptClass', $deptClass);
-        $this->set('roleClass', $roleClass);
-
-        $this->set('aStatusClass', $aStatusClass);
-        $this->set('iStatusClass', $iStatusClass);
-        $this->set('allStatusClass', $allStatusClass);
+        $this->set('accident', $accident);
+        $this->set('setting', $this->Accident->yesNo());
+        $this->set('status', $this->Accident->statusInt());
     }
 
     public function employeeView($id=null, $pageStatus = null, $viewBy = null){
@@ -773,4 +558,26 @@ class AccidentsController extends AppController {
 
         return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
     }
+
+	public function getDashboard(){
+		$links = array(
+			'1'=>array(
+				'title' => 'New Accident',
+				'controller'=>'Accidents',
+				'action'=>'new'
+			),
+			'2'=>array(
+				'title' => 'Employee Statement',
+				'controller'=>'Accidents',
+				'action'=>'empStatement'
+			),
+			'3'=>array(
+				'title' =>'Supervisor Statement',
+				'controller'=>'Accidents',
+				'action'=>'superStatement'
+			)
+		);
+
+		return $links;
+	}
 }

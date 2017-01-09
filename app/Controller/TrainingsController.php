@@ -1307,7 +1307,7 @@ class TrainingsController extends AppController {
 		if($file['error'] == 0 && in_array($ext, $arr_ext)){
 			$c = uniqid (rand(), true);;
 			$name = $c.'.'.$ext;
-            $dir = '../webroot/files/'.$id;
+            $dir = '../webroot/files/training/'.$id;
 
 			$uploadfile = $dir.'/'. $name;
 
@@ -1431,7 +1431,7 @@ class TrainingsController extends AppController {
         if(!is_null($id) && !empty($file)){
 			#$this->response->type('application/vnd.ms-powerpointtd>');
 
-            $this->response->file( 'webroot/files/'. $id .'/'. $file, array(
+            $this->response->file( 'webroot/files/training/'. $id .'/'. $file, array(
                 'download' => true,
                 'name' => $name,
             ));
