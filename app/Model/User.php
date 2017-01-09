@@ -374,6 +374,13 @@ class User extends AppModel {
             'conditions'=>array(
                 $this->alias.'.account_id'=>$account_id
             ),
+            'contain'=>array(
+                'AccountUser'=>array(
+                    'conditions'=>array(
+                        'AccountUser.account_id' => $account_id
+                    )
+                )
+            ),
             'order'=>$this->alias.'.first_name asc'
         );
 
