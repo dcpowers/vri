@@ -420,41 +420,57 @@ class AccidentsController extends AppController {
         $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $error = false;
-            $validationErrors = array();
+            $this->request->data['Accident']['date'] = (!empty($this->request->data['Accident']['date'])) ? date('Y-m-d', strtotime($this->request->data['Accident']['date'])) : date('Y-m-d', strtotime('now')) ;
 
-            $this->Group->validate = $this->Group->validationSets['subGroup'];
-            $this->Group->set($this->request->data['Group']);
+			$user = $this->User->find('first', array(
+	            'conditions' => array(
+	                'User.id' => $this->request->data['Accident']['user_id']
+	            ),
+	            'contain'=>array(
+					'AccountUser'=>array(
+	                ),
+					'DepartmentUser'=>array(
+	                ),
+	            ),
+				'fields'=>array('User.first_name', 'User.last_name', 'User.doh')
 
-            if(!$this->Group->validates()){
-                $validationErrors['Group'] = $this->Group->validationErrors;
-                $error = true;
-            }
+	        ));
+			#pr($user);
+			$this->request->data['Accident']['first_name'] = $user['User']['first_name'];
+			$this->request->data['Accident']['last_name'] = $user['User']['last_name'];
+			$this->request->data['Accident']['doh'] = $user['User']['doh'];
+			$this->request->data['Accident']['created_by'] = AuthComponent::user('id');
+			$this->request->data['Accident']['account_id'] = $user['AccountUser'][0]['account_id'];
+			$this->request->data['Accident']['department_id'] = $user['DepartmentUser'][0]['department_id'];
+			#pr($this->request->data);
+			#exit;
+			if(empty($this->request->data['Accident']['description'])){
+				$this->Flash->alertBox(
+	            	'Please Enter A Description Of What Happened',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
 
-            if($error == false){
-                if ($this->Group->saveall($this->request->data)) {
-                    #Audit::log('Group record added', $this->request->data );
-                    //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
-                    $this->Session->setFlash(__('The Group: "'.$this->request->data['Group']['name'].'" has been saved'), 'alert-box', array('class'=>'alert-success'));
+				$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+			}
 
-                    $this->redirect(array('controller'=>'groups', 'action'=>'orgLayout', 'member'=>true));
-                } else {
-                    $this->Session->setFlash(__('The Group could not be saved. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
-                }
+			if ($this->Accident->saveAll($this->request->data)) {
+            	#Audit::log('Group record added', $this->request->data );
+                $this->Flash->alertBox(
+	            	'A New Accident Has Been Reported',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
             }else{
-                $this->Session->setFlash(
-                    __('Information not save! Please see errors below'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
-                );
-                $this->set( compact( 'validationErrors' ) );
-
-                $id =  $this->request->data['Group']['parent_id'];
+            	$this->Flash->alertBox(
+	            	'There Were Problems, Please Try Again',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
             }
+
+			$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
         }
 
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-        
+
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $this->set('userList', $this->AccountUser->pickList($account_ids));
         $this->set('areas', $this->AccidentAreaLov->pickList());
@@ -527,7 +543,9 @@ class AccidentsController extends AppController {
 			'3'=>array(
 				'title' =>'Supervisor Statement',
 				'controller'=>'Accidents',
-				'action'=>'superStatement'
+				'action'=>'superStatement',
+				'data-toggle'=>'modal',
+				'data-target'=>'#myModal'
 			)
 		);
 
