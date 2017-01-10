@@ -1,6 +1,6 @@
 <?php
-    echo $this->Form->create('Accident', array(
-    'url' => array('controller'=>'Accidents', 'action'=>'add'),
+    echo $this->Form->create('AccidentCost', array(
+    'url' => array('controller'=>'Accidents', 'action'=>'cost'),
     'role'=>'form',
     'class'=>'form-horizontal',
     'inputDefaults' => array(
@@ -10,19 +10,24 @@
         'error'=>false
     )
 ));
+
+echo $this->Form->hidden('accident_id', array('value'=>$this->request->data['Accident']['id']));
 ?>
 <div class="modal-header modal-header-success">
     <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
-    <h2><?php echo __('Add New Accident Report:'); ?></h2>
+    <h2><?php echo __('Cost Of Accident:'); ?></h2>
 </div>
 
 <div class="modal-body">
     <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Employee:</label>
+        <label class="col-sm-4 control-label" for="name">Days on Restrictions:</label>
         <div class="col-sm-8">
             <?php
-            echo $this->Form->input('user_id', array (
-                'options'=>$userList,
+			for($i=0; $i<=1825; $i++){
+				$days[$i] = $i;
+			}
+            echo $this->Form->input('num_days', array (
+                'options'=>$days,
                 'class'=>'form-select chzn-select',
             ));
             ?>
@@ -30,57 +35,33 @@
     </div>
 
     <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Date Of Accident:</label>
+        <label class="col-sm-4 control-label" for="name">Cost Type:</label>
         <div class="col-sm-8">
             <?php
-            echo $this->Form->input( 'date', array(
-                'type'=>'text',
-                'value'=>date('m/d/Y', strtotime('now')),
-                'class'=>'datepicker form-control'
-            ));
-            ?>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Current Wage:</label>
-        <div class="col-sm-8">
-            <?php
-            echo $this->Form->input( 'hourly_rate', array(
-            ));
-            ?>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Current Position:</label>
-        <div class="col-sm-8">
-            <?php
-            echo $this->Form->input( 'EPosition', array(
-            ));
-            ?>
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Area(s) Of Injury:</label>
-        <div class="col-sm-8">
-            <?php
-            echo $this->Form->input('AccidentArea.accident_area_lov_id', array (
-                'options'=>$areas,
-				'empty'=>false,
+            echo $this->Form->input( 'accident_cost_lov_id', array(
+                'options'=>$costLov,
                 'class'=>'form-select chzn-select',
-				'multiple'=>true,
-				'data-placeholder'=>'Select Area(s) of Injury On Body'
+				'empty'=>true
             ));
             ?>
         </div>
     </div>
+
     <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">Brief Description of Accident:</label>
+        <label class="col-sm-4 control-label" for="name">Vanguard Cost:</label>
         <div class="col-sm-8">
             <?php
-            echo $this->Form->input( 'description', array(
-                'type'=>'textarea'
+            echo $this->Form->input( 'vri_cost', array(
+            ));
+            ?>
+        </div>
+    </div>
+
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Insurance Cost:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'insurance_cost', array(
             ));
             ?>
         </div>

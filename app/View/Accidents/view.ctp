@@ -16,6 +16,7 @@
 	<div class="row">
         <div class="col-sm-3">
             <div class="box box-success">
+
                 <div class="box-body">
                     <?php
 					$image = (file_exists('img/profiles/'.$this->request->data['User']['id'].'.png')) ? '/img/profiles/'.$this->request->data['User']['id'].'.png' : '/img/profiles/noImage.png' ;
@@ -50,6 +51,26 @@
 
         <div class="col-sm-9">
             <div class="box box-success">
+				<div class="box-header">
+					<div class="box-tools pull-right">
+			            <?php
+			            echo $this->Html->link(
+			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
+			                array('controller'=>'Improvements', 'action'=>'add'),
+			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+			            );
+
+			            if(AuthComponent::user('Role.permission_level') >= 60){
+			                echo $this->Html->link(
+			                    '<i class="fa fa-wrench fa-fw"></i> <span>Manage</span>',
+			                    array('controller'=>'Improvements', 'action'=>'index'),
+			                    array('escape'=>false)
+			                );
+
+			            }
+			            ?>
+			        </div>
+				</div>
                 <div class="box-body">
 					<?php #pr($setting); ?>
                     <div class="row">
@@ -122,28 +143,41 @@
             <div class="box box-success">
                 <div class="box-header">
                     <h3 class="box-title">Accident Costs</h3>
+					<div class="box-tools pull-right">
+			            <?php
+			            echo $this->Html->link(
+			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
+			                array('controller'=>'Accidents', 'action'=>'cost', $accident['Accident']['id']),
+			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+			            );
+                        ?>
+			        </div>
                 </div>
 
                     <table class="table table-striped table-condensed" id="trainingTable">
                         <thead>
                             <tr class="tr-heading">
-                                <th>Employee</th>
-                                <th>Cost</th>
+                                <th>Vri Cost</th>
+                                <th>Insurance Cost</th>
+                                <th>Type</th>
+                                <th class="text-center">Restricted Days</th>
                                 <th>Added By</th>
-                                <th>Date</th>
+                                <th>Date Added</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <?php
-                            foreach($accident['AccidentCost'] as $file){
-
-                                ?>
+							foreach($accident['AccidentCost'] as $file){
+                                $name = (empty($file['AccidentCostLov']['name'])) ? null : $file['AccidentCostLov']['name'] ;
+								?>
                                 <tr>
-                                    <td><?=$file['human_name']?></td>
-                                    <td><?=$file['file_type']?></td>
-                                    <td><?=$fileSize?></td>
-                                    <td><?=$file['runtime']?></td>
+                                    <td><?php echo number_format($file['vri_cost'], 2,'.', ','); ?></td>
+                                    <td><?=$file['insurance_cost']?></td>
+                                    <td><?=$name?></td>
+                                    <td class="text-center"><?=$file['num_days']?></td>
+                                    <td><?=$file['CreatedBy']['first_name']?> <?=$file['CreatedBy']['last_name']?></td>
+                                    <td><?php echo date('F d, Y', strtotime($file['created'])); ?></td>
                                 </tr>
                                 <?php
                             }
@@ -156,6 +190,15 @@
             <div class="box box-success">
             	<div class="box-header">
                     <h3 class="box-title">Accident Files</h3>
+					<div class="box-tools pull-right">
+			            <?php
+			            echo $this->Html->link(
+			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
+			                array('controller'=>'Accidents', 'action'=>'files', $accident['Accident']['id']),
+			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+			            );
+                        ?>
+			        </div>
                 </div>
                     <table class="table table-striped table-condensed" id="trainingTable">
                         <thead>
