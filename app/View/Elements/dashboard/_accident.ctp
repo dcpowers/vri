@@ -15,7 +15,7 @@
 					echo $this->Html->link(
 	            		$v['title'],
 	                	array('controller'=>$v['controller'], 'action'=>$v['action']),
-	                	array('escape'=>false)
+	                	array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
 					);
 					?>
 				</li>

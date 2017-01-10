@@ -11,14 +11,14 @@
     )
 ));
 ?>
-<div class="modal-header modal-header-warning">
+<div class="modal-header modal-header-success">
     <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
     <h2><?php echo __('Add New Accident Report:'); ?></h2>
 </div>
 
 <div class="modal-body">
     <div class="form-group">
-        <label class="col-sm-4 control-label" for="name">User:</label>
+        <label class="col-sm-4 control-label" for="name">Employee:</label>
         <div class="col-sm-8">
             <?php
             echo $this->Form->input('user_id', array (
@@ -41,7 +41,7 @@
             ?>
         </div>
     </div>
-    
+
     <div class="form-group">
         <label class="col-sm-4 control-label" for="name">Current Wage:</label>
         <div class="col-sm-8">
@@ -51,7 +51,7 @@
             ?>
         </div>
     </div>
-    
+
     <div class="form-group">
         <label class="col-sm-4 control-label" for="name">Current Position:</label>
         <div class="col-sm-8">
@@ -65,9 +65,12 @@
         <label class="col-sm-4 control-label" for="name">Area(s) Of Injury:</label>
         <div class="col-sm-8">
             <?php
-            echo $this->Form->input('AccidentArea.accident_area_lov_id', array (
+            echo $this->Form->input('AccidentArea.accident_area_lov_id.', array (
                 'options'=>$areas,
+				'empty'=>false,
                 'class'=>'form-select chzn-select',
+				'multiple'=>true,
+				'data-placeholder'=>'Select Area(s) of Injury On Body'
             ));
             ?>
         </div>
@@ -90,6 +93,11 @@
         '<i class="fa fa-times fa-fw"></i> Close',
         array('class'=>'btn btn-default pull-left', 'data-dismiss'=>'modal')
     );
+
+	echo $this->Form->button(
+        '<i class="fa fa-save fa-fw"></i> Save',
+        array('type'=>'submit', 'class'=>'btn btn-primary pull-left')
+    );
     ?>
 </div>
 <?php echo $this->Form->end();?>
@@ -98,7 +106,7 @@
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
-        
+
         $('.datepicker').datetimepicker({
                 'format': 'MM/DD/YYYY',
                 'showTodayButton': true,
@@ -108,7 +116,7 @@
                     up: "fa fa-arrow-up",
                     down: "fa fa-arrow-down",
                     close: "fa fa-trash",
-                    
+
                 }
             });
     });

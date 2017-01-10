@@ -41,7 +41,7 @@
                 <li role="presentation" class="active">
                     <?php
                     echo $this->Html->link(
-                        'Accepted <span class="badge bg-green">'. $acceptedCount .'</span>',
+                        'Accepted <span class="badge bg-blue">'. $acceptedCount .'</span>',
                         '#accept',
                         array('escape'=>false, 'aria-controls'=>'accept', 'role'=>'tab', 'data-toggle'=>'tab')
                     );
@@ -51,7 +51,7 @@
                 <li role="presentation">
                     <?php
                     echo $this->Html->link(
-                        'Completed <span class="badge bg-green">'. $completedCount .'</span>',
+                        'Completed <span class="badge bg-blue">'. $completedCount .'</span>',
                         '#complete',
                         array('escape'=>false, 'aria-controls'=>'complete', 'role'=>'tab', 'data-toggle'=>'tab')
                     );
@@ -61,7 +61,7 @@
                 <li role="presentation">
                     <?php
                     echo $this->Html->link(
-                        'New <span class="badge bg-green">'. $newCount .'</span>',
+                        'New <span class="badge bg-blue">'. $newCount .'</span>',
                         '#new',
                         array('escape'=>false, 'aria-controls'=>'new', 'role'=>'tab', 'data-toggle'=>'tab')
                     );
