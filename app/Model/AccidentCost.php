@@ -21,9 +21,17 @@ class AccidentCost extends AppModel {
      */
     public $belongsTo = array(
         'Accident',
+		'AccidentCostLov',
+		'CreatedBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'created_by',
+            'conditions' => '',
+            'fields' => array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name',),
+            'order' => ''
+        ),
     );
 
     public $hasMany = array(
-        'AccidentCostLov',
+
     );
 }
