@@ -19,10 +19,10 @@ class AccidentAreaLov extends AppModel {
      *
      * @var array
      */
-    public $belongsTo = array(
+    public $hasMany = array(
         'AccidentArea',
     );
-    
+
     public function pickList(){
         $dataArr = array();
 
