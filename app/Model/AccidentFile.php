@@ -21,6 +21,13 @@ class AccidentFile extends AppModel {
      */
     public $belongsTo = array(
         'Accident',
+		'CreatedBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'created_by',
+            'conditions' => '',
+            'fields' => array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name',),
+            'order' => ''
+        ),
     );
 
     public function pickList($id=null){
