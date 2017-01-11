@@ -140,7 +140,9 @@ class AccidentsController extends AppController {
 					'AccidentCostLov'=>array(),
 					'CreatedBy'=>array()
 				),
-                'AccidentFile'=>array()
+                'AccidentFile'=>array(
+					'CreatedBy'=>array()
+				)
             ),
 
         ));
@@ -515,57 +517,32 @@ class AccidentsController extends AppController {
     }
 
 	public function files($id=null){
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-        $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
-
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Accident']['date'] = (!empty($this->request->data['Accident']['date'])) ? date('Y-m-d', strtotime($this->request->data['Accident']['date'])) : date('Y-m-d', strtotime('now')) ;
-
-			$user = $this->User->find('first', array(
-	            'conditions' => array(
-	                'User.id' => $this->request->data['Accident']['user_id']
-	            ),
-	            'contain'=>array(
-					'AccountUser'=>array(
-	                ),
-					'DepartmentUser'=>array(
-	                ),
-	            ),
-				'fields'=>array('User.first_name', 'User.last_name', 'User.doh')
-
-	        ));
-			#pr($user);
-			$this->request->data['Accident']['first_name'] = $user['User']['first_name'];
-			$this->request->data['Accident']['last_name'] = $user['User']['last_name'];
-			$this->request->data['Accident']['doh'] = $user['User']['doh'];
-			$this->request->data['Accident']['created_by'] = AuthComponent::user('id');
-			$this->request->data['Accident']['account_id'] = $user['AccountUser'][0]['account_id'];
-			$this->request->data['Accident']['department_id'] = $user['DepartmentUser'][0]['department_id'];
-
-            $c = 0;
-            if(!empty($this->request->data['AccidentArea']['accident_area_lov_id'])){
-                foreach ($this->request->data['AccidentArea']['accident_area_lov_id'] as $account_id){
-                    $this->request->data['AccidentArea'][$c]['accident_area_lov_id'] = $account_id;
-                    $c++;
-                }
-
-                unset($this->request->data['AccidentArea']['accident_area_lov_id']);
-            }
             #pr($this->request->data);
-			#exit;
-			if(empty($this->request->data['Accident']['description'])){
-				$this->Flash->alertBox(
-	            	'Please Enter A Description Of What Happened',
-	                array( 'params' => array( 'class'=>'alert-danger' ))
-	            );
+			$c=0;
+			$id = $this->request->data['Accident']['accident_id'];
+			foreach($this->request->data['AccidentFile'] as $v){
+				if($v['files']['error'] == 0){
+					$this->request->data[$c]['AccidentFile']['name'] = $this->upload($v['files']);
+					$this->request->data[$c]['AccidentFile']['created_by'] = AuthComponent::user('id');
+					$this->request->data[$c]['AccidentFile']['accident_id'] = $this->request->data['Accident']['accident_id'];
+					$this->request->data[$c]['AccidentFile']['description'] = $v['description'];
+					$this->request->data[$c]['AccidentFile']['date'] = date('Y-m-d', strtotime('now'));
 
-				$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+					$c++;
+				}
+
 			}
-
-			if ($this->Accident->saveAll($this->request->data)) {
+			unset(
+				$this->request->data['Accident'],
+				$this->request->data['AccidentFile']
+			);
+			#pr($this->request->data);
+			#exit;
+			if ($this->AccidentFile->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
                 $this->Flash->alertBox(
-	            	'A New Accident Has Been Reported',
+	            	'Files Have Been Added',
 	                array( 'params' => array( 'class'=>'alert-success' ))
 	            );
             }else{
@@ -575,14 +552,11 @@ class AccidentsController extends AppController {
 	            );
             }
 
-			$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $id));
         }
 
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-
-        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
-        $this->set('userList', $this->AccountUser->pickList($account_ids));
-        $this->set('areas', $this->AccidentAreaLov->pickList());
+        $this->set('costLov', $this->AccidentCostLov->pickList());
+        $this->request->data['Accident']['id'] = $id;
     }
 
     public function delete($id = null, $empDelete = null) {
@@ -660,4 +634,28 @@ class AccidentsController extends AppController {
 
 		return $links;
 	}
+
+	public function upload($file=null, $id=null, $type=null){
+		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
+
+		if($file['error'] == 0){
+			$c = uniqid (rand(), true);;
+			$name = $file['name'];
+            $dir = '../webroot/files/accident/'.$id;
+
+			$uploadfile = $dir.'/'. $name;
+
+			if (!is_dir($dir)) {
+			    mkdir($dir, 0777, true);
+			}
+
+			if (move_uploaded_file($file['tmp_name'], $uploadfile) == TRUE) {
+				#$this->TrainingFile->saveAll($this->request->data['TrainingFile']);
+                return $name;
+            }else{
+            	return false;
+            }
+        }
+
+    }
 }
