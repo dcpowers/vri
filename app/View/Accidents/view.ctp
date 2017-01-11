@@ -193,7 +193,7 @@
 					<div class="box-tools pull-right">
 			            <?php
 			            echo $this->Html->link(
-			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
+			                '<i class="fa fa-upload fa-fw"></i> <span>Upload</span>',
 			                array('controller'=>'Accidents', 'action'=>'files', $accident['Accident']['id']),
 			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
 			            );
@@ -214,13 +214,12 @@
                         <tbody>
                             <?php
                             foreach($accident['AccidentFile'] as $f){
-
                                 ?>
                                 <tr>
                                     <td><?=$f['name']?></td>
                                     <td><?=$f['description']?></td>
-                                    <td><?=$f['created_by']?></td>
-                                    <td><?php echo date('F d, Y', strtotime($f['created_date'])); ?></td>
+                                    <td><?=$f['CreatedBy']['first_name']?> <?=$f['CreatedBy']['last_name']?></td>
+                                    <td><?php echo date('F d, Y', strtotime($f['date'])); ?></td>
                                 </tr>
                                 <?php
                             }
