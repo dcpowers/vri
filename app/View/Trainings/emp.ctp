@@ -1,6 +1,6 @@
 <?php
     echo $this->Form->create('Training', array(
-        'url' => array('controller'=>'Trainings', 'action'=>'add'),
+        'url' => array('controller'=>'Trainings', 'action'=>'addEmpStatement'),
         'role'=>'form',
 		'type'=>'file',
         #'class'=>'form-horizontal',
@@ -29,29 +29,67 @@
 </div>
 
 <div class="modal-body">
-	Which accident are you reporting on*:
-Date of report*:
-01/11/2017
-Exact location/area where injured*:
-What were you doing just before the incident occured? Describe the activity,
-as well as the tools, equipment, or material you were using. Be specific.
-Examples: "climbing a ladder while carrying roofing materials"; "spraying
-chlorine from hand sprayer"; "daily computer key-entry."*
-What happened? Tell us how the injury occurred. Examples: "When the ladder
-slipped on wet floor, I fell 20 feet"; "I was sparyed with chlorine when
-gasket broke during replacement"; "I developed soreness in my wrist over
-time." *
-What was the injury or illness? Tell us the part of the body that was affected
-and how it was affected; be more specific than "hurt," "pain," or "sore."
-Examples: "strained back"; "chemical burn, hand"; "carpal tunnel syndrome." *
-Have you had a same or similar injury before:
-if yes, give details:
-What object or substance directly harmed the employee? Examples: "concrete floor";
-"chlorine"; "radial arm saw." *:
-Was a Safety Device Applicable* :
-Was it used?:
-Was injury caused by failure to use or observe safety rules or regulations: *
-If yes, which rule:
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Which accident are you reporting on:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Exact location/area where injured*:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">What were you doing just before the incident occured? Describe the activity, as well as the tools, equipment, or material you were using. Be specific. Examples: "climbing a ladder while carrying roofing materials"; "spraying chlorine from hand sprayer"; "daily computer key-entry."*</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">What happened? Tell us how the injury occurred. Examples: "When the ladder slipped on wet floor, I fell 20 feet"; "I was sparyed with chlorine when gasket broke during replacement"; "I developed soreness in my wrist over time." *</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">What was the injury or illness? Tell us the part of the body that was affected and how it was affected; be more specific than "hurt," "pain," or "sore." Examples: "strained back"; "chemical burn, hand"; "carpal tunnel syndrome." *</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Have you had a same or similar injury before:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">if yes, give details:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">What object or substance directly harmed the employee? Examples: "concrete floor"; "chlorine"; "radial arm saw." *:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Was a Safety Device Applicable* :</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Was it used?:</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Was injury caused by failure to use or observe safety rules or regulations: *</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">If yes, which rule:
+		</label>
+        <div class="col-sm-8">
+		</div>
+	</div>
 </div>
 <div class="modal-footer">
     <?php
