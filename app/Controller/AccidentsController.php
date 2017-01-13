@@ -559,6 +559,50 @@ class AccidentsController extends AppController {
         $this->request->data['Accident']['id'] = $id;
     }
 
+	public function statements($id=null){
+        if ($this->request->is('post') || $this->request->is('put')) {
+            pr($this->request->data);
+            exit;
+			$c=0;
+			$id = $this->request->data['Accident']['accident_id'];
+			foreach($this->request->data['AccidentFile'] as $v){
+				if($v['files']['error'] == 0){
+					$this->request->data[$c]['AccidentFile']['name'] = $this->upload($v['files']);
+					$this->request->data[$c]['AccidentFile']['created_by'] = AuthComponent::user('id');
+					$this->request->data[$c]['AccidentFile']['accident_id'] = $this->request->data['Accident']['accident_id'];
+					$this->request->data[$c]['AccidentFile']['description'] = $v['description'];
+					$this->request->data[$c]['AccidentFile']['date'] = date('Y-m-d', strtotime('now'));
+
+					$c++;
+				}
+
+			}
+			unset(
+				$this->request->data['Accident'],
+				$this->request->data['AccidentFile']
+			);
+			#pr($this->request->data);
+			#exit;
+			if ($this->AccidentFile->saveAll($this->request->data)) {
+            	#Audit::log('Group record added', $this->request->data );
+                $this->Flash->alertBox(
+	            	'Files Have Been Added',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
+            }else{
+            	$this->Flash->alertBox(
+	            	'There Were Problems, Please Try Again',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
+            }
+
+			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $id));
+        }
+
+        $this->set('costLov', $this->AccidentCostLov->pickList());
+        $this->request->data['Accident']['id'] = $id;
+    }
+
     public function delete($id = null, $empDelete = null) {
         $this->Group->id = $id;
         $empDelete = (is_null($empDelete)) ? 'No' : $empDelete;
@@ -620,15 +664,14 @@ class AccidentsController extends AppController {
 			),
 			'2'=>array(
 				'title' => 'Employee Statement',
-				'controller'=>'Accidents',
-				'action'=>'empStatement'
+				'controller'=>'AccidentStatements',
+				'action'=>'index/1'
 			),
 			'3'=>array(
 				'title' =>'Supervisor Statement',
-				'controller'=>'Accidents',
-				'action'=>'superStatement',
-				'data-toggle'=>'modal',
-				'data-target'=>'#myModal'
+				'controller'=>'AccidentStatements',
+				'action'=>'index/2',
+
 			)
 		);
 
@@ -658,4 +701,16 @@ class AccidentsController extends AppController {
         }
 
     }
+
+	public function empStatement($id = null){
+
+		$this->set('options', $this->Accident->yesNo());
+    	$this->set('accident_id', $id);
+	}
+
+	public function supervisorStatement($id = null){
+
+		$this->set('options', $this->Accident->yesNo());
+    	$this->set('accident_id', $id);
+	}
 }
