@@ -83,9 +83,10 @@
 	        <tbody>
 	            <?php
 	            foreach($v as $a){
+					$class= ($a['Accident']['is_active'] == 2) ? 'danger' : null ;
 					$date = date('F d, Y', strtotime($a['Accident']['date']));
 	                ?>
-	                <tr>
+	                <tr class="<?=$class?>">
 						<td class="text-center"><?=$a['Accident']['id']?></td>
 	                    <td>
 	                        <?php
@@ -101,7 +102,29 @@
 
 	                    <td><?=$date?></td>
 	                    <td><?=$a['Accident']['description']?></td>
-                        <td></td>
+                        <td>
+							<ul class="list-inline">
+								<li>
+									<?php
+									if($a['Accident']['is_active'] == 1){
+										echo $this->Html->link(
+				                            '<i class="fa fa-fw fa-unlock"></i>',
+				                            array('controller'=>'Accidents', 'action'=>'open', $a['Accident']['id']),
+				                            array('escape'=>false)
+				                        );
+									}else{
+										echo $this->Html->link(
+				                            '<i class="fa fa-fw fa-lock"></i>',
+				                            array('controller'=>'Accidents', 'action'=>'close', $a['Accident']['id']),
+				                            array('escape'=>false)
+				                        );
+									}
+
+
+									?>
+								</li>
+                            </ul>
+						</td>
 	                </tr>
 	                <?php
 	            }

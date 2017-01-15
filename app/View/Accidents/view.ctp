@@ -13,7 +13,29 @@
             <?php #echo $this->element( 'Accounts/menu' );?>
         </div>
     </div>
-	<div class="row">
+	<ul class="list-inline pull-right">
+		<li>
+			<?php
+			echo $this->Html->link(
+				'Request Employee Statement',
+				array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 1),
+				array('escape'=>false, 'class'=>'btn btn-xs btn-primary', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+			);
+			?>
+		</li>
+
+		<li>
+			<?php
+			echo $this->Html->link(
+				'Request Supervisor Statement',
+				array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 2),
+				array('escape'=>false, 'class'=>'btn btn-xs btn-info', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+			);
+			?>
+		</li>
+	</ul>
+	<div class="clearfix"></div>
+	<div class="row clearfix">
         <div class="col-sm-3">
             <div class="box box-success">
 
@@ -43,8 +65,6 @@
                         <dt>Date of Hire:</dt>
                         <dd><?php echo date('F d, Y', strtotime($accident['User']['doh'])); ?></dd>
                     </dl>
-
-
                 </div>
             </div>
         </div>
@@ -169,7 +189,7 @@
                         <tbody>
                             <?php
 							foreach($accident['AccidentCost'] as $file){
-                                $name = (empty($file['AccidentCostLov']['name'])) ? null : $file['AccidentCostLov']['name'] ;
+								$name = (empty($file['AccidentCostLov']['name'])) ? null : $file['AccidentCostLov']['name'] ;
 								?>
                                 <tr>
                                     <td><?php echo number_format($file['vri_cost'], 2,'.', ','); ?></td>
@@ -186,8 +206,10 @@
                     </table>
 
             </div>
+        </div>
+    </div>
 
-            <div class="box box-success">
+	<div class="box box-success">
             	<div class="box-header">
                     <h3 class="box-title">Accident Files</h3>
 					<div class="box-tools pull-right">
@@ -216,10 +238,40 @@
                             foreach($accident['AccidentFile'] as $f){
                                 ?>
                                 <tr>
-                                    <td><?=$f['name']?></td>
+                                    <td>
+										<?php
+										if($f['is_active'] == 2){
+											echo $this->Html->link(
+												$f['name'],
+                                    			array('controller'=>'accidents', 'action'=>'download', $f['id']),
+                                    			array('escape'=>false)
+                                			);
+										}else{
+											echo $f['name'];
+										}
+										?>
+									</td>
                                     <td><?=$f['description']?></td>
                                     <td><?=$f['CreatedBy']['first_name']?> <?=$f['CreatedBy']['last_name']?></td>
-                                    <td><?php echo date('F d, Y', strtotime($f['date'])); ?></td>
+                                    <td><?php echo date('M d, Y', strtotime($f['date'])); ?></td>
+									<td>
+										<?php
+										if($f['is_active'] == 2){
+											echo $this->Html->link(
+												'<i class="fa fa-download fa-fw fa-lg"></i>',
+                                    			array('controller'=>'accidents', 'action'=>'download', $f['id']),
+                                    			array('escape'=>false)
+                                			);
+										}else{
+											?>
+											<span class="fa-stack ">
+										  		<i class="fa fa-download fa-stack-1x"></i>
+										  		<i class="fa fa-ban fa-stack-2x text-danger"></i>
+											</span>
+											<?php
+										}
+										?>
+									</td>
                                 </tr>
                                 <?php
                             }
@@ -228,8 +280,6 @@
                     </table>
 
             </div>
-        </div>
-    </div>
 </div>
 
 
