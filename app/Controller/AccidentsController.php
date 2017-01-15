@@ -54,12 +54,14 @@ class AccidentsController extends AppController {
     public function index($status=null) {
         $user_ids = $this->Accident->getUserIds();
 
+		$status = (is_null($status)) ? 1 : $status ;
+		$status = ($status == 'all') ? array(1,2) : $status ;
 		#$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
 
 		$this->Paginator->settings = array(
             'conditions' => array(
                 'Accident.user_id' => $user_ids,
-                'Accident.is_active' => 1,
+                'Accident.is_active' => $status,
             ),
             'contain'=>array(
             	'Account'=>array(
@@ -70,7 +72,11 @@ class AccidentsController extends AppController {
 				)
             ),
             'limit' => 50,
-            'order'=>array('Accident.id'=> 'asc'),
+            'order'=>array(
+				'Accident.account_id'=> 'asc',
+				'Accident.is_active'=> 'asc',
+				'Accident.date'=> 'DESC'
+			),
         );
 
 		$options = array();
@@ -94,7 +100,7 @@ class AccidentsController extends AppController {
         $accounts = $this->Paginator->paginate('Accident');
 		foreach($accounts as $key=>$t){
 			$indexName = $t['Account']['name'] .' ( '. $t['Account']['abr'] .' )';
-            $keysort[$indexName] = $t['Account']['name'];
+            $keysort[$indexName] = $indexName;
 
 			unset($t['Account']);
             $value[$indexName][] = $t;
@@ -102,12 +108,13 @@ class AccidentsController extends AppController {
 			$result = array_merge($result,$value);
 
 		}
+
 		if(!empty($result)){
             array_multisort($keysort, SORT_ASC, $result);
         }
         #pr($result);
 		#exit;
-        $this->set('accidents', $result);
+		$this->set('accidents', $result);
 
     }
 
@@ -492,6 +499,81 @@ class AccidentsController extends AppController {
         $this->set('areas', $this->AccidentAreaLov->pickList());
     }
 
+	public function sendRequest($id=null, $s_id=null){
+		$this->Accident->id = $id;
+
+		if (!$this->Accident->exists()) {
+	    	throw new NotFoundException(__('Invalid Accident Id'));
+	    }
+
+	    $accident = $this->Accident->find('first', array(
+	    	'conditions' => array(
+	        	'Accident.id' => $id
+	        ),
+	        'contain' => array(
+	        	'User'=>array(
+	            	'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+	            ),
+				'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name', 'Account.abr')
+                ),
+	        ),
+        ));
+
+		if ($this->request->is('post') || $this->request->is('put')) {
+            $c=0;
+
+			$type = ($s_id == 1) ? 'Employee' : 'Supervisor' ;
+			foreach($this->request->data['Accident']['user_id'] as $user_id){
+				$user = $this->User->find('first', array(
+		            'conditions' => array(
+		                'User.id' => $user_id
+		            ),
+		            'contain' => array(
+		            ),
+					'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+		        ));
+
+				$this->request->data[$c]['AccidentFile']['accident_id'] = $id;
+				$this->request->data[$c]['AccidentFile']['name'] = 'On-line '. $type .' Statement';
+				$this->request->data[$c]['AccidentFile']['description'] = 'On-line '. $type .' Statement By: '.$user['User']['first_name'] .' '.$user['User']['last_name'];
+	            $this->request->data[$c]['AccidentFile']['created_by'] = $user['User']['id'];
+				$this->request->data[$c]['AccidentFile']['date'] = date('Y-m-d', strtotime('now'));
+				$this->request->data[$c]['AccidentFile']['is_active'] = 1;
+				$this->request->data[$c]['AccidentFile']['statement_id'] = $s_id;
+
+				$c++;
+			}
+
+			unset($this->request->data['Accident']);
+
+            #pr($this->request->data);
+			#exit;
+
+			if ($this->AccidentFile->saveAll($this->request->data)) {
+            	#Audit::log('Group record added', $this->request->data );
+                $this->Flash->alertBox(
+	            	'A Request Has Been Sent',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
+            }else{
+            	$this->Flash->alertBox(
+	            	'There Were Problems, Please Try Again',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
+            }
+
+			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $id));
+        }
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+
+        $this->set('userList', $this->AccountUser->pickList($accident['Account']['id']));
+        $this->set('accident_id', $id);
+        $this->set('statement_id', $s_id);
+
+	}
+
 	public function cost($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
             #pr($user);
@@ -656,26 +738,23 @@ class AccidentsController extends AppController {
     }
 
 	public function getDashboard(){
-		$links = array(
-			'1'=>array(
-				'title' => 'New Accident',
-				'controller'=>'Accidents',
-				'action'=>'add'
+		$v = $this->AccidentFile->find('all', array(
+            'conditions' => array(
+                'AccidentFile.created_by' => AuthComponent::user('id'),
+                'AccidentFile.is_active' => 1,
+            ),
+			'contain'=>array(
+				'Accident'=>array(
+                	'fields'=>array(
+						'Accident.first_name',
+						'Accident.last_name',
+					)
+				),
 			),
-			'2'=>array(
-				'title' => 'Employee Statement',
-				'controller'=>'AccidentStatements',
-				'action'=>'index/1'
-			),
-			'3'=>array(
-				'title' =>'Supervisor Statement',
-				'controller'=>'AccidentStatements',
-				'action'=>'index/2',
 
-			)
-		);
+        ));
 
-		return $links;
+		return $v;
 	}
 
 	public function upload($file=null, $id=null, $type=null){
@@ -713,4 +792,36 @@ class AccidentsController extends AppController {
 		$this->set('options', $this->Accident->yesNo());
     	$this->set('accident_id', $id);
 	}
+
+	public function download($id = null) {
+
+        $v = $this->AccidentFile->find('first', array(
+            'conditions' => array(
+                'AccidentFile.id' => $id,
+            ),
+            'fields' => array(
+				'AccidentFile.name',
+			)
+        ));
+
+		$id = $id;
+        $name = $v['AccidentFile']['name'];
+        #$type = $v['TrainingFile']['file_type'];
+        #pr($v);
+		#exit;
+        if(!is_null($id) && !empty($name)){
+			#$this->response->type('application/vnd.ms-powerpointtd>');
+
+            $this->response->file( 'webroot/files/accidents/'. $id .'/'. $name, array(
+                'download' => true,
+                'name' => $name,
+            ));
+
+            return $this->response;
+        }
+
+        $this->Session->setFlash(__('Please select a file to download'), 'alert-box', array('class'=>'alert-danger'));
+        $this->redirect(array('controller'=>'accidents', 'action' => 'index'));
+
+    }
 }
