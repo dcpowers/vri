@@ -20,7 +20,13 @@ class AccidentFile extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'Accident',
+        'Accident'=>array(
+			'className' => 'Accident',
+            'foreignKey' => 'accident_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+		),
 		'CreatedBy' => array(
             'className' => 'User',
             'foreignKey' => 'created_by',
@@ -29,6 +35,7 @@ class AccidentFile extends AppModel {
             'order' => ''
         ),
     );
+
 
     public function pickList($id=null){
         $dataArr = array();
