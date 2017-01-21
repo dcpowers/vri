@@ -12,32 +12,33 @@ class Department extends AppModel {
     */
     public function beforeFilter() {
         parent::beforeFilter();
-        
+
     }
 
     public $actsAs = array('Containable', 'Multivalidatable');
-    
+
     public function parentNode() {
         return null;
     }
-    
+
     //The Associations below have been created with all possible keys, those that are not needed can be removed
 
-    
+
     /**
      * belongsTo associations
      *
      * @var array
      */
     public $hasMany = array(
+        'TrainingMembership',
         'AccountDepartment',
         'DepartmentUser',
-        'User'    
+        'User'
     );
-    
+
     public function pickList( ) {
         $dataArr = array();
-        
+
         $find_options = array(
             'conditions'=>array(
                 $this->alias.'.is_active'=>1
@@ -54,10 +55,10 @@ class Department extends AppModel {
         }
         return $dataArr;
     }
-    
+
     public function pickListById( $ids=null ) {
         $dataArr = array();
-        
+
         $find_options = array(
             'conditions'=>array(
                 $this->alias.'.is_active'=>1,

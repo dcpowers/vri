@@ -352,18 +352,20 @@ class User extends AppModel {
 
         $find_options = array(
             'conditions'=>array(
-                $this->alias.'.auth_role_id'=>$role_ids
+                $this->alias.'.auth_role_id <='=>4
             ),
             'order'=>$this->alias.'.first_name asc'
         );
 
-        //pr($find_options);
-        //exit;
+        #pr($find_options);
+        #exit;
         $recs = $this->find('all', $find_options );
 
         foreach ( $recs as $key=>$rec ) {
             $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
         }
+		#pr($dataArr);
+		#exit;
         return $dataArr;
     }
 

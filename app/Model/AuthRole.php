@@ -13,16 +13,16 @@ class AuthRole extends AppModel {
     */
     public function beforeFilter() {
         parent::beforeFilter();
-        
+
     }
 
     public function parentNode() {
         return null;
     }
-    
+
     //The Associations below have been created with all possible keys, those that are not needed can be removed
 
-    
+
     /**
      * belongsTo associations
      *
@@ -37,10 +37,10 @@ class AuthRole extends AppModel {
             'order' => ''
         ),
     );
-    
+
     public function pickListByRole( $role_id=null ) {
         $dataArr = array();
-        
+
         $parent = $this->find('first', array(
             'conditions' => array(
                 $this->alias.'.id' => $role_id
@@ -49,20 +49,20 @@ class AuthRole extends AppModel {
             ),
             'fields'=>array($this->alias.'.permission_level')
         ));
-        
+
         $data = $this->find('all', array(
             'conditions' => array(
-                $this->alias.'.permission_level <=' => $parent[$this->alias]['permission_level'], 
+                $this->alias.'.permission_level <=' => $parent[$this->alias]['permission_level'],
             ),
             'contain'=>array(
             ),
             'order'=>array($this->alias.'.lft')
         ));
-        
+
         foreach($data as $rec=>$v){
             $dataArr[$v['AuthRole']['id']] = $v['AuthRole']['name'];
         }
-        
+
         return $dataArr;
     }
 }
