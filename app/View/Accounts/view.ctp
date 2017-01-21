@@ -3,9 +3,9 @@
     $recordsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'records') ? 'active' : null;
     $assetsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'assets') ? 'active' : null;
     $safetyClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'safety') ? 'active' : null;
-    
+
     $accountClass = (empty($this->params['pass'][1]) || $this->params['pass'][1] == 'accounts') ? 'active' : null;
-    
+
     ?>
 <style type="text/css">
     #LoadingDiv{
@@ -38,7 +38,7 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php echo $this->element( 'Accounts/menu' );?>                
+            <?php #echo $this->element( 'Accounts/menu' );?>
         </div>
     </div>
     <div class="tabbable">
@@ -53,165 +53,204 @@
         <div class="tab-content">
             <div class="tab-pane fade <?=$accountClass?> in" id="info">
                 <?php #pr($account); ?>
-                <div class="row">
-                    <div class="col-md-3">
-                        <dl>
-                            <dt>Account Status:</dt>
-                            <dd><?=$account['Status']['name']?></dd>
-                        </dl>
-                        <dl>
-                            <dt>SprocketDB:</dt>
-                            <dd><?=$account['Account']['SprocketDB']?></dd>
-                        </dl>
-                        <dl>    
-                            <dt>All Pay Id:</dt>
-                            <dd><?=$account['Account']['AllPayID']?></dd>
-                        </dl>
-                        <dl>    
-                            <dt>Supervisor:</dt>
-                            <dd><?=$account['Manager']['first_name']?> <?=$account['Manager']['last_name']?></dd>
-                        </dl>
-                        <dl>    
-                            <dt>Systems Coordinator:</dt>
-                            <dd><?=$account['Coordinator']['first_name']?> <?=$account['Coordinator']['last_name']?></dd>
-                        </dl>
-                        <dl>    
-                            <dt>Regional Administrator:</dt>
-                            <dd><?=$account['RegionalAdmin']['first_name']?> <?=$account['RegionalAdmin']['last_name']?></dd>
-                        </dl>
-                    </div>
-                    <div class="col-md-9">
+				<?php
+			    echo $this->Form->create('Account', array(
+			        'url'=>array('controller'=>'Accounts', 'action'=>'edit', $this->request->data['Account']['id']),
+			        #'class'=>'form-horizontal',
+			        'role'=>'form',
+			        'inputDefaults'=>array(
+			            'label'=>false,
+			            'div'=>false,
+			            'class'=>'form-control',
+			            'error'=>false
+			        )
+			    ));
+
+			    echo $this->Form->hidden('id', array('value'=>$this->request->data['Account']['id']));
+			    ?>
+				<div class="row">
+					<div class="col-md-8">
+						<div class="row">
+							<div class="col-md-8">
+                    			<div class="form-group">
+			                        <label for="name" class="control-label">Name:</label>
+			                        <?php
+			                        echo $this->Form->input( 'name', array());
+			                        ?>
+			                    </div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+			                        <label for="abr" class="control-label">Abbreviation:</label>
+			                        <?php
+			                        echo $this->Form->input( 'abr', array());
+			                        ?>
+			                    </div>
+							</div>
+						</div>
+
+	                    <div class="form-group">
+	                        <label for="address" class="control-label">Address:</label>
+	                        <?php
+	                        echo $this->Form->input( 'address', array());
+	                        ?>
+	                    </div>
                         <div class="row">
-                            <div class="col-sm-6">
-                                <dl>
-                                    <dt>Name:</dt>
-                                    <dd><?=$account['Account']['name']?> ( <?=$account['Account']['abr']?> )</dd>
-                                </dl>
-                                <dl>    
-                                    <dt>Address:</dt>
-                                    <dd><?=$account['Account']['address']?></dd>
-                                </dl>
+							<div class="col-md-6">
+			                    <div class="form-group">
+			                        <label for="supervisor" class="control-label">Supervisor:</label>
+			                        <?php
+			                        echo $this->Form->input( 'manager_id', array(
+			                            'options'=>$userList,
+			                            'class'=>'chzn-select form-control',
+			                            'empty' => true,
+			                            'data-placeholder'=>'Select a Supervisor.....',
+			                        ));
+			                        ?>
+			                    </div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+			                        <label for="manager" class="control-label">Systems Coordinator:</label>
+			                        <?php
+			                        echo $this->Form->input('coordinator_id', array(
+			                            'options'=>$userList,
+			                            'class'=>'chzn-select form-control',
+			                            'empty' => true,
+			                            'data-placeholder'=>'Select a Systems Coordinator.....',
+			                        ));
+			                        ?>
+			                    </div>
+							</div>
+						</div>
+                        <div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+			                        <label for="department" class="control-label">Current Department(s):</label>
+			                        <?php
+			                        echo $this->Form->input('AccountDepartment.department_id', array(
+			                            'options'=>$departments,
+			                            'class'=>'chzn-select form-control',
+			                            'empty' => true,
+			                            'multiple'=>true,
+			                            'data-placeholder'=>'Select Department(s).....',
+			                        ));
+			                        ?>
+			                    </div>
                             </div>
-                                    
-                            <div class="col-sm-6">
-                                <?php
-                                $evs = ($account['Account']['EVS'] == 1) ? true : false;
-                                $ce = ($account['Account']['CE'] == 1) ? true : false;
-                                $food = ($account['Account']['Food'] == 1) ? true : false;
-                                $pom = ($account['Account']['POM'] == 1) ? true : false;
-                                $lau = ($account['Account']['LAU'] == 1) ? true : false;
-                                $sec = ($account['Account']['SEC'] == 1) ? true : false;
-                                ?>
-                                <dl>
-                                    <dt>Current Department(s):</dt>
-                                    <dd>
-                                        <?php
-                                        if(!empty($account['AccountDepartment'])){
-                                            ?>
-                                            <ul>
-                                                <?php
-                                                foreach($account['AccountDepartment'] as $group){
-                                                    ?>
-                                                    <li><?=$group['Department']['name']?></li>
-                                                    <?php
-                                                }
-                                                ?>
-                                            </ul>
-                                            <?php
-                                        }
-                                        ?>
-                                    </dd>
-                                </dl>
-                                <dl>    
-                                    <dt>Old Department(s):</dt>
-                                    
-                                    <dd>
-                                        <ul>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('EVS', array(
-                                                            'disabled'=>true, 
-                                                            'checked'=>$evs
-                                                        )); 
-                                                        ?>
-                                                        EVS
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('CE', array(
-                                                            'disabled'=>true, 
-                                                            'class'=>'accountInputs'
-                                                        )); 
-                                                        ?>
-                                                        CE
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('Food', array(
-                                                            'disabled'=>true, 
-                                                            'class'=>'accountInputs'
-                                                        )); 
-                                                        ?>
-                                                        Food
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('POM', array(
-                                                            'disabled'=>true, 
-                                                            'class'=>'accountInputs'
-                                                        )); 
-                                                        ?>
-                                                        POM
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('LAU', array(
-                                                            'disabled'=>true, 
-                                                            'class'=>'accountInputs'
-                                                        )); 
-                                                        ?>
-                                                        LAU
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <?php 
-                                                        echo $this->Form->checkbox('SEC', array(
-                                                            'disabled'=>true, 
-                                                            'class'=>'accountInputs'
-                                                        )); 
-                                                        ?>
-                                                        SEC
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+							<div class="col-md-6">
+			                    <div class="form-group">
+			                        <label for="AllPayID" class="control-label">Old Department(s):</label>
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('EVS', array());
+			                                ?>
+			                                EVS
+			                            </label>
+			                        </div>
+
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('CE', array());
+			                                ?>
+			                                CE
+			                            </label>
+			                        </div>
+
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('Food', array());
+			                                ?>
+			                                Food
+			                            </label>
+			                        </div>
+
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('POM', array());
+			                                ?>
+			                                POM
+			                            </label>
+			                        </div>
+
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('LAU', array());
+			                                ?>
+			                                LAU
+			                            </label>
+			                        </div>
+
+			                        <div class="checkbox">
+			                            <label>
+			                                <?php
+			                                echo $this->Form->checkbox('SEC', array());
+			                                ?>
+			                                SEC
+			                            </label>
+			                        </div>
+			                    </div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="well">
+							<div class="form-group">
+		                        <label for="status" class="control-label">Account Status:</label>
+		                        <?php
+		                        echo $this->Form->input('is_active', array(
+		                            'options'=>$status,
+		                            'value'=>$account['Status']['id'],
+		                            'class'=>'chzn-select-status form-control',
+		                            'empty' => true,
+		                            'multiple'=>false,
+		                            'data-placeholder'=>'Select Account Status.....',
+		                        ));
+		                        ?>
+		                    </div>
+
+		                    <div class="form-group">
+		                        <label for="SprocketDB" class="control-label">SprocketDB:</label>
+		                        <?php
+		                        echo $this->Form->input('SprocketDB', array());
+		                        ?>
+		                    </div>
+
+		                    <div class="form-group">
+		                        <label for="AllPayID" class="control-label">All Pay Id:</label>
+		                        <?php
+		                        echo $this->Form->input('AllPayID', array('type'=>'text'));
+		                        ?>
+		                    </div>
+							<div class="form-group">
+		                        <label for="regional_admin" class="control-label">Regional Administrator:</label>
+		                        <?php
+		                        echo $this->Form->input('regional_admin_id', array(
+		                            'options'=>$userList['Vanguard Resources'],
+		                            'class'=>'chzn-select form-control',
+		                            'empty' => true,
+		                            'data-placeholder'=>'Select a Regional Administrator.....',
+		                        ));
+		                        ?>
+		                    </div>
+						</div>
+					</div>
+				</div>
+                <?php
+	            echo $this->Form->button('Save', array(
+	                'type'=>'submit',
+	                'class'=>'btn btn-primary'
+	            ));
+	            ?>
                 <?php echo $this->Form->end();?>
             </div>
             <div class="tab-pane fade <?=$employeesClass?> in" id="users">
@@ -219,7 +258,7 @@
                         <?php echo $this->Html->image('ajax-loader-red.gif'); ?>
                     </div>
                 <div id="employeeList">
-                    
+
                     <div class="row">
                         <div class="col-sm-4">
                             <ul class="pagination pagination-sm">
@@ -232,7 +271,7 @@
                                     );
                                     ?>
                                 </li>
-                                
+
                                 <li class="<?=$roleClass?>">
                                     <?php
                                     echo $this->Html->link(
@@ -242,7 +281,7 @@
                                     );
                                     ?>
                                 </li>
-                                
+
                                 <li class="<?=$superClass?>">
                                     <?php
                                     echo $this->Html->link(
@@ -265,7 +304,7 @@
                                     );
                                     ?>
                                 </li>
-                                
+
                                 <li class="<?=$iStatusClass?>">
                                     <?php
                                     echo $this->Html->link(
@@ -275,7 +314,7 @@
                                     );
                                     ?>
                                 </li>
-                                
+
                                 <li class="<?=$allStatusClass?>">
                                     <?php
                                     echo $this->Html->link(
@@ -288,7 +327,7 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                     <?php
                     #pr($employees);
                     foreach($employees as $department=>$employee){
@@ -309,7 +348,7 @@
                                     <th class="col-sm-2 text-center">Status</th>
                                 </tr>
                             </thead>
-                                    
+
                             <tbody>
                                 <?php
                                 foreach($employee as $user){
@@ -324,11 +363,11 @@
                                             );
                                             ?>
                                         </td>
-                                                
+
                                         <td><?=$user['username']?></td>
-                                                
+
                                         <td><?=$user['email']?></td>
-                                                
+
                                         <td><?=$user['Role']['name']?></td>
                                         <td>
                                             <?php
@@ -367,45 +406,45 @@
                             <th class="col-md-4">Required For</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         <?php
                         #pr($trainings);
                         #exit;
                         foreach($trainings as $title=>$trn){
-                            #pr($trn); 
+                            #pr($trn);
                             #exit;
                             $required = ($trn[0]['is_required'] ==1) ? '<i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color: #00A65A" ></i>' : '<i class="fa fa-times-circle fa-lg" aria-hidden="true" style="color: #DD4B39"></i>' ;
                             $maditory = ($trn[0]['is_manditory'] ==1) ? '<i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color: #00A65A" ></i>' : '<i class="fa fa-times-circle fa-lg" aria-hidden="true" style="color: #DD4B39"></i>' ;
-                            
+
                             foreach($trn as $record){
                                 if(!empty($record['Department'])){
                                     $requiredFor['Departments'][] = $record['Department']['name'];
                                 }
-                                
+
                                 if(!empty($record['RequiredUser'])){
                                     $requiredFor['Users'][] = $record['RequiredUser']['first_name'] .' '.$record['RequiredUser']['last_name'];
                                 }
                             }
-                            
+
                             ?>
                             <tr>
                                 <td>
-                                    <?php 
+                                    <?php
                                     echo $this->Html->link(
                                         $trn[0]['Training']['name'],
                                         array('controller'=>'Trainings', 'action'=>'index'),
                                         array('escape'=>false)
                                     );
-                                    ?> 
+                                    ?>
                                 </td>
-                                        
+
                                 <td class="text-center"><?=$required?></td>
-                                        
+
                                 <td class="text-center"><?=$maditory?></td>
-                                        
+
                                 <td><?=$trn[0]['renewal']?> Mo(s)</td>
-                                        
+
                                 <td>
                                     <?php
                                     if(!empty($requiredFor)){
@@ -460,7 +499,7 @@
                             <th class="col-md-3">Assigned To</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         <?php
                         foreach($assets as $asset){
@@ -469,34 +508,34 @@
                             ?>
                             <tr>
                                 <td>
-                                    <?php 
+                                    <?php
                                     echo $this->Html->link(
                                         $asset['asset'],
                                         array('controller'=>'Assets', 'action'=>'view', $asset['id']),
                                         array('escape'=>false)
                                     );
-                                    ?> 
+                                    ?>
                                 </td>
-                                        
+
                                 <td><?=$asset['tag_number']?></td>
-                                        
+
                                 <td><?=$manName?></td>
-                                        
+
                                 <td><?=$asset['model']?></td>
-                                        
+
                                 <td><?=$name?></td>
                             </tr>
                             <?php
                         }
                         ?>
                     </tbody>
-                </table>    
+                </table>
             </div>
             <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
             </div>
         </div>
-    </div> 
-</div> 
+    </div>
+</div>
 
 <?php
     $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Accounts', 'action' => 'employeeView', $account['Account']['id']));
@@ -506,7 +545,7 @@
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
-        
+
         $('.statusType').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -529,13 +568,13 @@
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                
+
             });
-            
+
             return false;
-            
+
         });
-        
+
         $('.type').on('click', function () {
             $.ajax({
                 type: 'POST',
@@ -558,11 +597,11 @@
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                
+
             });
-            
+
             return false;
-            
+
         });
     });
 </script>
