@@ -681,11 +681,15 @@ class UsersController extends AppController {
                 'Status'=>array(
                     'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
-                'TrainingExempt'=>array()
+                'TrainingExempt'=>array(),
+                'Accident'=>array(
+					'AccidentArea'=>array(
+						'AccidentAreaLov'=>array()
+					)
+				)
             ),
 
         ));
-
 
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
