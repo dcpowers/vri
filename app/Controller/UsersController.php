@@ -433,6 +433,7 @@ class UsersController extends AppController {
             $this->set( compact( 'validationErrors' ) );
         }
 
+        $this->set('account', $this->Account->pickListById($account_id));
         $this->set('status', $this->User->statusInt());
         $this->set('pickListByAccount', $this->AccountUser->pickList($account_id));
         $this->set('accounts', $this->Account->pickListActive());

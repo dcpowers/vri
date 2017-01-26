@@ -77,7 +77,11 @@ class AssetsController extends AppController {
             $this->request->data['Asset']['active'] = false;
         }
 
-        if(is_null($status) || $status == 'All'){
+		if(is_null($status)){
+			$option = array('conditions'=>array('Asset.is_active' => 1));
+            $options = array_merge_recursive($options,$option);
+            $this->set('status', 1);
+		}else if($status == 'All'){
             $option = array('conditions'=>array('Asset.is_active' => array(1,2)));
             $options = array_merge_recursive($options,$option);
             $this->set('status', 'All');
@@ -319,7 +323,8 @@ class AssetsController extends AppController {
 
     public function add($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
-
+			pr($this->request->data);
+			exit;
             $this->request->data['Asset']['is_active'] = (empty($this->request->data['Asset']['is_active'])) ? 1 : $this->request->data['Asset']['is_active'] ;
 
             if ($this->Asset->saveAll($this->request->data)) {
