@@ -49,6 +49,7 @@ class User extends AppModel {
         'Asset',
         'TrainingRecord',
         'TrainingExempt',
+		'Accident'
     );
     /*
     public $validate = array(
