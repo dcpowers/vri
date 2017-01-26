@@ -553,7 +553,48 @@
                                     </div>
 
                                     <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
-                                        <?php #pr(); ?>
+                                        <table class="table table-striped table-condensed" id="assetsTable">
+                                            <thead>
+                                                <tr class="tr-heading">
+                                                    <th class="col-md-3">Date</th>
+                                                    <th class="col-md-6">Description</th>
+                                                    <th class="col-md-3">Area(s) of Injury</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <?php
+                                                foreach($user['Accident'] as $v){
+                                                    ?>
+                                                    <tr>
+                                                        <td><?php echo date('F d, Y', strtotime($v['date'])); ?></td>
+                                                        <td><?=$v['description']?></td>
+                                                        <td>
+															<ul class="list-unstyled">
+																<?php
+																foreach($v['AccidentArea'] as $l){
+																	?>
+																	<li><?=$l['AccidentAreaLov']['name']?></li>
+																	<?php
+																}
+																?>
+															</ul>
+														</td>
+                                                    </tr>
+                                                    <?php
+                                                }
+
+                                                if(empty($user['Asset'])){
+                                                    ?>
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">No Records Found</td>
+                                                    </tr>
+                                                    <?php
+                                                }
+
+                                                ?>
+                                            </tbody>
+                                        </table>
                                     </div>
 
                                 </div>

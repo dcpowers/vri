@@ -1,9 +1,7 @@
 <?php
     $data = $this->requestAction('/Accidents/getDashboard/');
-
     #pr($data);
-
-	if(!empty($data)){
+    if(!empty($data)){
 		?>
 		<div class="box box-success" style="border-left: 1px solid #00A65A; border-right: 1px solid #00A65A;">
             <div class="box-header">

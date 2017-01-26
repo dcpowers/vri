@@ -12,7 +12,7 @@
             <?php
             if(AuthComponent::user('Role.permission_level') >= 60){
                 echo $this->Html->link(
-                    '<i class="fa fa-wrench fa-fw"></i> <span>Manage</span>',
+                    '<i class="fa fa-wrench fa-fw"></i>',
                     array('controller'=>'Links', 'action'=>'index'),
                     array('escape'=>false)
                 );
@@ -22,12 +22,12 @@
         </div>
     </div>
     <div class="box-body">
-		<ul class="list-inline">
+		<ul class="list-unstyled">
 			<?php
     		#pr($requiredTraining );
     		foreach($data as $v){
 				if(AuthComponent::user('Role.permission_level') >= $v['Link']['permission_level']){
-	                echo '<li class="col-md-4">';
+	                echo '<li>';
 					echo $this->Html->link(
 		                $v['Link']['name'],
 		                $v['Link']['url'],

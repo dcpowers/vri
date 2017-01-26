@@ -13,7 +13,7 @@
             echo $this->Html->image($image, array('class'=>'img-circle img-responsive thumbnail', 'alt'=>$current_user['last_name'], 'style'=>'margin-bottom: 0px;'));
 			?>
 
-            <h3>
+            <h4>
 				<?php
 		        echo $this->Html->link(
 		        	$this->request->data['User']['first_name'].' '.$this->request->data['User']['last_name'],
@@ -21,7 +21,7 @@
 		            array('escape'=>false)
 		        );
                 ?>
-			</h3>
+			</h4>
 
 			<dl>
 				<dt>Status:</dt>
@@ -34,7 +34,7 @@
 			</dl>
 
 			<dl>
-				<dt>Department(s):</dt>
+				<dt>Department:</dt>
 				<dd>
 					<ul class="list-unstyled">
 				    	<?php
