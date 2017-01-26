@@ -8,6 +8,7 @@
         <div class="col-md-9">
 			<?php echo $this->element( 'dashboard/_accident' ); ?>
             <?php echo $this->element( 'dashboard/_trainings' ); ?>
+			<?php echo $this->element( 'dashboard/_links' ); ?>
             <?php echo $this->element( 'dashboard/_improvements' ); ?>
         </div>
     </div>

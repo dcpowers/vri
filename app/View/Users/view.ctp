@@ -191,20 +191,36 @@
 
                                                 <div class="form-group">
                                                     <label class="control-label">Account:</label>
-                                                    <p class="form-control-static"><?= $this->request->data['AccountUser'][0]['Account']['name']; ?></p>
+													<?php
+													if(AuthComponent::user('Role.permission_level') >= 50){
+														$this->request->data['AccountUser']['account_id'] = Set::extract( $this->request->data['AccountUser'], '/account_id' );
+
+						                                echo $this->Form->input( 'AccountUser.account_id', array(
+						                                	'options'=>$accounts,
+						                                    'class'=>'chzn-select form-control',
+						                                    'multiple'=>false,
+						                                    'between' => '<div class="input-group">',
+						                                    'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+						                                ));
+						                            }else{
+														?>
+														<p class="form-control-static"><?= $this->request->data['AccountUser'][0]['Account']['name']; ?></p>
+														<?php
+													}
+													?>
                                                 </div>
 
                                                 <div class="row">
                                                     <div class="col-sm-6">
 														<div class="form-group">
-                                                            <label class="control-label">Department(s):</label>
+                                                            <label class="control-label">Department:</label>
 															<?php
 						                                    $this->request->data['DepartmentUser']['department_id'] = Set::extract( $this->request->data['DepartmentUser'], '/department_id' );
 
 						                                    echo $this->Form->input( 'DepartmentUser.department_id', array(
 						                                        'options'=>$departments,
 						                                        'class'=>'chzn-select form-control',
-						                                        'multiple'=>true,
+						                                        'multiple'=>false,
 						                                        'between' => '<div class="input-group">',
 						                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
 						                                    ));
