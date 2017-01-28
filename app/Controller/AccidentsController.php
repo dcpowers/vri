@@ -55,7 +55,7 @@ class AccidentsController extends AppController {
         $user_ids = $this->Accident->getUserIds();
 
 		$status = (is_null($status)) ? 1 : $status ;
-		$status = ($status == 'all') ? array(1,2) : $status ;
+		$status = ($status == 'All') ? array(1,2) : $status ;
 		#$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
 
 		$this->Paginator->settings = array(
@@ -114,6 +114,7 @@ class AccidentsController extends AppController {
         }
         #pr($result);
 		#exit;
+		$this->set('status', $status);
 		$this->set('accidents', $result);
 
     }

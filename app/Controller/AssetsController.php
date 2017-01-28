@@ -307,14 +307,14 @@ class AssetsController extends AppController {
             ),
         ));
 
-        $account_id = (!empty($asset['Asset']['account_id'])) ? $asset['Asset']['account_id'] : null ;
+		$account_id = (!empty($asset['Asset']['account_id'])) ? $asset['Asset']['account_id'] : null ;
 
-        $this->set('status', $this->Setting->pickList('status'));
+		$this->set('status', $this->Setting->pickList('status'));
         $this->set('assetTypeList', $this->AssetType->pickList());
         $this->set('manufacturerList', $this->Manufacturer->pickList());
         $this->set('vendorList', $this->Vendor->pickList());
         $this->set('accountList', $this->Account->pickListActive());
-        $this->set('userList', $this->User->pickListByAccount($account_id));
+        $this->set('userList', $this->AccountUser->pickList($account_id));
 
         $this->set('asset', $asset);
         $this->set('id', $id);
@@ -323,11 +323,7 @@ class AssetsController extends AppController {
 
     public function add($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
-			pr($this->request->data);
-			exit;
-            $this->request->data['Asset']['is_active'] = (empty($this->request->data['Asset']['is_active'])) ? 1 : $this->request->data['Asset']['is_active'] ;
-
-            if ($this->Asset->saveAll($this->request->data)) {
+			if ($this->Asset->saveAll($this->request->data)) {
                 $this->Flash->alertBox(
                     'The Asset: "'.$this->request->data['Asset']['asset'].'" has been saved',
                     array( 'params' => array( 'class'=>'alert-success' ))
@@ -339,6 +335,8 @@ class AssetsController extends AppController {
                     array( 'params' => array( 'class'=>'alert-success' ))
                 );
             }
+
+			$this->redirect(array('controller'=>'Assets', 'action'=>'index'));
         }
 
         $this->set('status', $this->Setting->pickList('status'));
@@ -354,7 +352,7 @@ class AssetsController extends AppController {
 
         if($this->Asset->delete()){
             $this->Flash->alertBox(
-                'The Asset Has Been Delete',
+                'The Asset Has Been Deleted',
                 array( 'params' => array( 'class'=>'alert-success' ))
             );
             $this->redirect(array('controller'=>'Assets', 'action'=>'index'));
@@ -363,8 +361,10 @@ class AssetsController extends AppController {
                 'The Asset Could Not Be Deleted. Please, try again.',
                 array( 'params' => array( 'class'=>'alert-success' ))
             );
-            $this->redirect(array('controller'=>'Assets', 'action'=>'view', $id));
+
         }
+
+		$this->redirect(array('controller'=>'Assets', 'action'=>'index'));
     }
 
     public function setLists(){
