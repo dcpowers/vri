@@ -74,7 +74,8 @@
 				<div class="box-header">
 					<div class="box-tools pull-right">
 			            <?php
-			            echo $this->Html->link(
+                        /*
+						echo $this->Html->link(
 			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
 			                array('controller'=>'Improvements', 'action'=>'add'),
 			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
@@ -88,6 +89,7 @@
 			                );
 
 			            }
+						*/
 			            ?>
 			        </div>
 				</div>

@@ -19,13 +19,11 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php #echo $this->element( 'Accounts/menu' );?>
+            <?php echo $this->element( 'Accidents/menu' );?>
         </div>
         <div class="flextable-item">
-            <?php #echo $this->element( 'Accounts/status_filter' );?>
-        </div>
-        <div class="flextable-item">
-            <?php #echo $this->element( 'Accounts/search_filter', ['in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy] );?>
+			<?php echo $this->element( 'Accidents/status_filter' );?>
+            <?php #echo $this->element( 'Accidents/search_filter', ['in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy] );?>
         </div>
     </div>
 	<?php

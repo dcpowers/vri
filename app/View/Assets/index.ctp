@@ -111,9 +111,10 @@
             <tbody>
                 <?php
                 foreach($data as $asset){
-                    $name = (!empty($asset['Asset']['asset'])) ? $asset['Asset']['asset'] : '--' ;
+					$name = (!empty($asset['Asset']['asset'])) ? $asset['Asset']['asset'] : '--' ;
+					$trClass = ($asset['Asset']['is_active'] == 2) ? 'danger' : null ;
                     ?>
-                    <tr>
+                    <tr class="<?=$trClass?>">
                         <td>
                             <?php
                             echo $this->Html->link(

@@ -159,13 +159,14 @@
             <div class="form-group">
                 <label for="SprocketDB" class="control-label">Assigned To:</label>
                 <?php
-                echo $this->Form->input('user_id', array(
+				echo $this->Form->input('user_id', array(
                     'options'=>$userList,
-                    'class'=>'chzn-select form-control assetInputs',
+                    'class' => 'chzn-select form-control assetInputs',
                     'empty' => true,
-                    'multiple'=>false,
+					'value' => $this->request->data['Asset']['user_id'],
+                    'multiple' => false,
                     'data-placeholder'=>'Select A User.....',
-					'id'=>'user_id'
+					'id' => 'user_id'
                 ));
                 ?>
             </div>
