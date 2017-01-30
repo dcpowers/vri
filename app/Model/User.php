@@ -390,9 +390,8 @@ class User extends AppModel {
         //pr($find_options);
         //exit;
         $recs = $this->find('all', $find_options );
-        pr($recs);
-		exit;
-        foreach ( $recs as $key=>$rec ) {
+
+		foreach ( $recs as $key=>$rec ) {
             $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
         }
         return $dataArr;
