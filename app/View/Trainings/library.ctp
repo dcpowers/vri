@@ -17,7 +17,7 @@
             <?php echo $this->element( 'Trainings/menu' );?>
         </div>
         <div class="flextable-item">
-            <?php #echo $this->element( 'Trainings/status_filter' );?>
+            <?php echo $this->element( 'Trainings/status_filter' );?>
         </div>
         <div class="flextable-item">
             <?php #echo $this->element( 'Trainings/settings');?>
@@ -28,7 +28,7 @@
     <table class="table table-striped table-condensed" id="trainingTable">
         <thead>
             <tr class="tr-heading">
-                <th class="col-md-4">
+                <th class="col-md-3">
                     <?php echo $this->Paginator->sort('name', 'Name');?>
                     <?php if ($this->Paginator->sortKey() == 'name'): ?>
                         <i class='fa fa-sort-alpha-<?php echo $this->Paginator->sortDir() === 'asc' ? 'asc' : 'desc'; ?>'></i>
@@ -38,7 +38,7 @@
                 </th>
 
                 <th class="col-md-4">Description</th>
-
+				<th class="col-md-1 text-center">Status</th>
                 <th class="col-md-3">Categories</th>
                 <th class="col-md-1"></th>
             </tr>
@@ -49,7 +49,7 @@
             #pr($trainings);
             $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
             foreach($trainings as $trn){
-                ?>
+				?>
                 <tr>
                     <td>
 						<?php
@@ -59,9 +59,13 @@
                             array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal' )
                         );
                         ?>
-                    </td>
+					</td>
 
                     <td><?=$trn['Training']['description']?></td>
+
+					<td class="text-center">
+                        <span class="<?=$trn['Status']['color']?> label-as-badge"><i class="fa <?=$trn['Status']['icon']?>"></i></span>
+					</td>
 
                     <td>
                         <?php

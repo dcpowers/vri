@@ -1,6 +1,6 @@
     <div class="btn-group pull-right" style="margin-right: 5px;">
         <?php
-        $trncat[null] = 'View All';
+        $trncat['All'] = 'View All';
         echo $this->Form->button(
             '<i class="fa fa-eye fa-fw"></i> Category: '. $trncat[$cat] .' <i class="fa fa-fw fa-caret-down"></i>',
             array(
@@ -23,7 +23,7 @@
                     <?php
                     echo $this->Html->link(
                         $item,
-                        array('controller'=>'Trainings', 'action'=>'library', $key),
+                        array('controller'=>'Trainings', 'action'=>'library', $key, $status),
                         array('escape'=>false)
                     );
                     ?>
