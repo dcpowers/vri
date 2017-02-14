@@ -389,15 +389,33 @@ class TrainingsController extends AppController {
 
     }
 
-	public function library($cat=null) {
+	public function library($cat=null, $status=null) {
 
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $status = ($status == 'All' ) ? array(1,2) : $status;
+        $status = (is_null($status)) ? 1 : $status;
 
-        #pr($training_ids);
+		$cat = (is_null($cat)) ? 'All' : $cat;
+        #pr($account_ids);
         #exit;
         $this->Paginator->settings = array(
             'conditions' => array(
-
+				'OR' => array(
+                    array(
+                        'AND'=>array(
+                            'Training.is_public' => 1,
+                        )
+                    ),
+                    array(
+                        'AND'=>array(
+                            'Training.is_public' => 0,
+                            'Training.account_id' => $account_ids
+                        )
+                    ),
+                ),
+				'AND'=>array(
+					'Training.is_active' => $status
+				)
             ),
             'contain'=>array(
                 'Author'=>array(
@@ -437,7 +455,10 @@ class TrainingsController extends AppController {
                 ),
                 'TrainingFile'=>array(
                 ),
-                'TrainingMembership'=>array()
+                'TrainingMembership'=>array(),
+				'Status'=>array(
+                    'fields'=>array('Status.name', 'Status.color', 'Status.icon')
+                ),
             ),
             'limit' => 100,
             'order'=>array('Training.name'=> 'asc'),
@@ -454,7 +475,7 @@ class TrainingsController extends AppController {
             $this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$option);
         }
 
-        if(!is_null($cat)){
+        if(!is_null($cat) && $cat != 'All'){
             $training_ids = $this->TrnCat->getTrainingIds($cat);
 
             $options = array(
@@ -495,8 +516,10 @@ class TrainingsController extends AppController {
         #pr($trainings);
         #exit;
         $this->set('trainings', $trainings);
+        $this->set('status', $status);
         $this->set('cat', $cat);
         $this->set('trnCat', $this->TrainingCategory->pickList());
+        $this->set('settings', $this->Training->statusInt());
     }
 
     public function view($id=null){
