@@ -710,6 +710,7 @@ class UsersController extends AppController {
         $this->set('allRecords', $allRecords);
         $this->set('payStatus', $this->User->empPayStatus());
         $this->set('status', $this->User->statusInt());
+        $this->set('yesNo', $this->User->yesNo());
         $this->set('pickListByAccount', $this->AccountUser->pickList($account_ids));
         $this->set('accounts', $this->Account->pickListActive());
         $this->set('departments', $this->AccountDepartment->pickListByAccount($account_ids));

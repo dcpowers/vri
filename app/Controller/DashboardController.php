@@ -19,7 +19,7 @@
  */
 
 App::uses('AppController', 'Controller');
-
+App::uses('CakeTime', 'Utility');
 /**
  * Static content controller
  *
@@ -36,15 +36,17 @@ class DashboardController extends AppController {
  * @var array
  */
 	public $uses = array(
-        'User', 
+        'User',
+		'Accident',
+		'BingoGame',
     );
-    
+
     #public $helpers = array('Session');
     public function isAuthorized($user = null) {
         return true;
     }
     #public $components = array('RequestHandler', 'Paginator');
-    
+
     public function pluginSetup() {
         $user = AuthComponent::user();
         $role_names = Set::extract( AuthComponent::user(), '/AuthRole/name' );
@@ -57,13 +59,13 @@ class DashboardController extends AppController {
 
     public function beforeFilter() {
         parent::beforeFilter();
-        
-        
+
+
     }
 
     public function index() {
-        
-    }
+
+	}
 
 /**
  * Displays a view
@@ -72,5 +74,5 @@ class DashboardController extends AppController {
  * @throws NotFoundException When the view file could not be found
  *	or MissingViewException in debug mode.
  */
- 
+
 }
