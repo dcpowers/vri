@@ -10,6 +10,7 @@
 			<?php echo $this->element( 'dashboard/_accident' ); ?>
 			<?php echo $this->element( 'dashboard/_trainings' ); ?>
 			<?php echo $this->element( 'dashboard/_improvements' ); ?>
+			<?php echo $this->element( 'dashboard/_bingo' ); ?>
         </div>
     </div>
 </div>

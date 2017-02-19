@@ -68,43 +68,91 @@
         </div>
         <div id="employeeList">
             <div class="row">
-                <div class="col-md-2 headerContent">
-                    <div class="form-group">
-                        <div class="fileupload fileupload-new " data-provides="fileupload">
-                            <div class="fileupload-new thumbnail">
-                                <div class="effect3 thumbnail">
-                                <?php
-                                #pr($this->request->data);
-                                #exit;
-                                clearstatcache();
-                                $image = (file_exists('img/profiles/'.$this->request->data['User']['id'].'.png')) ? '/img/profiles/'.$this->request->data['User']['id'].'.png' : '/img/profiles/noImage.png' ;
-                                echo $this->Html->image($image, array('class'=>'img-responsive'));
-                                #echo $this->Html->image('/img/profiles/'.$this->request->data['User']['id'].'.png', array('class'=>'img-responsive'));
-                                ?>
-                                </div>
-                            </div>
+                <div class="col-md-3 headerContent">
+					<div class="col-md-10 col-md-offset-1">
+	                    <div class="form-group">
+	                        <div class="fileupload fileupload-new " data-provides="fileupload">
+	                            <div class="fileupload-new thumbnail">
+	                                <div class="effect3 thumbnail">
+	                                <?php
+	                                #pr($this->request->data);
+	                                #exit;
+	                                clearstatcache();
+	                                $image = (file_exists('img/profiles/'.$this->request->data['User']['id'].'.png')) ? '/img/profiles/'.$this->request->data['User']['id'].'.png' : '/img/profiles/noImage.png' ;
+	                                echo $this->Html->image($image, array('class'=>'img-responsive'));
+	                                #echo $this->Html->image('/img/profiles/'.$this->request->data['User']['id'].'.png', array('class'=>'img-responsive'));
+	                                ?>
+	                                </div>
+	                            </div>
 
-                            <div class="effect3 thumbnail">
-                                <div class="fileupload-preview fileupload-exists thumbnail"></div>
-                            </div>
+	                            <div class="effect3 thumbnail">
+	                                <div class="fileupload-preview fileupload-exists thumbnail"></div>
+	                            </div>
 
 
-                            <div class="text-center">
-                                <span class="btn btn-file">
-                                    <span class="text-danger"><small>( 2mb Limit )</small></span><br />
-                                    <span class="fileupload-new">Select Image</span>
-                                    <span class="fileupload-exists">Select New Image</span>
-                                    <?php echo $this->Form->file('file'); ?>
-                                </span>
+	                            <div class="text-center">
+	                                <span class="btn btn-file">
+	                                    <span class="text-danger"><small>( 2mb Limit )</small></span><br />
+	                                    <span class="fileupload-new">Select Image</span>
+	                                    <span class="fileupload-exists">Select New Image</span>
+	                                    <?php echo $this->Form->file('file'); ?>
+	                                </span>
 
-                                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+	                                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
 
-                            </div>
+	                            </div>
+	                        </div>
+
+	                    </div>
+                    </div>
+					<div style="color: #000;">
+                    	<div class="form-group">
+                        	<label class="control-label">Status:</label>
+							<?php
+					        echo $this->Form->input( 'is_active', array(
+					        	'options'=>$status,
+					            'class'=>'chzn-select form-control',
+					            'between' => '<div class="input-group">',
+					            'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+					        ));
+					        ?>
                         </div>
 
+                        <div class="form-group">
+                        	<label class="control-label">Permission (Role):</label>
+                            <?php
+					        echo $this->Form->input( 'auth_role_id', array(
+					        	'options'=>$roles,
+					            'class'=>'chzn-select form-control',
+					            'value'=>$this->request->data['User']['auth_role_id'],
+					            'between' => '<div class="input-group">',
+					            'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+					        ));
+					        ?>
+                        </div>
+
+                        <div class="form-group">
+                        	<label class="control-label">Date Of Hire:</label>
+                            <?php
+			                echo $this->Form->input( 'doh', array(
+			                	'type'=>'text',
+			                    'required'=>false,
+			                    'label'=>false,
+			                    'value'=>date('m/d/Y', strtotime($this->request->data['User']['doh'])),
+			                    'class'=>'datepicker form-control'
+			                ));
+			                ?>
+                        </div>
+
+						<div class="form-group" >
+                        	<label class="sr-only control-label">Eligible Bingo:</label>
+                            <div class="checkbox">
+			                	<label> <?php echo $this->Form->checkbox('is_bingo', array()); ?>Plays Bingo</label>
+							</div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <div class="row">
                         <div class="col-md-12 headerContent">
                             <h2 class="title">
@@ -186,8 +234,6 @@
                                         <hr style="border: 1px #C0C0C0 solid; "/>
                                         <h3><i class="fa fa-suitcase fa-fw" aria-hidden="true"></i> Job</h3>
                                         <hr/>
-                                        <div class="row">
-                                            <div class="col-sm-8">
 
                                                 <div class="form-group">
                                                     <label class="control-label">Account:</label>
@@ -243,51 +289,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="col-sm-4">
-                                                <div class="well">
-                                                    <div class="form-group">
-                                                        <label class="control-label">Status:</label>
-														<?php
-					                                    echo $this->Form->input( 'is_active', array(
-					                                        'options'=>$status,
-					                                        'class'=>'chzn-select form-control',
-					                                        'between' => '<div class="input-group">',
-					                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
-					                                    ));
-					                                    ?>
-
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="control-label">Permission (Role):</label>
-                                                        <?php
-					                                    echo $this->Form->input( 'auth_role_id', array(
-					                                        'options'=>$roles,
-					                                        'class'=>'chzn-select form-control',
-					                                        'value'=>$this->request->data['User']['auth_role_id'],
-					                                        'between' => '<div class="input-group">',
-					                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
-					                                    ));
-					                                    ?>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="control-label">Date Of Hire:</label>
-                                                        <?php
-			                                            echo $this->Form->input( 'doh', array(
-			                                                'type'=>'text',
-			                                                'required'=>false,
-			                                                'label'=>false,
-			                                                'value'=>date('m/d/Y', strtotime($this->request->data['User']['doh'])),
-			                                                'class'=>'datepicker form-control'
-			                                            ));
-			                                            ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <hr style="border: 1px #C0C0C0 solid; "/>
                                         <h3><i class="fa fa-gavel fa-fw" aria-hidden="true"></i> EEOC <small>( Equal Employment Opportunity Commission )</small></h3>
