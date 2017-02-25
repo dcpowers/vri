@@ -212,6 +212,7 @@ class BingoGameController extends AppController {
 	public function getDashboard() {
 		$account_id = AuthComponent::user('AccountUser.0.account_id');
 
+        //Amount Amount
 		$dashboardData = $this->BingoGame->find('all', array(
             'conditions' => array(
                 'BingoGame.account_id' => $account_id,
@@ -244,11 +245,12 @@ class BingoGameController extends AppController {
 		$account_id = AuthComponent::user('AccountUser.0.account_id');
 
 		#pr(AuthComponent::user('id'));
+        $current_amount = $this->getCurrentAmount();
 
-		$bingo = $this->BingoGame->find('all', array(
+		$current_bingo = $this->BingoGame->find('first', array(
             'conditions' => array(
                 'BingoGame.account_id' => $account_id,
-				#'BingoGame.end_date' =>null
+				'BingoGame.end_date' =>null
             ),
 			'contain'=>array(
 				'BingoGameBall'=>array(
@@ -264,7 +266,27 @@ class BingoGameController extends AppController {
 
 			),
 			'order'=>array('BingoGame.end_date' => 'ASC'),
-			'limit' => 2
+		));
+
+		$last_bingo = $this->BingoGame->find('first', array(
+            'conditions' => array(
+                'BingoGame.account_id' => $account_id,
+				'BingoGame.user_id !=' =>null
+            ),
+			'contain'=>array(
+				'BingoGameBall'=>array(
+					'Ball'=>array(),
+					'order'=>array('BingoGameBall.date' => 'DESC')
+				),
+				'Winner'=>array(
+					'fields'=>array(
+						'Winner.first_name',
+						'Winner.last_name'
+					)
+				)
+
+			),
+			'order'=>array('BingoGame.end_date' => 'ASC'),
 		));
 
 		$this->BingoGame->virtualFields = array(
@@ -284,12 +306,13 @@ class BingoGameController extends AppController {
 		unset($this->BingoGame->virtualFields);
 
 
-		$ball = (!empty($bingo[0]['BingoGameBall'][0]['Ball']['ball'])) ? $bingo[0]['BingoGameBall'][0]['Ball']['ball'] : null ;
-		$ballDate = (!empty($bingo[0]['BingoGameBall'][0]['Ball']['ball'])) ? CakeTime::format($bingo[0]['BingoGameBall'][0]['date'], '%b %e, %Y') : 'No Balls Drawn' ;
+		$ball = (!empty($current_bingo['BingoGameBall'][0]['Ball']['ball'])) ? $current_bingo['BingoGameBall'][0]['Ball']['ball'] : null ;
+		$ballDate = (!empty($current_bingo['BingoGameBall'][0]['Ball']['ball'])) ? CakeTime::format($current_bingo['BingoGameBall'][0]['date'], '%b %e, %Y') : 'No Balls Drawn' ;
+        $current_amount = (!empty($current_bingo['BingoGame']['amount'])) ? $current_bingo['BingoGame']['amount'] : '0.00';
 
-		$winner = (!empty($bingo[1]['Winner']['first_name'])) ? $bingo[1]['Winner']['first_name'].' '.$bingo[1]['Winner']['last_name']  : null ;
-		$amount = (!empty($bingo[1]['BingoGame']['amount'])) ? '$'.$bingo[1]['BingoGame']['amount'] : '$0.00' ;
-		$date = (!empty($bingo[1]['BingoGame']['end_date'])) ? CakeTime::format($bingo[1]['BingoGame']['end_date'], '%b %e, %Y') : null ;
+		$winner = (!empty($last_bingo['Winner']['first_name'])) ? $last_bingo['Winner']['first_name'].' '.$last_bingo['Winner']['last_name']  : null ;
+		$amount = (!empty($last_bingo['BingoGame']['amount'])) ? '$'.$last_bingo['BingoGame']['amount'] : '0.00' ;
+		$date = (!empty($last_bingo['BingoGame']['end_date'])) ? CakeTime::format($last_bingo['BingoGame']['end_date'], '%b %e, %Y') : null ;
 
 		#pr($winner);
 		#pr($amount);
@@ -317,20 +340,70 @@ class BingoGameController extends AppController {
 		$info['ballDate'] = $ballDate;
 		$info['winner'] = $winner;
 		$info['amount'] = $amount;
+		$info['current_amount'] = $current_amount;
 		$info['totalAmount'] = '$'.$totalAmount[0]['BingoGame']['the_sum'];
-		$info['currentGame'] = (!empty($bingo[0]['BingoGame']['id'])) ? $bingo[0]['BingoGame']['id'] : null ;
+		$info['currentGame'] = (!empty($current_bingo['BingoGame']['id'])) ? $current_bingo['BingoGame']['id'] : null ;
 
-		unset($diff, $ball, $date, $ballDate, $winner, $amount, $totalAmount, $bingo);
+		unset($diff, $ball, $date, $ballDate, $winner, $amount, $totalAmount, $bingo, $current_amount);
 		return $info;
 		exit;
 	}
 
-/**
- * Displays a view
- *
- * @return void
- * @throws NotFoundException When the view file could not be found
- *	or MissingViewException in debug mode.
- */
+	public function getCurrentAmount(){
+		$account_id = AuthComponent::user('AccountUser.0.account_id');
+
+		$userList = $this->User->find('list', array(
+            'conditions' => array(
+                'User.account_id' => $account_id,
+                'User.is_active' => 1,
+                'User.is_bingo' => 1
+            ),
+			'contain'=>array(
+			),
+		));
+        $user_count = count($userList);
+		$lastAccident = $this->Accident->find('first', array(
+            'conditions' => array(
+                'Accident.account_id' => $account_id,
+            ),
+			'contain'=>array(
+			),
+			'order'=>array('Accident.date' => 'DESC'),
+			'fields'=>array('Accident.date')
+		));
+
+		$current_bingo = $this->BingoGame->find('first', array(
+            'conditions' => array(
+                'BingoGame.end_date' => null
+            ),
+			'contain'=>array(
+			),
+			'fields'=>array('BingoGame.id', 'BingoGame.start_date')
+		));
+
+        $accident = (!empty($lastAccident['Accident']['date'])) ? $lastAccident['Accident']['date'] : 0 ;
+        $bingo = (!empty($current_bingo['BingoGame']['start_date'])) ? $current_bingo['BingoGame']['start_date'] : 0 ;
+
+		if($accident == 0 && $bingo == 0){
+			$days = 0;
+		}else{
+			if($bingo >= $accident){
+				$days = ceil((strtotime('now') - strtotime($bingo)) /86400);
+			}else{
+				$days = ceil((strtotime('now') - strtotime($accident)) /86400);
+			}
+		}
+
+		$amount = round(($days * $user_count) * .10, 2);
+
+		if(!empty($current_bingo['BingoGame']['id'])){
+			$this->request->data['BingoGame']['id'] = $current_bingo['BingoGame']['id'];
+			$this->request->data['BingoGame']['amount'] = $amount;
+
+			$this->BingoGame->saveAll($this->request->data);
+		}
+
+		return $amount;
+	}
 
 }

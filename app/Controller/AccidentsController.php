@@ -20,7 +20,8 @@ class AccidentsController extends AppController {
 		'User',
         'AccountDepartment',
         'AccountUser',
-        'AccidentAreaLov'
+        'AccidentAreaLov',
+		'BingoGame'
 
     );
 
@@ -479,6 +480,12 @@ class AccidentsController extends AppController {
 
 			if ($this->Accident->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
+
+				$now = date('Y-m-d', strtotime('now'));
+                $this->BingoGame->updateAll(
+				    array( 'BingoGame.end_date' => "' $now '", 'BingoGame.amount' => 0 ),   //fields to update
+				    array('BingoGame.end_date' => null, 'BingoGame.account_id' =>  AuthComponent::user('AccountUser.0.account_id'))  //condition
+				);
                 $this->Flash->alertBox(
 	            	'A New Accident Has Been Reported',
 	                array( 'params' => array( 'class'=>'alert-success' ))
