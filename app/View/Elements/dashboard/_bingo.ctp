@@ -37,6 +37,7 @@
 								$end = (!empty($v['BingoGame']['end_date'])) ? CakeTime::format($v['BingoGame']['end_date'], '%b %e, %Y') : null ;
 								$winner = (!empty($v['Winner']['first_name'])) ? $v['Winner']['first_name'].' '.$v['Winner']['last_name']  : null ;
 								$amount = (!empty($v['Winner']['first_name'])) ? '$'. $v['BingoGame']['amount']  : null ;
+								$amount = (is_null($amount)) ? '$'.$v['BingoGame']['amount'] : $amount ;
 								$ballDate = (!empty($v['BingoGameBall'][0]['Ball']['ball'])) ? CakeTime::format($v['BingoGameBall'][0]['date'], '%b %e, %Y') : 'No Balls Drawn' ;
 								?>
 								<tr>

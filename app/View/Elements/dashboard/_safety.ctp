@@ -45,7 +45,8 @@
 					 ]
 				</span>
                 <span class="info-box-number">
-					Drawn On: <br /><small><?=$safety['ballDate']?></small>
+					<small><?=$safety['ballDate']?></small>
+					<br /><small>$<?=$safety['current_amount']?></small>
 				</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
