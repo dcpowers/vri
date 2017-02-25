@@ -12,14 +12,14 @@ class AccountUser extends AppModel {
     * @var string
     */
 	public $displayField = 'id';
-    
+
     public $actsAs = array('Containable');
     /**
      * belongsTo associations
      *
      * @var array
      */
-    public $belongsTo = array( 
+    public $belongsTo = array(
         'User',
         'Account' => array(
             'className' => 'Account',
@@ -29,10 +29,10 @@ class AccountUser extends AppModel {
             'order' => ''
         )
     );
-    
+
     public function pickList($account_id=null, $dept_id = null){
         $dataArr = array();
-        
+
         $items = $this->find('all', array(
             'conditions' => array(
                 $this->alias.'.account_id'=>$account_id
@@ -52,17 +52,48 @@ class AccountUser extends AppModel {
             ),
             'fields'=>array(),
         ));
-        
+
         foreach ( $items as $key=>$rec ) {
             $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
         }
-        
+
         return $dataArr;
     }
-    
+
+	public function pickListActive($account_id=null, $dept_id = null){
+        $dataArr = array();
+
+        $items = $this->find('all', array(
+            'conditions' => array(
+                $this->alias.'.account_id'=>$account_id,
+                'User.is_active'=>1,
+            ),
+            'contain'=>array(
+                'User'=>array(
+                    'fields'=>array(
+                        'User.id',
+                        'User.first_name',
+                        'User.last_name',
+                    ),
+                    'order'=>array(
+                        'User.first_name' => 'ASC',
+                        'User.last_name' => 'ASC'
+                    )
+                )
+            ),
+            'fields'=>array(),
+        ));
+
+        foreach ( $items as $key=>$rec ) {
+            $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
+        }
+
+        return $dataArr;
+    }
+
     public function getAccountIds($account_id=null){
         $dataArr = array();
-        
+
         $items = $this->find('all', array(
             'conditions' => array(
                 $this->alias.'.account_id'=>$account_id
@@ -81,7 +112,7 @@ class AccountUser extends AppModel {
         }
         return $dataArr;
     }
-    
+
     public function pick_list_user(){
         $items = $this->find('list', array(
             'conditions' => array(),
