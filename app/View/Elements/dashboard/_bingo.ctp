@@ -23,9 +23,9 @@
 	                    	<th class="col-sm-2">Start Date</th>
 	                        <th class="col-sm-2">End Date</th>
 	                        <th class="col-sm-2">Winner</th>
-	                        <th class="col-sm-2">Amount</th>
+	                        <th class="col-sm-1">Amount</th>
 	                        <th class="col-sm-2">Last Drawn Date</th>
-							<th class="col-sm-2"></th>
+							<th class="col-sm-3"></th>
 	                    </tr>
 	                </thead>
 
@@ -58,11 +58,28 @@
 									<td>
 										<?php
 										if(is_null($end)){
-							                echo $this->Html->link(
-	                							'Drawn New Ball',
-							                    array('controller'=>'BingoGame', 'action'=>'newdrawn', $v['BingoGame']['id']),
-							                    array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-							                );
+											?>
+											<ul class="list-inline">
+												<li>
+													<?php
+									                echo $this->Html->link(
+	                									'Drawn New Ball',
+									                    array('controller'=>'BingoGame', 'action'=>'newdrawn', $v['BingoGame']['id']),
+									                    array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+									                );
+													?>
+												</li>
+												<li>
+													<?php
+													echo $this->Html->link(
+	                									'Bingo',
+									                    array('controller'=>'BingoGame', 'action'=>'bingo', $v['BingoGame']['id']),
+									                    array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+									                );
+													?>
+												</li>
+											</ul>
+											<?php
 										}
 										?>
 						            </td>

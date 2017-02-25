@@ -21,7 +21,7 @@
                 <i class="fa fa-trophy"></i>
             </span>
             <div class="info-box-content">
-                <span class="info-box-text">Last Award Given</span>
+                <span class="info-box-text">Last Award (<?=$safety['amount']?>)</span>
                 <span class="info-box-number"><?=$safety['winner']?> <br /><small><?=$safety['date']?></small></span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
