@@ -40,7 +40,8 @@ class BingoGameController extends AppController {
 		'Accident',
 		'BingoGame',
 		'BingoBall',
-		'BingoGameBall'
+		'BingoGameBall',
+		'AccountUser'
     );
 
     #public $helpers = array('Session');
@@ -170,6 +171,41 @@ class BingoGameController extends AppController {
 		$this->set('ballList', $ballList);
 	}
 
+	public function bingo($id = null) {
+
+		if ($this->request->is('post') || $this->request->is('put')) {
+
+			$this->request->data['BingoGame']['end_date'] = date('Y-m-d', strtotime('now'));
+			if ($this->BingoGame->saveAll($this->request->data)) {
+            	$this->Flash->alertBox(
+	            	'Bingo Has Been Updated',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
+            }else{
+				$this->Flash->alertBox(
+	            	'There Was An Error. Please, Try Again!',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
+            }
+
+			$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+		}
+
+		$bingo = $this->BingoGame->find('first', array(
+            'conditions' => array(
+                'BingoGame.id' => $id,
+			),
+			'contain'=>array(
+			),
+		));
+
+		$this->set('amount','$'.$bingo['BingoGame']['amount']);
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+
+        $this->set('users', $this->AccountUser->pickListActive($account_ids));
+		$this->set('bingo_game_id', $id);
+	}
+
 	public function add() {
 		$account_id = AuthComponent::user('AccountUser.0.account_id');
 
@@ -265,7 +301,6 @@ class BingoGameController extends AppController {
 				)
 
 			),
-			'order'=>array('BingoGame.end_date' => 'ASC'),
 		));
 
 		$last_bingo = $this->BingoGame->find('first', array(
@@ -286,9 +321,10 @@ class BingoGameController extends AppController {
 				)
 
 			),
-			'order'=>array('BingoGame.end_date' => 'ASC'),
+			'order'=>array('BingoGame.end_date' => 'DESC'),
 		));
-
+		#pr($last_bingo);
+		#exit;
 		$this->BingoGame->virtualFields = array(
     		'the_sum' => 'SUM(BingoGame.amount)'
 		);
@@ -329,11 +365,16 @@ class BingoGameController extends AppController {
 			'order'=>array('Accident.date' => 'Desc'),
 		));
 
+		$diff = floor((strtotime('now') - strtotime($accident['Accident']['date'])) /86400);
+        if($diff == 0){$diff = 'Today';}
+        if($diff == 1){$diff = 'Yesterday';}
+        if($diff >= 2){$diff = $diff.' Days Ago';}
+		/*
 		$diff = CakeTime::timeAgoInWords(
 			$accident['Accident']['date'],
     		array('format' => 'F jS, Y', 'end' => '+10 year')
 		);
-
+        */
         $info['accident_days'] = $diff;
 		$info['ball'] = $ball;
 		$info['date'] = $date;
@@ -383,17 +424,15 @@ class BingoGameController extends AppController {
 
         $accident = (!empty($lastAccident['Accident']['date'])) ? $lastAccident['Accident']['date'] : 0 ;
         $bingo = (!empty($current_bingo['BingoGame']['start_date'])) ? $current_bingo['BingoGame']['start_date'] : 0 ;
-
 		if($accident == 0 && $bingo == 0){
 			$days = 0;
 		}else{
 			if($bingo >= $accident){
-				$days = ceil((strtotime('now') - strtotime($bingo)) /86400);
+				$days = floor((strtotime('now') - strtotime($bingo)) /86400);
 			}else{
-				$days = ceil((strtotime('now') - strtotime($accident)) /86400);
+				$days = floor((strtotime('now') - strtotime($accident)) /86400);
 			}
 		}
-
 		$amount = round(($days * $user_count) * .10, 2);
 
 		if(!empty($current_bingo['BingoGame']['id'])){
