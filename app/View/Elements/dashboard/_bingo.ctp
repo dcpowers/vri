@@ -57,7 +57,8 @@
 
 									<td>
 										<?php
-										if(is_null($end)){
+										#pr($end);
+										if(is_null($end) || empty($end)){
 											?>
 											<ul class="list-inline">
 												<li>
