@@ -46,7 +46,7 @@
 				</span>
                 <span class="info-box-number">
 					<small><?=$safety['ballDate']?></small>
-					<br /><small>$<?=$safety['current_amount']?></small>
+					<br /><small><?php echo $this->Number->currency($safety['current_amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></small>
 				</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
@@ -59,7 +59,9 @@
             </span>
             <div class="info-box-content">
                 <span class="info-box-text">Total Money Given</span>
-                <span class="info-box-number"><?=$safety['totalAmount']?></span>
+                <span class="info-box-number">
+					<?php echo $this->Number->currency($safety['totalAmount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));  ?>
+				</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
