@@ -216,7 +216,7 @@
                     <h3 class="box-title">Accident Files</h3>
 					<div class="box-tools pull-right">
 			            <?php
-			            echo $this->Html->link(
+						echo $this->Html->link(
 			                '<i class="fa fa-upload fa-fw"></i> <span>Upload</span>',
 			                array('controller'=>'Accidents', 'action'=>'files', $accident['Accident']['id']),
 			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
