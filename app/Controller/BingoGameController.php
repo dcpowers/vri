@@ -332,22 +332,23 @@ class BingoGameController extends AppController {
 		$totalAmount = $this->BingoGame->find('all', array(
             'conditions' => array(
                 #'BingoGame.account_id' => $account_id,
-				#'BingoGame.end_date' =>null
+				'BingoGame.end_date !=' =>null
             ),
 			'contain'=>array(
 			),
 			'fields'=>array('BingoGame.the_sum'),
 		));
-
+		#pr($totalAmount);
+		#exit;
 		unset($this->BingoGame->virtualFields);
 
 
 		$ball = (!empty($current_bingo['BingoGameBall'][0]['Ball']['ball'])) ? $current_bingo['BingoGameBall'][0]['Ball']['ball'] : null ;
 		$ballDate = (!empty($current_bingo['BingoGameBall'][0]['Ball']['ball'])) ? CakeTime::format($current_bingo['BingoGameBall'][0]['date'], '%b %e, %Y') : 'No Balls Drawn' ;
-        $current_amount = (!empty($current_bingo['BingoGame']['amount'])) ? $current_bingo['BingoGame']['amount'] : '0.00';
+        $current_amount = (!empty($current_bingo['BingoGame']['amount'])) ? $current_bingo['BingoGame']['amount'] : '0';
 
 		$winner = (!empty($last_bingo['Winner']['first_name'])) ? $last_bingo['Winner']['first_name'].' '.$last_bingo['Winner']['last_name']  : null ;
-		$amount = (!empty($last_bingo['BingoGame']['amount'])) ? '$'.$last_bingo['BingoGame']['amount'] : '0.00' ;
+		$amount = (!empty($last_bingo['BingoGame']['amount'])) ? $last_bingo['BingoGame']['amount'] : '0' ;
 		$date = (!empty($last_bingo['BingoGame']['end_date'])) ? CakeTime::format($last_bingo['BingoGame']['end_date'], '%b %e, %Y') : null ;
 
 		#pr($winner);
@@ -382,7 +383,7 @@ class BingoGameController extends AppController {
 		$info['winner'] = $winner;
 		$info['amount'] = $amount;
 		$info['current_amount'] = $current_amount;
-		$info['totalAmount'] = '$'.$totalAmount[0]['BingoGame']['the_sum'];
+		$info['totalAmount'] = $totalAmount[0]['BingoGame']['the_sum'];
 		$info['currentGame'] = (!empty($current_bingo['BingoGame']['id'])) ? $current_bingo['BingoGame']['id'] : null ;
 
 		unset($diff, $ball, $date, $ballDate, $winner, $amount, $totalAmount, $bingo, $current_amount);

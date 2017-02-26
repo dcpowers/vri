@@ -599,19 +599,24 @@ class UsersController extends AppController {
                 unset($this->request->data['User']['file']);
             }
 
-            $c = 0;
-            $this->DepartmentUser->deleteAll(array('DepartmentUser.user_id' => $this->request->data['User']['id']), false);
-            if(!empty($this->request->data['DepartmentUser']['department_id'])){
-                foreach ($this->request->data['DepartmentUser']['department_id'] as $account_id){
-                    $this->request->data['DepartmentUser'][$c]['department_id'] = $account_id;
-                    $this->request->data['DepartmentUser'][$c]['user_id'] = $this->request->data['User']['id'];
-                    $c++;
-                }
 
-                unset($this->request->data['DepartmentUser']['department_id']);
+			$this->DepartmentUser->deleteAll(array('DepartmentUser.user_id' => $this->request->data['User']['id']), false);
+            if(!empty($this->request->data['DepartmentUser']['department_id'])){
+                $this->request->data['DepartmentUser'][0]['user_id'] = $this->request->data['User']['id'];
+                $this->request->data['DepartmentUser'][0]['department_id'] = $this->request->data['DepartmentUser']['department_id'];
+
+				unset($this->request->data['DepartmentUser']['department_id']);
+            }
+
+			$this->AccountUser->deleteAll(array('AccountUser.user_id' => $this->request->data['User']['id']), false);
+            if(!empty($this->request->data['AccountUser']['account_id'])){
+                $this->request->data['AccountUser'][0]['user_id'] = $this->request->data['User']['id'];
+                $this->request->data['AccountUser'][0]['account_id'] = $this->request->data['AccountUser']['account_id'];
+
+				unset($this->request->data['AccountUser']['account_id']);
             }
             #pr($check);
-
+            #pr($this->request->data['User']['id']);
             #pr($this->request->data);
             #exit;
             if($this->User->saveAll($this->request->data)) {
