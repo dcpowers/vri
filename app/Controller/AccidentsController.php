@@ -613,7 +613,7 @@ class AccidentsController extends AppController {
 			$id = $this->request->data['Accident']['accident_id'];
 			foreach($this->request->data['AccidentFile'] as $v){
 				if($v['files']['error'] == 0){
-					$this->request->data[$c]['AccidentFile']['name'] = $this->upload($v['files']);
+					$this->request->data[$c]['AccidentFile']['name'] = $this->upload($v['files'], $id);
 					$this->request->data[$c]['AccidentFile']['created_by'] = AuthComponent::user('id');
 					$this->request->data[$c]['AccidentFile']['accident_id'] = $this->request->data['Accident']['accident_id'];
 					$this->request->data[$c]['AccidentFile']['description'] = $v['description'];
@@ -771,7 +771,7 @@ class AccidentsController extends AppController {
 		if($file['error'] == 0){
 			$c = uniqid (rand(), true);;
 			$name = $file['name'];
-            $dir = '../webroot/files/accident/'.$id;
+            $dir = '../webroot/files/accidents/'.$id;
 
 			$uploadfile = $dir.'/'. $name;
 
@@ -808,11 +808,12 @@ class AccidentsController extends AppController {
                 'AccidentFile.id' => $id,
             ),
             'fields' => array(
+				'AccidentFile.accident_id',
 				'AccidentFile.name',
 			)
         ));
 
-		$id = $id;
+		$id = $v['AccidentFile']['accident_id'];
         $name = $v['AccidentFile']['name'];
         #$type = $v['TrainingFile']['file_type'];
         #pr($v);

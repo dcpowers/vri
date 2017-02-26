@@ -403,7 +403,7 @@ class BingoGameController extends AppController {
 			'contain'=>array(
 			),
 		));
-        $user_count = count($userList);
+		$user_count = count($userList);
 		$lastAccident = $this->Accident->find('first', array(
             'conditions' => array(
                 'Accident.account_id' => $account_id,
@@ -425,6 +425,7 @@ class BingoGameController extends AppController {
 
         $accident = (!empty($lastAccident['Accident']['date'])) ? $lastAccident['Accident']['date'] : 0 ;
         $bingo = (!empty($current_bingo['BingoGame']['start_date'])) ? $current_bingo['BingoGame']['start_date'] : 0 ;
+
 		if($accident == 0 && $bingo == 0){
 			$days = 0;
 		}else{
@@ -434,8 +435,12 @@ class BingoGameController extends AppController {
 				$days = floor((strtotime('now') - strtotime($accident)) /86400);
 			}
 		}
-		$amount = round(($days * $user_count) * .10, 2);
 
+		$amount = round(($days * $user_count) * .10, 2);
+		#pr($days);
+		#pr($user_count);
+		#pr($amount);
+		#exit;
 		if(!empty($current_bingo['BingoGame']['id'])){
 			$this->request->data['BingoGame']['id'] = $current_bingo['BingoGame']['id'];
 			$this->request->data['BingoGame']['amount'] = $amount;
