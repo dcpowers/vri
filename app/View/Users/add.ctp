@@ -129,7 +129,6 @@
                                         <hr/>
                                         <div class="row">
                                             <div class="col-sm-7">
-
                                                 <div class="form-group">
                                                     <label class="control-label">Account:</label>
 													<?php
@@ -150,7 +149,7 @@
 													?>
                                                 </div>
 
-                                                		<div class="form-group">
+                                                <div class="form-group">
                                                             <label class="control-label">Department:</label>
 															<?php
 						                                    echo $this->Form->input( 'DepartmentUser.department_id', array(
@@ -161,8 +160,8 @@
 						                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
 						                                    ));
 						                                    ?>
-                                                        </div>
-                                                        <div class="form-group">
+                                                </div>
+                                                <div class="form-group">
                                                             <label class="control-label">Supervisor:</label>
 															<?php
 						                                    echo $this->Form->input( 'supervisor_id', array(
@@ -173,7 +172,7 @@
 						                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
 						                                    ));
 						                                    ?>
-                                                        </div>
+                                                </div>
 
                                             </div>
 
@@ -215,6 +214,19 @@
 			                                                'class'=>'datepicker form-control'
 			                                            ));
 			                                            ?>
+                                                    </div>
+
+													<div class="form-group">
+                                                        <label class="control-label">Employment Type:</label>
+														<?php
+					                                    echo $this->Form->input( 'pay_status', array(
+					                                        'options'=>$empStatus,
+					                                        'class'=>'chzn-select form-control',
+					                                        'between' => '<div class="input-group">',
+					                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+					                                    ));
+					                                    ?>
+
                                                     </div>
                                                 </div>
                                             </div>

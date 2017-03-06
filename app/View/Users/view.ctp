@@ -117,7 +117,17 @@
 					        ));
 					        ?>
                         </div>
-
+                        <div class="form-group">
+                        	<label class="control-label">Employment Type:</label>
+							<?php
+					        echo $this->Form->input( 'pay_status', array(
+					        	'options'=>$empStatus,
+					            'class'=>'chzn-select form-control',
+					            'between' => '<div class="input-group">',
+					            'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
+					        ));
+					        ?>
+                        </div>
                         <div class="form-group">
                         	<label class="control-label">Permission (Role):</label>
                             <?php
