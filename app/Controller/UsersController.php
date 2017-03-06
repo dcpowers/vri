@@ -200,10 +200,26 @@ class UsersController extends AppController {
         );
 
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+		$dept_ids = Set::extract( AuthComponent::user(), '/DepartmentUser/department_id' );
 
-		$option = array('conditions'=>array('User.id' => $user_ids));
-        $options = array_merge_recursive($options,$option);
+		#pr($account_ids);
+		#exit;
+		if(AuthComponent::user('Role.permission_level') >= 30){
+            $user_ids = $this->AccountUser->getAccountIds($account_ids);
+			$option = array('conditions'=>array('User.id' => $user_ids));
+        	$options = array_merge_recursive($options,$option);
+        }
+
+		if(AuthComponent::user('Role.permission_level') == 20){
+            $user_ids = $this->DepartmentUser->getUserIds($dept_ids);
+			$option = array('conditions'=>array('User.id' => $user_ids));
+        	$options = array_merge_recursive($options,$option);
+        }
+
+		if(AuthComponent::user('Role.permission_level') == 10){
+            $option = array('conditions'=>array('User.supervisor_id' => AuthComponent::user('id')));
+        	$options = array_merge_recursive($options,$option);
+        }
 
 		if(!is_null($letter) && $letter != 'All'){
             $option = array('conditions'=>array('User.first_name LIKE' => $letter.'%'));
@@ -228,6 +244,8 @@ class UsersController extends AppController {
             $options = array_merge_recursive($options,$option);
             $this->set('status', $status);
         }
+
+
 		$this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
         $users = $this->Paginator->paginate('User');
         #pr($this->Paginator->settings);
@@ -437,6 +455,7 @@ class UsersController extends AppController {
         $this->set('status', $this->User->statusInt());
         $this->set('pickListByAccount', $this->AccountUser->pickList($account_id));
         $this->set('accounts', $this->Account->pickListActive());
+        $this->set('empStatus', $this->Account->empPayStatus());
         $this->set('departments', $this->Department->pickList());
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
 
@@ -720,6 +739,7 @@ class UsersController extends AppController {
         $this->set('accounts', $this->Account->pickListActive());
         $this->set('departments', $this->AccountDepartment->pickListByAccount($account_ids));
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
+		$this->set('empStatus', $this->Account->empPayStatus());
     }
 
     public function profile(){
