@@ -12,14 +12,14 @@ class DepartmentUser extends AppModel {
     * @var string
     */
 	public $displayField = 'id';
-    
+
     public $actsAs = array('Containable');
     /**
      * belongsTo associations
      *
      * @var array
      */
-    public $belongsTo = array( 
+    public $belongsTo = array(
         'User',
         'Department' => array(
             'className' => 'Department',
@@ -29,10 +29,10 @@ class DepartmentUser extends AppModel {
             'order' => ''
         )
     );
-    
+
     public function pickListByDept($id=null){
         $dataArr = array();
-        
+
         $items = $this->find('all', array(
             'conditions' => array(
                 $this->alias.'.department_id'=>$id
@@ -53,12 +53,12 @@ class DepartmentUser extends AppModel {
                             'AccountUser.account_id'=>AuthComponent::user('AccountUser.0.account_id'),
                         )
                     )
-                    
+
                 )
             ),
             'fields'=>array(),
         ));
-        
+
         foreach ( $items as $key=>$rec ) {
             if(!empty($rec['User']['AccountUser'])){
                 $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
@@ -66,7 +66,7 @@ class DepartmentUser extends AppModel {
         }
         return $dataArr;
     }
-    
+
     public function pick_list_user(){
         $items = $this->find('list', array(
             'conditions' => array(),
@@ -76,22 +76,20 @@ class DepartmentUser extends AppModel {
         ));
         return $users;
     }
-    
-    public function getUserIds($account_id=null){
+
+    public function getUserIds($id=null){
         $dataArr = array();
-        
+
         $items = $this->find('all', array(
             'conditions' => array(
-                $this->alias.'.account_id'=>$account_id
+                $this->alias.'.deparment_id'=>$id
             ),
             'contain'=>array(
-                
+
             ),
             'fields'=>array($this->alias.'.department_id'),
         ));
-        
-        pr($items);
-        exit;
+
         foreach ( $items as $key=>$rec ) {
             $dataArr[$rec['User']['id']] = $rec['User']['id'];
         }
