@@ -52,15 +52,22 @@ class Award extends AppModel {
         ),
 		'CreatedBy' => array(
             'className' => 'User',
-            'foreignKey' => 'vefified_by',
+            'foreignKey' => 'verified_by',
             'conditions' => '',
             'fields' => array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name',),
+            'order' => ''
+        ),
+		'Type' => array(
+            'className' => 'AwardType',
+            'foreignKey' => 'award_type_id',
+            'conditions' => '',
+            'fields' => '',
             'order' => ''
         ),
 	);
 
     public $hasMany = array(
-		'AwardTypes',
+		'',
     );
 
 

@@ -397,6 +397,34 @@ class User extends AppModel {
         return $dataArr;
     }
 
+	public function pickListByStartDate( $ids = null, $month=null, $year=null ) {
+        $dataArr = array();
+
+		$recs = $this->find('all',array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$ids,
+				'month(User.doh) <=' => $month,
+	            'year(User.doh) <=' => $year,
+	        ),
+            'contain'=>array(
+
+            ),
+			'fields'=>array(
+				$this->alias.'.id',
+				$this->alias.'.first_name',
+				$this->alias.'.last_name',
+				$this->alias.'.department_id',
+			),
+            'order'=>array(
+				$this->alias.'.first_name asc',
+				$this->alias.'.last_name asc'
+			)
+        ));
+
+
+		return $recs;
+    }
+
     public function pickList_all() {
         $dataArr = array();
 
