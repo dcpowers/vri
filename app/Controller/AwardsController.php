@@ -13,7 +13,9 @@ class AwardsController extends AppController {
 
     var $uses = array(
         'Award',
-		'AccountUser'
+		'AccountUser',
+		'User',
+		'Department'
     );
 
     public $components = array( 'RequestHandler', 'Paginator', 'Session');
@@ -43,57 +45,54 @@ class AwardsController extends AppController {
         $this->set('title_for_layout', 'Awards');
     }
 
-    public function index($status=null) {
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+    public function index() {
+
+		$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
+        $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 		$user_ids = $this->AccountUser->getAccountIds($account_ids);
+		$users = $this->User->pickListByStartDate($user_ids, $month, $year);
+        $depts = $this->Department->pickList();
 
-		$this->Paginator->settings = array(
-            'conditions' => array(
-                'Award.account_id' => $account_ids,
-            ),
-            'contain'=>array(
-            ),
-        );
+        foreach($users as $key=>$u){
+			$users[$key]['Awards'] = $this->Award->find('all', array(
+	            'conditions' => array(
+	                'Award.user_id' => $u['User']['id'],
+	                'month(Award.date)' => $month,
+	                'year(Award.date)' => $year,
+	            ),
+	            'contain' => array(
+                	'Type'=>array(),
+                	'CreatedBy'=>array(),
+	            ),
 
-		$options = array();
-        if(!empty($this->request->data['Search']['q'])){
-            $option = array('conditions'=>array(
-                'OR'=>array(
-                    'Account.name LIKE' => '%'.$this->request->data['Search']['q'].'%',
-                    'Account.abr LIKE' => '%'.$this->request->data['Search']['q'].'%'
-                )
-            ));
-            $options = array_merge_recursive($options,$option);
-        }
+	        ));
 
-		$this->Paginator->settings = array_merge_recursive($this->Paginator->settings,$options);
-
-        #pr($this->Paginator->settings);
-        #exit;
-
-		$result = array();
-
-        $awards = $this->Paginator->paginate('Award');
-		pr($awards);
-		exit;
-		foreach($accounts as $key=>$t){
-			$indexName = $t['Account']['name'] .' ( '. $t['Account']['abr'] .' )';
-            $keysort[$indexName] = $indexName;
-
-			unset($t['Account']);
-            $value[$indexName][] = $t;
-
-			$result = array_merge($result,$value);
-
+			#pr($users[$key]['Awards']);
 		}
 
-		if(!empty($result)){
-            array_multisort($keysort, SORT_ASC, $result);
-        }
-        #pr($result);
+        #pr($depts);
+		#pr($users);
 		#exit;
-		$this->set('status', $status);
-		$this->set('accidents', $result);
+		$result = array();
+		$c = 0;
+
+		for($i=1; $i<=12; $i++){
+			$months[$i] = date( 'F', mktime( 0, 0, 0, $i + 1, 0, 0, 0 ) );
+		}
+
+		$current_year = date('Y', strtotime('now'));
+
+		for($y=2013; $y<=$current_year; $y++){
+			$years[$y] = $y;
+		}
+
+        $this->set('month', $month);
+        $this->set('months', $months);
+        $this->set('year', $year);
+        $this->set('years', $years);
+		$this->set('results', $users);
 
     }
 
