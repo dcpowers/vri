@@ -15,7 +15,8 @@ class AwardsController extends AppController {
         'Award',
 		'AccountUser',
 		'User',
-		'Department'
+		'Department',
+		'Accident'
     );
 
     public $components = array( 'RequestHandler', 'Paginator', 'Session');
@@ -50,17 +51,23 @@ class AwardsController extends AppController {
 		$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
         $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
 
+		$dateObj   = DateTime::createFromFormat('!m', $month);
+		$monthName = $dateObj->format('F'); // March
+
+		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
+		$end = date("Y-m-d", strtotime('Last day of '.$monthName.' '. $year));
+
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 		$user_ids = $this->AccountUser->getAccountIds($account_ids);
-		$users = $this->User->pickListByStartDate($user_ids, $month, $year);
+		$users = $this->User->pickListByStartDate($user_ids, $end);
         $depts = $this->Department->pickList();
 
         foreach($users as $key=>$u){
 			$users[$key]['Awards'] = $this->Award->find('all', array(
 	            'conditions' => array(
 	                'Award.user_id' => $u['User']['id'],
-	                'month(Award.date)' => $month,
-	                'year(Award.date)' => $year,
+	                'Award.date >=' => $start,
+	                'Award.date <=' => $end,
 	            ),
 	            'contain' => array(
                 	'Type'=>array(),
@@ -69,10 +76,24 @@ class AwardsController extends AppController {
 
 	        ));
 
-			#pr($users[$key]['Awards']);
+			if(!empty($users[$key]['Awards'])){
+				$users[$key]['User']['is_paid'] = 1;
+				$users[$key]['User']['is_verified'] = 1;
+				foreach($users[$key]['Awards'] as $akey=>$item){
+					if(empty($item['Award']['paid_date'])){
+						$users[$key]['User']['is_paid'] = 0;
+					}
+
+					if(empty($item['Award']['verified_date'])){
+						$users[$key]['User']['is_verified'] = 0;
+					}
+	            }
+			}
 		}
 
         #pr($depts);
+		#pr($start);
+		#pr($end);
 		#pr($users);
 		#exit;
 		$result = array();
@@ -360,6 +381,37 @@ class AwardsController extends AppController {
 
         return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
     }
+
+	public function verify(){
+    	$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
+        $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
+
+		$dateObj   = DateTime::createFromFormat('!m', $month);
+		$monthName = $dateObj->format('F'); // March
+
+		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
+		$end = date("Y-m-d", strtotime('Last day of '.$monthName.' '. $year));
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+
+		//get any accidents
+        $accidents = $this->Accident->find('list', array(
+	    	'conditions' => array(
+	        	'Accident.account_id' => $account_ids,
+	        	'Accident.date >=' => $start,
+	        	'Accident.date <=' => $end,
+			),
+	        'contain'=>array(),
+            'fields'=>array('Accident.department_id')
+	    ));
+		pr($accidents);
+		exit;
+		$user_ids = $this->AccountUser->getAccountIds($account_ids);
+		$users = $this->User->pickListByStartDateAndType($user_ids, $end);
+        pr($users);
+		exit;
+		$depts = $this->Department->pickList();
+	}
 
 	public function upload($file=null, $id=null, $type=null){
 		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
