@@ -47,7 +47,7 @@ class Award extends AppModel {
             'className' => 'User',
             'foreignKey' => 'user_id',
             'conditions' => '',
-            'fields' => '',
+            'fields' => array('User.id', 'User.first_name', 'User.last_name',),
             'order' => ''
         ),
 		'CreatedBy' => array(

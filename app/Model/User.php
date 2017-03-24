@@ -397,14 +397,15 @@ class User extends AppModel {
         return $dataArr;
     }
 
-	public function pickListByStartDate( $ids = null, $month=null, $year=null ) {
+	public function pickListByStartDate( $ids = null, $endDate = null ) {
         $dataArr = array();
+
 
 		$recs = $this->find('all',array(
             'conditions'=>array(
                 $this->alias.'.id'=>$ids,
-				'month(User.doh) <=' => $month,
-	            'year(User.doh) <=' => $year,
+				$this->alias.'.doh <=' => $endDate,
+
 	        ),
             'contain'=>array(
 
@@ -421,6 +422,33 @@ class User extends AppModel {
 			)
         ));
 
+		return $recs;
+    }
+
+	public function pickListByStartDateAndType( $ids = null, $endDate = null ) {
+        $dataArr = array();
+
+
+		$recs = $this->find('all',array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$ids,
+				$this->alias.'.doh <=' => $endDate,
+				$this->alias.'.pay_status' => array(1,2,5),
+            ),
+            'contain'=>array(
+
+            ),
+			'fields'=>array(
+				$this->alias.'.id',
+				$this->alias.'.first_name',
+				$this->alias.'.last_name',
+				$this->alias.'.department_id',
+			),
+            'order'=>array(
+				$this->alias.'.first_name asc',
+				$this->alias.'.last_name asc'
+			)
+        ));
 
 		return $recs;
     }
