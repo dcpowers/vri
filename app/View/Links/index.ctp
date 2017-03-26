@@ -13,7 +13,7 @@
     </div>
     <div class="flextable">
         <div class="flextable-item flextable-primary">
-			<?php echo $this->element( 'links/menu' );?>
+			<?php echo $this->element( 'Links/menu' );?>
         </div>
     </div>
 
