@@ -425,8 +425,9 @@ class User extends AppModel {
 		return $recs;
     }
 
-	public function pickListByStartDateAndType( $ids = null, $endDate = null ) {
-        $dataArr = array();
+	public function pickListByStartDateAndType( $ids = null, $endDate = null, $dept_ids = null ) {
+
+		$dataArr = array();
 
 
 		$recs = $this->find('all',array(
@@ -434,21 +435,30 @@ class User extends AppModel {
                 $this->alias.'.id'=>$ids,
 				$this->alias.'.doh <=' => $endDate,
 				$this->alias.'.pay_status' => array(1,2,5),
-            ),
+			),
             'contain'=>array(
-
+				'DepartmentUser'=>array(),
+				'AccountUser'=>array()
             ),
 			'fields'=>array(
 				$this->alias.'.id',
 				$this->alias.'.first_name',
 				$this->alias.'.last_name',
-				$this->alias.'.department_id',
+				$this->alias.'.pay_status'
 			),
             'order'=>array(
 				$this->alias.'.first_name asc',
 				$this->alias.'.last_name asc'
 			)
         ));
+
+		foreach($recs as $key=>$v){
+
+			$recs[$key]['User']['account_id'] = $v['AccountUser'][0]['account_id'];
+			$recs[$key]['User']['dept_id'] = $v['DepartmentUser'][0]['department_id'];
+
+			unset($recs[$key]['DepartmentUser'], $recs[$key]['AccountUser']);
+		}
 
 		return $recs;
     }

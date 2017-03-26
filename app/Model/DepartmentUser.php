@@ -95,4 +95,21 @@ class DepartmentUser extends AppModel {
         }
         return $dataArr;
     }
+
+	public function removeUserIdsByDept($users=null, $dept_ids = null){
+        $dataArr = array();
+
+        $items = $this->find('list', array(
+            'conditions' => array(
+                $this->alias.'.user_id'=>$users,
+                $this->alias.'.department_id !='=>$dept_ids
+            ),
+            'contain'=>array(
+
+            ),
+            'fields'=>array($this->alias.'.user_id', $this->alias.'.user_id'),
+        ));
+
+		return $items;
+    }
 }
