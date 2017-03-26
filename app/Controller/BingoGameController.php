@@ -294,7 +294,7 @@ class BingoGameController extends AppController {
 				)
 
 			),
-			#'order'=>array('BingoGame.end_date' => 'ASC'),
+			'order'=>array('BingoGame.start_date' => 'DESC'),
 		));
 
 		#pr($dashboardData);
