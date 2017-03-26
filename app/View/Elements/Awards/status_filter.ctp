@@ -1,7 +1,7 @@
     <div class="dashhead-toolbar-item item col-md-12">
         <?php
         echo $this->Form->create('Awards', array(
-            'url' => array('plugin'=>false, 'controller' => 'Awards', 'action'=>'index'),
+            'url' => array('plugin'=>false, 'controller' => 'Awards', 'action'=>$this->request->params['action']),
             'role'=>'form',
             #'class'=>'form-inline',
             'inputDefaults' => array(

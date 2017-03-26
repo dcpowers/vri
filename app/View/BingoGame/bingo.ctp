@@ -12,6 +12,9 @@
     ));
 
     echo $this->Form->hidden('id', array('value'=>$bingo_game_id));
+    echo $this->Form->hidden('amount', array('value'=>$amount));
+
+
     ?>
 <div class="modal-header modal-header-success">
     <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
@@ -37,7 +40,7 @@
 	<div class="form-group">
         <label class="col-sm-4 control-label" for="name">Amount:</label>
 		<div class="col-sm-8">
-			<p class="form-control-static"><?=$amount?></p>
+			<p class="form-control-static">$<?=$amount?></p>
 		</div>
     </div>
 </div>

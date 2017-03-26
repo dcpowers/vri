@@ -3,14 +3,14 @@
     #exit;
 ?>
 <style type="text/css">
-	.hr-divider:before{
-        background-color: #00A65A;
+	.checkbox{
+        margin-top: 0px;
 	}
 </style>
 <div class="account index bg-white">
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">List Of Awards: <?=$months[$month]?> <?=$years[$year]?></h6>
+            <h6 class="dashhead-subtitle">Verify Awards: <?=$months[$month]?> <?=$years[$year]?></h6>
             <h3 class="dashhead-title"><i class="fa fa-trophy fa-fw"></i>Awards</h3>
         </div>
         <div class="dashhead-toolbar">
@@ -26,91 +26,92 @@
             <?php #echo $this->element( 'Accidents/search_filter', ['in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy] );?>
         </div>
     </div>
+    <?php
+    echo $this->Form->create('Awards', array(
+    	'url'=>array('controller'=>'Awards', 'action'=>'process'),
+        #'class'=>'form-horizontal',
+        'role'=>'form',
+        'inputDefaults'=>array(
+        	'label' => false,
+            'div' => false,
+            #'between' => '<div class="input-group">',
+            'class'=>'form-control',
+            #'after' => '</div>',
+            'error' => array('attributes' => array('wrap' => 'span', 'class' => 'help-block'))
+        )
+    ));
+    ?>
+	<table class="table table-striped" id="accountsTable">
+		<thead>
+	    	<tr class="tr-heading">
+                <th class="col-md-1"></th>
+				<th class="col-md-4">User</th>
+				<th class="col-md-4">Verify Date</th>
+	            <th class="col-md-3">Amount</th>
+	        </tr>
+	    </thead>
 
-	<?php
-    foreach($results as $title=>$v){
-		$count = count($v['Awards']);
-		$in = null;
-		if($count >= 1){
-			if($v['User']['is_paid'] == 1){
-				$labelType = "label-success";
-			}else if($v['User']['is_verified'] == 1){
-				$labelType = "label-warning";
-				$in = 'in';
-			}else{
-				$labelType = "label-danger";
-				$in = 'in';
+	    <tbody>
+			<?php
+			$c = 0;
+			$dateObj   = DateTime::createFromFormat('!m', $month);
+			$monthName = $dateObj->format('F'); // March
+
+			$numDays = cal_days_in_month(CAL_GREGORIAN, $month, $year) - 1;
+			$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
+			$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
+			if(isset($results)){
+				foreach($results as $r){
+					$amount = ($r['User']['pay_status'] = 1) ? '5.00' : '2.50' ;
+					$name = $r['User']['first_name'].' '.$r['User']['last_name'];
+
+					echo $this->Form->hidden($c.'.verified_by', array('value'=>AuthComponent::user('id')));
+					echo $this->Form->hidden($c.'.verified_date', array('value'=>date('Y-m-d h:i:s',strtotime('now'))));
+            		echo $this->Form->hidden($c.'.date', array('value'=>$end));
+					echo $this->Form->hidden($c.'.account_id', array('value'=>$r['User']['account_id']));
+					echo $this->Form->hidden($c.'.department_id', array('value'=>$r['User']['dept_id']));
+					echo $this->Form->hidden($c.'.award_type_id', array('value'=>1));
+					echo $this->Form->hidden($c.'.user_id', array('value'=>$r['User']['id']));
+					?>
+					<tr>
+						<td>
+							<div class="form-group" >
+                        		<label class="sr-only control-label">Eligible Bingo:</label>
+                            	<div class="checkbox">
+			                		<label> <?php echo $this->Form->checkbox($c.'.verify', array('checked'=>true)); ?></label>
+								</div>
+                        	</div>
+						</td>
+						<td><?=$name?></td>
+						<td><?php echo date('F d, Y', strtotime('now')); ?></td>
+						<td>
+							<div class="form-group">
+                            	<?php
+                                echo $this->Form->input($c.'.amount', array (
+                                	'type'=>'text',
+                                    'value'=>$amount
+                                ));
+                                ?>
+                            </div>
+						</td>
+					</tr>
+					<?php
+					$c++;
+				}
 			}
-		}else{
-			$labelType = "label-default";
-		}
-        ?>
-		<div class="panel panel-default">
-  			<div class="panel-heading" id="heading<?=$v['User']['id']?>">
-                <h4 class="panel-title">
-					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#<?=$v['User']['id']?>" aria-expanded="false" aria-controls="<?=$v['User']['id']?>">
-						<div class="pull-right">
-							<span class="label label-as-badge <?=$labelType?>"><?=$count?></span>
-						</div>
-						<i class="fa fa-user fa-fw"></i><?=$v['User']['first_name']?> <?=$v['User']['last_name']?> <i class="fa fa-caret-down fa-fw"></i>
-					</a>
-				</h4>
-  			</div>
-			<div id="<?=$v['User']['id']?>" class="panel-collapse collapse <?=$in?>" role="tabpanel" aria-labelledby="heading<?=$v['User']['id']?>">
-
-				<table class="table table-striped" id="accountsTable">
-	        		<thead>
-	            		<tr class="tr-heading">
-	                		<th class="">Date</th>
-	                		<th class="col-md-2">Paid Date</th>
-	                		<th class="col-md-2">Amount</th>
-	                		<th class="col-md-2">Type</th>
-							<th class="col-md-2">Verified By</th>
-							<th class="col-md-2"></th>
-						</tr>
-	        		</thead>
-
-	        		<tbody>
-						<?php
-						if(isset($v['Awards'])){
-							foreach($v['Awards'] as $r){
-								$paid = (!empty($r['Award']['paid_date'])) ? date('F d, Y', strtotime($r['Award']['paid_date'])) : null;
-								$ver_by = (!empty($r['CreatedBy']['first_name'])) ? $r['CreatedBy']['first_name'].' '.$r['CreatedBy']['last_name'] : null;
-								?>
-	                			<tr>
-									<td><?php echo date('F d, Y', strtotime($r['Award']['date'])); ?></td>
-									<td><?=$paid?></td>
-									<td><?php echo $this->Number->currency($r['Award']['amount']); ?></td>
-									<td><?=$r['Type']['award']?></td>
-									<td><?=$ver_by?></td>
-	                    			<td>
-										<ul class="list-inline">
-											<li>
-												<?php
-												echo $this->Html->link(
-						                    		'<i class="fa fa-fw fa-unlock"></i>',
-							                        array('controller'=>'Accidents', 'action'=>'open', $r['Award']['id']),
-							                        array('escape'=>false)
-							                    );
-												?>
-											</li>
-										</ul>
-									</td>
-								</tr>
-								<?php
-							}
-						}
-						?>
-					</tbody>
-				</table>
-			</div>
-
-		</div>
-		<?php
-	}
-	?>
-
+			?>
+		</tbody>
+	</table>
+	<?php
+    echo $this->Form->button('Verify', array(
+    	'type'=>'submit',
+        'class'=>'btn btn-primary pull-left'
+    ));
+    ?>
+	<?php echo $this->Form->end(); ?>
 </div>
+
+
 
 <script type="text/javascript">
     jQuery(window).ready( function($) {
@@ -119,5 +120,7 @@
 			width: '100%',
 			disable_search: true
 		});
+
+
      });
 </script>

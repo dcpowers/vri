@@ -61,12 +61,11 @@
 				<table class="table table-striped" id="accountsTable">
 	        		<thead>
 	            		<tr class="tr-heading">
-	                		<th class="">Date</th>
-	                		<th class="col-md-2">Paid Date</th>
+	                		<th class="col-md-2">Date</th>
+	                		<th class="col-md-3">Paid Date</th>
 	                		<th class="col-md-2">Amount</th>
 	                		<th class="col-md-2">Type</th>
-							<th class="col-md-2">Verified By</th>
-							<th class="col-md-2"></th>
+							<th class="col-md-3">Verified By</th>
 						</tr>
 	        		</thead>
 
@@ -74,29 +73,29 @@
 						<?php
 						if(isset($v['Awards'])){
 							foreach($v['Awards'] as $r){
-								$paid = (!empty($r['Award']['paid_date'])) ? date('F d, Y', strtotime($r['Award']['paid_date'])) : null;
 								$ver_by = (!empty($r['CreatedBy']['first_name'])) ? $r['CreatedBy']['first_name'].' '.$r['CreatedBy']['last_name'] : null;
 								?>
 	                			<tr>
 									<td><?php echo date('F d, Y', strtotime($r['Award']['date'])); ?></td>
-									<td><?=$paid?></td>
+									<td>
+                                        <div id="<?=$r['Award']['id']?>">
+											<?php
+											if(!empty($r['Award']['paid_date'])){
+												echo date('F d, Y', strtotime($r['Award']['paid_date']));
+											}else{
+												echo $this->Html->link(
+													'Paid',
+												    '#',
+												    array('escape'=>false, 'id'=>$r['Award']['id'], 'class'=>'link')
+												);
+											}
+											?>
+										</div>
+									</td>
 									<td><?php echo $this->Number->currency($r['Award']['amount']); ?></td>
 									<td><?=$r['Type']['award']?></td>
 									<td><?=$ver_by?></td>
-	                    			<td>
-										<ul class="list-inline">
-											<li>
-												<?php
-												echo $this->Html->link(
-						                    		'<i class="fa fa-fw fa-unlock"></i>',
-							                        array('controller'=>'Accidents', 'action'=>'open', $r['Award']['id']),
-							                        array('escape'=>false)
-							                    );
-												?>
-											</li>
-										</ul>
-									</td>
-								</tr>
+	                    		</tr>
 								<?php
 							}
 						}
@@ -111,7 +110,9 @@
 	?>
 
 </div>
-
+<?php
+    $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Awards', 'action' => 'paid'));
+?>
 <script type="text/javascript">
     jQuery(window).ready( function($) {
         $(".chzn-select").chosen({
@@ -119,5 +120,35 @@
 			width: '100%',
 			disable_search: true
 		});
+
+		$('.link').on('click', function () {
+			var id = $(this).attr("id");
+			$.ajax({
+				type: 'POST',
+                url:'<?=$url?>/' + id + '.json',
+                cache: false,
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    $('#LoadingDiv').show();
+                    $('#' + id).empty();
+                },
+                complete: function(){
+                    $('#LoadingDiv').hide();
+                },
+                success: function(response) {
+                    $('#' + id).html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+
+            });
+
+            return false;
+
+        });
      });
 </script>
