@@ -41,7 +41,8 @@ class BingoGameController extends AppController {
 		'BingoGame',
 		'BingoBall',
 		'BingoGameBall',
-		'AccountUser'
+		'AccountUser',
+		'Award'
     );
 
     #public $helpers = array('Session');
@@ -175,8 +176,35 @@ class BingoGameController extends AppController {
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 
+			$user = $this->User->find('first', array(
+	    		'conditions' => array(
+	        		'User.id' => $this->request->data['BingoGame']['user_id']
+				),
+				'contain'=>array(
+					'AccountUser'=>array(),
+					'DepartmentUser'=>array(),
+				),
+
+			));
+
+			$account_id = Set::extract( $user, '/AccountUser/account_id' );
+			$dept_id = Set::extract( $user, '/DepartmentUser/department_id' );
+
+			$this->request->data['Award']['verified_by'] = AuthComponent::user('id');
+			$this->request->data['Award']['verified_date'] = date('Y-m-d h:i:s',strtotime('now'));
+    		$this->request->data['Award']['date'] = date('Y-m-d', strtotime('now'));
+			$this->request->data['Award']['account_id'] = $account_id[0];
+			$this->request->data['Award']['department_id'] = $dept_id[0];
+			$this->request->data['Award']['award_type_id'] = 2;
+			$this->request->data['Award']['user_id'] = $this->request->data['BingoGame']['user_id'];
+			$this->request->data['Award']['amount'] = $this->request->data['BingoGame']['amount'];
+
 			$this->request->data['BingoGame']['end_date'] = date('Y-m-d', strtotime('now'));
-			if ($this->BingoGame->saveAll($this->request->data)) {
+
+			if ($this->BingoGame->save($this->request->data['BingoGame'])) {
+
+				$this->Award->create();
+				$this->Award->save($this->request->data['Award']);
             	$this->Flash->alertBox(
 	            	'Bingo Has Been Updated',
 	                array( 'params' => array( 'class'=>'alert-success' ))
@@ -199,7 +227,7 @@ class BingoGameController extends AppController {
 			),
 		));
 
-		$this->set('amount','$'.$bingo['BingoGame']['amount']);
+		$this->set('amount',$bingo['BingoGame']['amount']);
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 
         $this->set('users', $this->AccountUser->pickListActive($account_ids));
