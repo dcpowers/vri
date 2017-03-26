@@ -35,19 +35,20 @@
 				#pr($data['Link']['permission_level']);
                 ?>
                 <tr>
-                	<td>
-						<?php
-						echo $this->Html->link(
-		                	$data['Link']['name'],
-		                    array('controller'=>'Links', 'action'=>'view', $data['Link']['id']),
-		                    array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-		                );
-						?>
-					</td>
+                	<td><?=$data['Link']['name']?></td>
                 	<td><span class="<?=$data['Status']['color']?>"><?=$data['Status']['name']?></span></td>
                     <td class="text-center"><?=$roles[$data['Link']['permission_level']]?></td>
 					<td>
 						<ul class="list-inline">
+                            <li>
+								<?php
+								echo $this->Html->link(
+		                			'<i class="fa fa-edit fa-fw"></i>',
+				                    array('controller'=>'Links', 'action'=>'view', $data['Link']['id']),
+				                    array('escape'=>false, 'class'=>'btn btn-primary btn-sm', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+				                );
+								?>
+							</li>
 							<li>
 								<?php
 								echo $this->Html->link(
