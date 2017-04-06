@@ -1,0 +1,8 @@
+{
+    "slug": "Training",
+    "name": "Training",
+    "author": "Nick Robillard",
+    "description": "A custom developed SafeTrain module.  Training Quiz and Tracking Database.",
+    "version": "2.0.1",
+    "license": "Commercial"
+}
