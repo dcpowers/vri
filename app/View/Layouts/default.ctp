@@ -48,6 +48,7 @@
 
             <!-- Morris.js charts -->
             <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/js/bootstrap-dialog.min.js"></script>
 
             <?php echo $this->Html->script('../plugins/morris/morris.min'); ?>
             <!-- Sparkline -->
@@ -103,6 +104,7 @@
 
 
             <?php echo $this->Html->css('https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css');?>
+            <?php echo $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.35.4/css/bootstrap-dialog.min.css');?>
             <?php #echo $this->Html->css('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');?>
             <?php echo $this->Html->css('font-awesome.min.css');?>
             <?php echo $this->Html->css('//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css');?>
@@ -149,30 +151,29 @@
             <?php echo $this->element('sidebar'); ?>
 
         </div>
-        <!-- Large Model -->
-        <div class="modal fade bs-example-modal-lg" tabindex="-1" id="myLgModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                </div> <!-- /.model-content -->
-            </div> <!-- /.model-dialog -->
-        </div> <!-- /.model -->
-
-        <!-- Normal Size -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="myModal" aria-labelledby="myRegularModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
+        <!-- Normal Model -->
+        <div class="modal bootstrap-dialog type-primary fade in" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
             <div class="modal-dialog">
                 <div class="modal-content">
+                </div> <!-- /.modal-content -->
+            </div> <!-- /.modal-dialog -->
+        </div> <!-- /.modal -->
 
-                </div> <!-- /.model-content -->
-            </div> <!-- /.model-dialog -->
-        </div> <!-- /.model -->
-
-        <!-- Small Model -->
-        <div class="modal fade bs-example-modal-sm" tabindex="-1" id="mySmModal" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="false" data-keyboard="false" data-backdrop="static">
-            <div class="modal-dialog modal-sm" role="document">
+        <!-- Big Model -->
+        <div class="modal bootstrap-dialog type-primary fade modal-wide in" id="myModalBig" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
+            <div class="modal-dialog">
                 <div class="modal-content">
-                </div> <!-- /.model-content -->
-            </div> <!-- /.model-dialog -->
-        </div> <!-- /.model -->
+                </div> <!-- /.modal-content -->
+            </div> <!-- /.modal-dialog -->
+        </div> <!-- /.modal -->
+
+        <!-- small Model -->
+        <div class="modal bootstrap-dialog type-primary fade in" id="myModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                </div> <!-- /.modal-content -->
+            </div> <!-- /.modal-dialog -->
+        </div> <!-- /.modal -->
 
         <script type="text/javascript">
             jQuery(document).ready( function($) {

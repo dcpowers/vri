@@ -7,12 +7,13 @@
 			<?php echo $this->element( 'dashboard/_links' ); ?>
 		</div>
         <div class="col-md-10">
-			<?php echo $this->element( 'dashboard/_accident' ); ?>
+    		<?php echo $this->element( 'dashboard/_accident' ); ?>
 			<?php echo $this->element( 'dashboard/_trainings' ); ?>
-			<?php echo $this->element( 'dashboard/_improvements' ); ?>
+			<?php echo $this->element( 'dashboard/_tests' ); ?>
+            <?php echo $this->element( 'dashboard/_improvements' ); ?>
 			<?php echo $this->element( 'dashboard/_bingo' ); ?>
         </div>
-    </div>
+	</div>
 </div>
 
 <script type="text/javascript">

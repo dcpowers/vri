@@ -1,6 +1,6 @@
 <?php
 echo $this->Form->create('AssignedTest', array(
-    'url' => array('controller'=>'TestSchedules', 'action'=>'Single', 'member'=>true, $test_id), 
+    'url' => array('controller'=>'TestSchedules', 'action'=>'Single', $test_id),
     'role'=>'form',
     'class'=>'form-horizontal',
     'inputDefaults' => array(
@@ -43,18 +43,18 @@ echo $this->Form->hidden('test_id', array('value'=>$test_id));
 
 <div class="modal-footer">
     <div class="bootstrap-dialog-footer">
-        <div class="bootstrap-dialog-footer-buttons">  
+        <div class="bootstrap-dialog-footer-buttons">
             <?php echo $this->Form->button('<i class="fa fa-times"></i> Close', array('class'=>'btn btn-default', 'data-dismiss'=>'modal')); ?>
             <?php echo $this->Form->button('<i class="fa fa-floppy-o"></i> Save', array('type'=>'submit', 'div'=>false, 'label'=>false, 'class'=>'btn btn-primary')); ?>
         </div>
     </div>
 </div>
-<?php echo $this->Form->end();?>    
+<?php echo $this->Form->end();?>
 
 <script type="text/javascript">
     jQuery(window).ready( function($) {
             $(".chosen-select").chosen({ width: "inherit" })
-        
-        
+
+
     });
-</script> 
+</script>

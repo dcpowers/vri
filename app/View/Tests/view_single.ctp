@@ -145,6 +145,7 @@
                     }
 
                     if(!is_null($c_date)){
+						#pr($item['Test']);
                         foreach($item['Test']['ReportSwitch'] as $report){
                             if(($report['Report']['is_user_report'] == 2 || is_null($report['Report']['is_user_report']))){
                                 $link[] = $this->Html->link(

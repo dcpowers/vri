@@ -1,6 +1,4 @@
 <?php
-    $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-    $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
     $editable_group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
 
 ?>
@@ -81,7 +79,7 @@
 						<?php
                         echo $this->Html->link(
                             '<h3 class="media-heading">'. $test['Test']['name'].'</h3>',
-                            array('controller'=>'tests', 'member'=>true, 'action'=>'view_single', $test['Test']['id']),
+                            array('controller'=>'tests', 'action'=>'view_single', $test['Test']['id']),
                             array('escape' => false) );
                         ?>
 
@@ -128,20 +126,20 @@
 
                         echo $this->Html->link(
                             $this->Html->image($image, array('class'=>'img-responsive img-thumbnail')),
-                            array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                            array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false)
                         );
 
                         ?>
 
                         <?php
-                        if($test['Test']['group_id'] == $editable_group_id[0]){
+                        if($test['Test']['account_id'] == $editable_group_id[0]){
                             ?>
                             <div class="col-md-12 text-center" style="margin-top: 20px;">
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-pencil-square-o"></i><span class="text">Edit</span>',
-                                    array('controller'=>'TestGroups', 'member'=>true, 'action'=>'index', $test['Test']['id']),
+                                    array('controller'=>'TestGroups', 'action'=>'index', $test['Test']['id']),
                                     array('escape' => false, 'class'=>'btn btn-success btn-sm')
                                 );
                                 ?>
@@ -155,7 +153,7 @@
                         <?php
                         echo $this->Html->link(
                             '<h2 class="no-margin">'. $test['Test']['name'].'</h2>',
-                            array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                            array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false) );
                         ?>
                         <div class="pull-right">
@@ -170,7 +168,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-eye"></i><span class="text">View</span>',
-                                    array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                                    array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                                     array('escape' => false) );
                                 ?>
                             </li>
@@ -178,7 +176,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-calendar"></i><span class="text">Schedule</span>',
-                                    array('controller'=>'TestSchedules', 'member'=>true, 'action'=>'Type', $test['Test']['id']),
+                                    array('controller'=>'TestSchedules', 'action'=>'Type', $test['Test']['id']),
                                     array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                 );
                                 ?>
@@ -207,7 +205,7 @@
 
                         echo $this->Html->link(
                             $this->Html->image($image, array('class'=>'img-responsive img-thumbnail')),
-                            array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                            array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false)
                         );
 
@@ -220,7 +218,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-pencil-square-o"></i><span class="text">Edit</span>',
-                                    array('controller'=>'TestGroups', 'member'=>true, 'action'=>'index', $test['Test']['id']),
+                                    array('controller'=>'TestGroups', 'action'=>'index', $test['Test']['id']),
                                     array('escape' => false, 'class'=>'btn btn-success btn-sm')
                                 );
                                 ?>
@@ -234,7 +232,7 @@
                         <?php
                         echo $this->Html->link(
                             '<h2 class="no-margin">'. $test['Test']['name'].'</h2>',
-                            array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                            array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false) );
                         ?>
                         <div class="pull-right">
@@ -249,7 +247,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-eye"></i><span class="text">View</span>',
-                                    array('controller'=>'tests', 'member'=>true, 'action'=>'view_group', $test['Test']['id']),
+                                    array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                                     array('escape' => false) );
                                 ?>
                             </li>
@@ -257,7 +255,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="fa fa-calendar"></i><span class="text">Schedule</span>',
-                                    array('controller'=>'TestSchedules', 'member'=>true, 'action'=>$test['Test']['schedule_type'], $test['Test']['id']),
+                                    array('controller'=>'TestSchedules', 'action'=>$test['Test']['schedule_type'], $test['Test']['id']),
                                     array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                 );
                                 ?>
