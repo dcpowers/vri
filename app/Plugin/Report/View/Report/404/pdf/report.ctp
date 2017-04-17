@@ -4,7 +4,7 @@ $ext = explode(".", Router::url( $this->here, true ));
 ?>
 
 <style type="text/css">
-    .break {page-break-before: always;}
+    .break {page-break-before: always;}    
 </style>
 <div class="container">
     <div class="col-md-12">
@@ -19,14 +19,14 @@ $ext = explode(".", Router::url( $this->here, true ));
                     'width'=>'48px',
                     'height'=>'48px',
                     'url' => array('plugin'=> 'report', 'controller' => 'report', 'action' => 'abc_report', $id ,'member'=>false, 'ext'=>'pdf'),
-
-                ));
+                    
+                ));                    
                 ?>
             </div>
             <?php
         }
         ?>
-        <div class="clearfix"></div>
+        <div class="clearfix"></div>                     
         <div class="widget widget-no-header">
             <div style="color:#428BCA; background-color:#428BCA;height:25px;"></div>
             <h1 class="text-center" style="text-align: center;">This Report was specially prepared for</h1>
@@ -34,10 +34,10 @@ $ext = explode(".", Router::url( $this->here, true ));
             <div style="color:#428BCA; background-color:#428BCA;height:25px;"></div>
             <div class="logo" style="text-align: center">
                 <?php
-                echo $this->Html->image("logo.png", array(
+                echo $this->Html->image("iworklogo.png", array(
                     'fullBase' => true,
-                    'alt' => 'Vanguard Resources'
-                ));
+                    'alt' => 'iWorkZone'
+                ));                    
                 ?>
             </div>
             <?php
@@ -45,7 +45,7 @@ $ext = explode(".", Router::url( $this->here, true ));
                 $text = str_replace('{uploadir}', $folder, $item['Report']['text']);
                 $text = str_replace('{assigned_id}', $AssignedTest['id'], $text);
                 $text = str_replace('{firstname}', $userInfo['first_name'], $text);
-
+                
                 ?>
                 <div class="col-md-12 break">
                     <h1 class="text-center"><?=$item['Report']['name']?></h1>
@@ -61,7 +61,7 @@ $ext = explode(".", Router::url( $this->here, true ));
                         <h2 class="text-center"><?=$section['Report']['name']?></h2>
                         <?=$text?>
                     </div>
-                    <?php
+                    <?php 
                     foreach($section['children'] as $sectionKey=>$statement){
                         foreach($answers as $key=>$answer){
                             if(!isset($answer['section_id'])) { echo $key; }
@@ -81,13 +81,13 @@ $ext = explode(".", Router::url( $this->here, true ));
                                     <?=$text?>
                                 </div>
                                 <?php
-                                unset($answers[$key]);
+                                unset($answers[$key]);   
                             }
                         }
                     }
                 }
             }
-            ?>
+            ?> 
             <div class="clearfix"></div>
         </div>
     </div>
