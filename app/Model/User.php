@@ -400,7 +400,6 @@ class User extends AppModel {
 	public function pickListByStartDate( $ids = null, $endDate = null ) {
         $dataArr = array();
 
-
 		$recs = $this->find('all',array(
             'conditions'=>array(
                 $this->alias.'.id'=>$ids,
