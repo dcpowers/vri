@@ -76,19 +76,21 @@ Cache::config('default', array('engine' => 'File'));
 
  defined('PRO_AUDITLOG_BIND_USER') or define('PRO_AUDITLOG_BIND_USER', true );
  defined('PRO_AUDITLOG_USER_MODEL') or define('PRO_AUDITLOG_USER_MODEL', 'User');
- 
+
  defined('APP_LONGDATE_FORMAT') or define('APP_LONGDATE_FORMAT', 'F jS, Y');
  defined('APP_DATE_FORMAT') or define('APP_DATE_FORMAT', 'M jS, Y');
  defined('APP_SHORTDATE_FORMAT') or define('APP_SHORTDATE_FORMAT', 'M jS');
  defined('APP_DATETIME_FORMAT') or define('APP_DATETIME_FORMAT', 'F jS Y g:i A');
  defined('APP_TIME_FORMAT') or define('APP_TIME_FORMAT', 'g:i A');
  defined('APP_BOOTSTRAP_FORMAT') or define('APP_BOOTSTRAP_FORMAT', 'm/d/Y');
- 
- 
+
+
  defined('DATE_MYSQL_DATE') or define('DATE_MYSQL_DATE', 'Y-m-d');
  defined('DATE_MYSQL_DATETIME') or define('DATE_MYSQL_DATETIME', 'Y-m-d H:i:s');
  defined('DATE_MYSQL_TIME') or define('DATE_MYSQL_TIME', 'H:i:s');
  defined('DATE_MYSQL_YEAR') or define('DATE_MYSQL_YEAR', 'Y');
+
+ Configure::write('expired_testing', '+90 Days');
 /**
  * To prefer app translation over plugin translation, you can set
  *
