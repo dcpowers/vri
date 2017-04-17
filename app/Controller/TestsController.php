@@ -67,8 +67,8 @@ class TestsController extends AppController {
         #$data = $this->Group->verify();
     }
 
-    public function member_dashboard() {
-        $group_ids = AuthComponent::user('parent_group_ids');
+    public function dashboard() {
+        $group_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 
         $assigned['current'] = $this->AssignedTest->find('all', array(
             'conditions'=>array(
@@ -145,9 +145,7 @@ class TestsController extends AppController {
     }
 
     public function index() {
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-        $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
-        $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
+        $account_id = AuthComponent::user('AccountUser.0.account_id');
 
         $assessments = $this->Test->find('all', array(
             'conditions' => array(
@@ -155,13 +153,13 @@ class TestsController extends AppController {
                 'Test.is_active' =>1,
                 'Test.schedule_type'=>'Single',
                 'OR'=>array(
-                    'Test.group_id IS NULL',
-                    'Test.group_id'=>$group_id[0]
+                    'Test.account_id IS NULL',
+                    'Test.account_id'=>$account_id
                 )
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.group_id'),
+            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
             'order'=>array('Test.name')
         ));
 
@@ -173,13 +171,13 @@ class TestsController extends AppController {
                 'Test.is_active' =>1,
                 'Test.schedule_type'=>array('Group','Blind'),
                 'OR'=>array(
-                    'Test.group_id IS NULL',
-                    'Test.group_id'=>$group_id[0]
+                    'Test.account_id IS NULL',
+                    'Test.account_id'=>$account_id
                 )
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.group_id'),
+            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
             'order'=>array('Test.name')
         ));
 
@@ -191,13 +189,13 @@ class TestsController extends AppController {
                 'Test.is_active' =>1,
                 'Test.schedule_type'=>'MultiplePeople',
                 'OR'=>array(
-                    'Test.group_id IS NULL',
-                    'Test.group_id'=>$group_id[0]
+                    'Test.account_id IS NULL',
+                    'Test.account_id'=>$account_id
                 )
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.group_id'),
+            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
             'order'=>array('Test.name')
         ));
 
@@ -219,7 +217,7 @@ class TestsController extends AppController {
                     'Test'=>array(
                         'ReportSwitch'=>array(
                             'conditions'=>array(
-                                'ReportSwitch.group_id' => AuthComponent::user('parent_group_ids'),
+                                #'ReportSwitch.group_id' => $account_ids,
                             ),
                             'Report'=>array(
                                 'fields'=>array(
@@ -232,7 +230,7 @@ class TestsController extends AppController {
                         ),
                         'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.schedule_type', 'Test.credits', 'Test.logo'),
                     ),
-                    'User'=>array(
+					'User'=>array(
                         'fields'=>array('User.id', 'User.first_name', 'User.last_name'),
                         'order'=>array('User.first_name ASC', 'User.last_name ASC')
                     ),
@@ -269,25 +267,13 @@ class TestsController extends AppController {
     }
 
     public function view_group($id=null) {
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-        $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
-
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids) ){
-            $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
-
-            $group_ids = $this->Group->getChildren($group_id);
-            $search_ids = array();
-
-            //get all users in those groups
-            $active_user_ids = $this->User->activeUserList($group_ids);
-
-            foreach($active_user_ids as $key=>$activeId){
-                $search_ids[$key] = $activeId['pro_users']['id'];
-            }
+        if(AuthComponent::user('Role.permission_level') >= 30){
+            $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+            $user_ids = $this->AccountUser->getAccountIds($account_ids);
 
             $this->Paginator->settings = array(
                 'conditions' => array(
-                    'TestSchedule.group_id'=>$group_ids,
+                    'TestSchedule.group_id'=>$account_ids,
                     'TestSchedule.test_id'=>$id
                 ),
                 'contain'=>array(
@@ -303,7 +289,7 @@ class TestsController extends AppController {
                     'Test'=>array(
                         'ReportSwitch'=>array(
                             'conditions'=>array(
-                                'ReportSwitch.group_id' => AuthComponent::user('parent_group_ids'),
+                                'ReportSwitch.group_id' => $account_ids,
                             ),
                             'Report'=>array(
                                 'fields'=>array(
@@ -377,12 +363,6 @@ class TestsController extends AppController {
             }
 
             $this->set( 'tests', $data );
-            $this->set( 'credits', $this->GroupCredit->getCredits(AuthComponent::user('parent_group_ids')) );
-
-            $this->set('breadcrumbs', array(
-                array('title'=>'Testing', 'link'=>array('controller'=>'tests', 'action'=>'index', 'member'=>true ) ),
-                array('title'=>$data[0]['Test']['name'], 'link'=>array('controller'=>'tests', 'action'=>'view', $id, 'member'=>true ) ),
-            ));
         }
     }
 
@@ -423,7 +403,7 @@ class TestsController extends AppController {
 
     }
 
-    public function member_individualReport($id=null) {
+    public function individualReport($id=null) {
         $data = $this->AssignedTest->grabReportData($id);
 
         $folder = $data[0]['Test']['id'];
@@ -434,7 +414,7 @@ class TestsController extends AppController {
         $this->render('reports/'. $folder .'/member_individual');
     }
 
-    public function member_fix(){
+    public function fix(){
         //set_time_limit(60*60*24);
         //$verify = $this->Test->verify();
         //$this->Test->recover('parent');
@@ -473,7 +453,7 @@ class TestsController extends AppController {
         $this->set('categories', $data);
     }
 
-    public function member_moveup($id = null, $delta = 14) {
+    public function moveup($id = null, $delta = 14) {
         $this->Test->id = $id;
 
         if (!$this->Test->exists()) {
@@ -501,7 +481,7 @@ class TestsController extends AppController {
         return $this->redirect(array('action' => 'fix', 'member'=>true));
     }
 
-    public function member_test($id=null){
+    public function test($id=null){
         //set_time_limit(60*60*24);
         //$this->Test->reorder($options = array('id'=>15698));
         //$this->Test->recover('parent');
@@ -552,7 +532,7 @@ class TestsController extends AppController {
 
     }
 
-    public function member_process(){
+    public function process(){
         //Add new data to current saved date
         //grab all saved answers and unserlize
         $u=$this->AssignedTest->findByid($this->request->data['testing']['id']);
@@ -624,7 +604,7 @@ class TestsController extends AppController {
         }
 
         //redirect
-        $this->redirect(array('controller'=>'tests', 'action'=>'test', 'member'=>true, $u['AssignedTest']['id']));
+        $this->redirect(array('controller'=>'tests', 'action'=>'test', $u['AssignedTest']['id']));
     }
 
     public function admin_index($id=null) {

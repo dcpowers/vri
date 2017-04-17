@@ -1,4 +1,5 @@
 <?php
+
     // app/Controller/UsersController.php
     App::uses('CakeEmail', 'Network/Email');
     App::uses('AppController', 'Controller');
@@ -460,6 +461,13 @@ class UsersController extends AppController {
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
 
 
+    }
+
+	public function member_getUserInfo(){
+
+        $record = $this->User->getUserInfo();
+
+        return $record;
     }
 
     public function edit($id = null) {
