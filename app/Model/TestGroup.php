@@ -33,17 +33,25 @@ class TestGroup extends AppModel {
 
     );
 
-    public function fullList( $id = null ) {
-        $conditions = array(
+    public function fullList( $options = array() ) {
+		$conditions = array(
             'conditions'=>array(
-                'TestGroup.account_id' => $id
+            	#'TestGroup.account_id !=' => 0,
+            	'TestGroup.parent_id' => null
             ),
             'contain'=>array(
             ),
-            'fields'=>array('TestGroup.id','TestGroup.name','TestGroup.is_active','TestGroup.schedule_type','TestGroup.credits','TestGroup.cal_function'),
+            'fields'=>array(
+				'TestGroup.id',
+				'TestGroup.name','TestGroup.is_active','TestGroup.schedule_type','TestGroup.credits','TestGroup.cal_function'),
             'order'=>'TestGroup.name asc'
         );
-        $recs = $this->find('all', $conditions );
+        #pr($conditions);
+		$cond = array_merge($conditions, $options);
+
+        #pr($cond);
+
+		$recs = $this->find('all', $cond );
         return $recs;
     }
 

@@ -74,4 +74,9 @@ class AppModel extends Model {
     function empPayStatus(){
         return array( 1 => 'Full Time', 2 => 'Part Time', 3=>'Not eligible for Safety Awards', 4 => 'Salary', 5 => 'PRN' );
     }
+
+	function scheduleTypeInt() {
+        return array('Single'=>'Single', 'Group'=>'Group', 'MultiplePeople' => 'Multiple People', 'Blind' => 'Blind');
+    }
+
 }
