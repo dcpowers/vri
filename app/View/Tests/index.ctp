@@ -1,6 +1,5 @@
 <?php
-    $editable_group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
-
+    $editable_group_id = AuthComponent::user('AccountUser.0.account_id');
 ?>
 <div class="training index">
     <div class="dashhead">
@@ -25,34 +24,26 @@
         </div>
     </div>
 
-	<div class="pull-right">
-        <?php
-        if(AuthComponent::user('Role.permission_level') >= 50){
-            ?>
-            <div class="row">
-                <ul class="list-inline">
-                    <li class="pull-right">
-                        <?php
-                        echo $this->Html->link(
-                            '<i class="fa fa-info-circle fa-lg text-success"></i><span class="text text-success">Custom Testing</span>',
-                            array('controller'=>'TestGroups', 'action'=>'index'),
-                            array('escape'=>false, 'class'=>'btn btn-default btn-xs pull-right')
-                        );
-                        ?>
-                    </li>
-                </ul>
-            </div>
-            <?php
-        }
-        ?>
-
-    </div>
-
-    <!-- Nav tabs -->
+	<!-- Nav tabs -->
     <ul class="nav nav-pills" role="tablist">
         <li role="presentation" class="active" ><a href="#assessment" aria-controls="assessment" role="tab" data-toggle="tab">Assessments</a></li>
         <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Surveys</a></li>
         <li role="presentation"><a href="#evaluation" aria-controls="evaluation" role="tab" data-toggle="tab">Evaluations</a></li>
+		<?php
+        if(AuthComponent::user('Role.permission_level') >= 60){
+            ?>
+            <li>
+				<?php
+                        echo $this->Html->link(
+                            '<i class="fa fa-info-circle fa-lg text-success fa-fw"></i><span class="text text-success">Custom Testing</span>',
+                            array('controller'=>'TestGroups', 'action'=>'index'),
+                            array('escape'=>false)
+                        );
+                ?>
+            </li>
+			<?php
+        }
+        ?>
     </ul>
 
     <!-- Tab panes -->
@@ -61,7 +52,7 @@
             <?php
 
             foreach($assessments as $test){
-                ?>
+            	?>
 				<div class="media">
 					<div class="media-left media-middle">
 				    	<?php
@@ -72,6 +63,22 @@
                             array('controller'=>'tests', 'action'=>'view_single', $test['Test']['id']),
                             array('escape' => false)
                         );
+                        ?>
+
+						<?php
+						if($test['Test']['account_id'] == $editable_group_id){
+                            ?>
+                            <div class="col-md-12 text-center" style="margin-top: 20px;">
+                                <?php
+                                echo $this->Html->link(
+                                    '<i class="fa fa-pencil-square-o"></i><span class="text">Edit</span>',
+                                    array('controller'=>'TestGroups', 'action'=>'index', $test['Test']['id']),
+                                    array('escape' => false, 'class'=>'btn btn-success btn-sm')
+                                );
+                                ?>
+                            </div>
+                            <?php
+                        }
                         ?>
 				  	</div>
 
@@ -156,18 +163,12 @@
                             array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false) );
                         ?>
-                        <div class="pull-right">
-                            <p>
-                                <strong>Credits: </strong>
-                                <small><?php echo $test['Test']['credits']; ?></small>
-                            </p>
-                        </div>
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active" ><a href="#assessment#about" aria-controls="assessment" role="tab" data-toggle="tab"><i class="fa fa-info"></i><span class="text">About</span></a></li>
+                            <li role="presentation" class="active" ><a href="#assessment#about" aria-controls="assessment" role="tab" data-toggle="tab"><i class="fa fa-info fa-fw"></i><span class="text">About</span></a></li>
                             <li role="presentation">
                                 <?php
                                 echo $this->Html->link(
-                                    '<i class="fa fa-eye"></i><span class="text">View</span>',
+                                    '<i class="fa fa-eye fa-fw"></i><span class="text">View</span>',
                                     array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                                     array('escape' => false) );
                                 ?>
@@ -175,7 +176,7 @@
                             <li role="presentation">
                                 <?php
                                 echo $this->Html->link(
-                                    '<i class="fa fa-calendar"></i><span class="text">Schedule</span>',
+                                    '<i class="fa fa-calendar fa-fw"></i><span class="text">Schedule</span>',
                                     array('controller'=>'TestSchedules', 'action'=>'Type', $test['Test']['id']),
                                     array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                 );

@@ -1,13 +1,18 @@
+<div class="training index">
+    <div class="dashhead">
+        <div class="dashhead-titles">
+            <h6 class="dashhead-subtitle">All Testing:</h6>
+            <h3 class="dashhead-title"><i class="fa fa-clipboard fa-fw"></i> Testing</h3>
+        </div>
+        <div class="dashhead-toolbar">
+            <?php echo $this->element( 'Tests/menu' );?>
+        </div>
+    </div>
     <div class="page-header" style="border-bottom: 2px #FFAB00 solid;">
         <h1 style="color: #FFAB00"><i class="fa fa-clipboard"></i><span class="text"><?php echo __('Testing/Assessments');?></span></h1>
     </div>
-    <?php 
-    echo $this->Html->link( 
-        '<i class="fa fa-plus"></i> Add A New Test',
-        array('controller'=>'tests', 'action'=>'add', 'admin'=>true),
-        array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'btn btn-primary btn-xs') ); 
-    ?>
-    
+
+
     <table class="table table-striped" id="information">
         <thead>
             <tr>
@@ -19,9 +24,9 @@
                 <th>Function Name</th>
             </tr>
         </thead>
-        
+
         <tbody>
-            <?php 
+            <?php
             foreach($tests as $test){
                 $is_active = ($test['Test']['is_active'] == 1) ? '<i class="fa fa-check-circle fa-lg text-success"></i>' : '<i class="fa fa-times-circle fa-lg text-danger"></i>' ;
                 $group_name = (!empty($test['Group']['name'])) ? $test['Group']['name'] : NULL ;
@@ -35,7 +40,7 @@
                             <span id="is_active<?=$test['Test']['id']?>" class="is_active editable editable-click" style="display: inline;" data-type="select" data-pk="2" data-value="<?php echo $test['Test']['is_active']; ?>" data-title="Status">
                                 <?php echo $settings['options'][$test['Test']['is_active']]; ?>
                             </span>
-                        </div>    
+                        </div>
                     </td>
                     <td style="text-align:center">
                         <div class="wrap" id="<?=$test['Test']['id']?>" field="credits">
@@ -43,11 +48,11 @@
                                 <?=$test['Test']['credits'] ?>
                             </span>
                         </div>
-                        
+
                     </td>
-                    
+
                     <td><?=$group_name?></td>
-                    
+
                     <td>
                         <div class="wrap" id="<?=$test['Test']['id']?>" field="schedule_type">
                             <span id="schedule_type<?=$test['Test']['id']?>" class="schedule_type editable editable-click" style="display: inline;" data-type="select" data-pk="2" data-value="<?php echo $test['Test']['schedule_type']; ?>" data-title="Schedule Type">
@@ -61,26 +66,27 @@
                         </div>
                     </td>
                 </tr>
-                <?php   
+                <?php
             }
             ?>
         </tbody>
     </table>
-    
-    
+</div>
+
+
 <script type="text/javascript">
     jQuery(document).ready( function($) {
         $('.cal_function').editable({
             type: 'text',
             name: 'cal_function'
         });
-        
+
         $('.name').editable({
             type: 'text',
             name: 'name'
         });
-    
-        $('.credits').editable({                                    
+
+        $('.credits').editable({
             source: [
                 {value: '0', text: '0'},
                 {value: '1', text: '1'},
@@ -93,29 +99,29 @@
                 {value: '8', text: '8'},
                 {value: '9', text: '9'},
                 {value: '10', text: '10'}
-                
+
             ],
         });
-        
+
         $('.is_active').editable({
             source: [
                 {value: '1', text: 'Active'},
                 {value: '0', text: 'Inactive'},
             ],
-            
+
         });
-        
+
         $('.schedule_type').editable({
             source: <?php echo json_encode($settings['scheduleType']); ?>,
         });
-        
+
         var edit_name_url = '<?php echo Router::url( array('controller'=>'tests', 'action'=>'inline_edit', 'admin'=>true ));?>';
-    
+
         $(document).on('click','.editable-submit',function(){
             var id = $(this).closest('.wrap').attr('id');
             var value = $('.input-sm').val();
             var field = $(this).closest('.wrap').attr('field');
-            
+
             $.ajax({
                 url: edit_name_url,
                 type: 'post',
@@ -125,17 +131,17 @@
                     if(s == 'status'){
                         $(z).html(y);
                     }
-                        
+
                     if(s == 'error') {
                         alert('Error Processing your Request!');
                     }
                 },
-                    
+
                 error: function(e){
                     alert('Error Processing your Request!!');
-                } 
+                }
             });
-            
+
         });
     });
 </script>

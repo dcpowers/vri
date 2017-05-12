@@ -10,53 +10,32 @@
             <h3 class="dashhead-title"><i class="fa fa-clipboard fa-fw"></i>Creation Tool</h3>
         </div>
         <div class="dashhead-toolbar">
-        	<?php #echo $this->element( 'Users/search' );?>
+        	<?php echo $this->element( 'TestGroups/menu' );?>
         </div>
     </div>
 
-	<div class="flextable">
-    	<div class="flextable-item">
-			<ul class="list-inline pull-right">
-	        	<li>
-		            <?php
-		            echo $this->Html->link(
-		                '<i class="fa fa-arrow-left fa-fw fa-lg text-success"></i><span class="text text-success">Back To Testing</span>',
-		                array('controller'=>'Tests', 'action'=>'index'),
-		                array('escape'=>false, 'class'=>'btn btn-default btn-xs pull-right')
-		            );
-		            ?>
-		        </li>
-		        <li>
-		            <?php
-		            echo $this->Html->link(
-		                '<i class="fa fa-plus fa-lg fa-fw text-success"></i><span class="text text-success">Add A New Test</span>',
-		                array('controller'=>'TestGroups', 'action'=>'add'),
-		                array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'btn btn-default btn-xs pull-right') );
-		            ?>
-		        </li>
-	    	</ul>
-            <?php #echo $this->element( 'Users/search_filter', array('in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy) );?>
-        </div>
-    </div>
-
-    <table class="table table-striped" id="information">
+	<table class="table table-striped" id="information">
         <thead>
             <tr>
-                <th style="width: 25%">Name</th>
-                <th style="width: 25%; text-align:center">Status</th>
-                <th style="width: 25%; text-align:center">Credits</th>
-                <th style="width: 25%">Test Type</th>
+                <th class="col-md-4">Name</th>
+                <th class="col-md-3 text-center">Status</th>
+                <th class="col-md-3 text-center">Test Type</th>
+				<th class="col-md-2"></th>
             </tr>
         </thead>
 
         <tbody>
             <?php
             foreach($tests as $test){
-                $is_active = ($test['TestGroup']['is_active'] == 1) ? '<i class="fa fa-check-circle fa-lg text-success"></i>' : '<i class="fa fa-times-circle fa-lg text-danger"></i>' ;
+				$is_active = ($test['TestGroup']['is_active'] == 1) ? '<i class="fa fa-check-circle fa-lg text-success"></i>' : '<i class="fa fa-times-circle fa-lg text-danger"></i>' ;
                 ?>
                 <tr>
                     <td>
-                        <?php echo $this->Html->link( $test['TestGroup']['name'],   array('controller'=>'TestGroups', 'member'=>true, 'action'=>'index', $test['TestGroup']['id']) );?>
+                        <?php
+						echo $this->Html->link( $test['TestGroup']['name'],
+							array('controller'=>'TestGroups', 'action'=>'index', $test['TestGroup']['id'])
+						);
+						?>
                     </td>
                     <td style="text-align:center">
                         <div class="wrap" id="<?=$test['TestGroup']['id']?>" field="is_active">
@@ -65,28 +44,32 @@
                             </span>
                         </div>
                     </td>
-                    <td style="text-align:center">
-                        <div class="wrap" id="<?=$test['TestGroup']['id']?>" field="credits">
-                            <span id="credits<?=$test['TestGroup']['id']?>" class="credits editable editable-click" style="display: inline;" data-type="select" data-pk="2" data-value="<?php echo $test['TestGroup']['credits']; ?>" data-title="Credits">
-                                <?=$test['TestGroup']['credits'] ?>
-                            </span>
-                        </div>
 
-                    </td>
-                    <td>
+                    <td style="text-align:center">
                         <div class="wrap" id="<?=$test['TestGroup']['id']?>" field="schedule_type">
                             <span id="schedule_type<?=$test['TestGroup']['id']?>" class="schedule_type editable editable-click" style="display: inline;" data-type="select" data-pk="2" data-value="<?php echo $test['TestGroup']['schedule_type']; ?>" data-title="Schedule Type">
                                 <?php echo $settings['scheduleType'][$test['TestGroup']['schedule_type']]; ?>
                             </span>
                         </div>
                     </td>
+					<td style="text-align:center">
+						<?php
+						if(AuthComponent::user('Role.permission_level') >= 70){
+							echo $this->Html->link(
+								'<i class="fa fa-trash fa-lg"></i>',
+								array('controller'=>'TestGroups', 'action'=>'delete', $test['TestGroup']['id']),
+								array('escape'=>false)
+							);
+						}
+						?>
+					</td>
                 </tr>
                 <?php
             }
             ?>
         </tbody>
     </table>
-</span>
+</div>
 
 
 <script type="text/javascript">
@@ -115,7 +98,7 @@
         $('.is_active').editable({
             source: [
                 {value: '1', text: 'Active'},
-                {value: '0', text: 'Inactive'},
+                {value: '2', text: 'Inactive'},
             ],
 
         });
@@ -124,7 +107,7 @@
             source: <?php echo json_encode($settings['scheduleType']); ?>,
         });
 
-        var edit_name_url = '<?php echo Router::url( array('controller'=>'tests', 'action'=>'inline_edit', 'admin'=>true ));?>';
+        var edit_name_url = '<?php echo Router::url( array('controller'=>'tests', 'action'=>'inline_edit' ));?>';
 
         $(document).on('click','.editable-submit',function(){
             var id = $(this).closest('.wrap').attr('id');

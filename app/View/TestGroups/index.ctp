@@ -1,26 +1,20 @@
 <?php
-    #pr($data);
-    #exit;
+    $this->Html->css( 'ui.easytree.css', '', array('block' => 'csslib' ) );  //TOP
+    $this->Html->script( 'jquery.easytree.min', array( 'block' => 'scriptsBottom' ) );
 
 ?>
-
-<div class="container">
-    <ul class="list-inline" >
-        <li class="pull-right">
-            <?php
-            echo $this->Html->link(
-                '<i class="fa fa-arrow-left fa-fw fa-lg text-success"></i><span class="text text-success">Back To Testing</span>',
-                array('controller'=>'Tests', 'action'=>'index'),
-                array('escape'=>false, 'class'=>'btn btn-default btn-xs pull-right')
-            );
-            ?>
-        </li>
-    </ul>
-    <h2 class="title"><i class="fa fa-clipboard"></i><span class="text"><?php echo __('Creation Tool:');?><small>Assessments/Surveys/Evaluations</small></h2>
-    <hr class="solidOrange" />
-
-    <div class="row" style="margin-top: 20px;">
-        <div class="col-md-4" id="menu">
+<div class="account index bg-white">
+	<div class="dashhead">
+    	<div class="dashhead-titles">
+        	<h6 class="dashhead-subtitle">Evaluations</h6>
+            <h3 class="dashhead-title"><i class="fa fa-clipboard fa-fw"></i>Creation Tool</h3>
+        </div>
+        <div class="dashhead-toolbar">
+        	<?php echo $this->element( 'TestGroups/menu' );?>
+        </div>
+    </div>
+	<div class="row" style="margin-top: 20px;">
+	    <div class="col-md-4" id="menu">
             <?=RecursiveCategories($data) ?>
         </div>
 
