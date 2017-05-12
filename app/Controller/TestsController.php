@@ -160,7 +160,14 @@ class TestsController extends AppController {
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
+            'fields'=>array(
+				'Test.id',
+				'Test.name',
+				'Test.description',
+				'Test.logo',
+				'Test.schedule_type',
+				'Test.account_id'
+			),
             'order'=>array('Test.name')
         ));
 
@@ -178,7 +185,14 @@ class TestsController extends AppController {
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
+            'fields'=>array(
+				'Test.id',
+				'Test.name',
+				'Test.description',
+				'Test.logo',
+				'Test.schedule_type',
+				'Test.account_id'
+			),
             'order'=>array('Test.name')
         ));
 
@@ -196,7 +210,14 @@ class TestsController extends AppController {
             ),
             'contain'=>array(
             ),
-            'fields'=>array('Test.id', 'Test.name', 'Test.description', 'Test.credits', 'Test.logo', 'Test.schedule_type', 'Test.account_id'),
+            'fields'=>array(
+				'Test.id',
+				'Test.name',
+				'Test.description',
+				'Test.logo',
+				'Test.schedule_type',
+				'Test.account_id'
+			),
             'order'=>array('Test.name')
         ));
 
@@ -781,7 +802,7 @@ class TestsController extends AppController {
 
     }
 
-    public function admin_inline_edit($id=null) {
+    public function inline_edit($id=null) {
 
         if ($this->request->is('post')) {
 

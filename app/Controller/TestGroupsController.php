@@ -3,8 +3,7 @@
 App::uses('AppController', 'Controller');
 
 class TestGroupsController extends AppController {
-
-    public $components = array('Search.Prg', 'RequestHandler', 'Paginator');
+	public $components = array('Search.Prg', 'RequestHandler', 'Paginator');
 
     public $uses = array(
         'TestGroup',
@@ -31,13 +30,12 @@ class TestGroupsController extends AppController {
             if(empty($this->request->data['TestGroup']['name'])){
                 $error = true;
             }
-
-            if($error == false){
+        	if($error == false){
                 $this->request->data['TestGroup']['category_type'] = 1;
-                $this->request->data['TestGroup']['group_id'] = $this->group_id[0];
+                $this->request->data['TestGroup']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
 
                 $this->TestGroup->create();
-                if ($this->TestGroup->saveall($this->request->data)) {
+                if ($this->TestGroup->saveAll($this->request->data)) {
                     $id = $this->TestGroup->id;
 
                     switch($this->request->data['TestGroup']['schedule_type']){
@@ -59,21 +57,33 @@ class TestGroupsController extends AppController {
                     $data['ReportSwitch']['group_id'] = 2;
 
                     $this->ReportSwitch->create();
-                    $this->ReportSwitch->saveall($data);
+                    $this->ReportSwitch->saveAll($data);
 
-                    $this->Session->setFlash(__('The Test: "'.$this->request->data['TestGroup']['name'].'" has been saved'), 'alert-box', array('class'=>'alert-success'));
+					$this->Flash->alertBox(
+	                    'The Test: "'.$this->request->data['TestGroup']['name'].'" has been saved', [
+	                        'key' => 'profile',
+	                        'params' => [ 'class'=>'alert-success' ]
+	                    ]
+	                );
+				} else {
+                    $this->Flash->alertBox(
+	                    'The Test could not be saved. Please, try again.', [
+	                        'key' => 'profile',
+	                        'params' => [ 'class'=>'alert-danger' ]
+	                    ]
+	                );
 
-                } else {
-                    $this->Session->setFlash(__('The Test could not be saved. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
                 }
             }else{
                 $this->Session->setFlash(__('Name Cannot be empty. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
             }
 
-            $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true));
+            $this->redirect(array('controller'=>'TestGroups', 'action'=>'index'));
         }
 
+        $settings['scheduleType'] = $this->TestGroup->scheduleTypeInt();
         $settings['options'] = $this->TestGroup->statusInt();
+
         $this->set( 'settings', $settings );
 
     }
@@ -163,22 +173,30 @@ class TestGroupsController extends AppController {
            throw new NotFoundException(__('Invalid Id'));
         }
 
-        if($this->TestGroup->delete($this->TestGroup->id)){
+		if($this->TestGroup->delete($this->TestGroup->id)){
             //Delete Assinged Testing
             $this->AssignedTest->deleteAll(array('AssignedTest.test_id' => $id), false);
             //Delete Report Switch
             $this->ReportSwitch->deleteAll(array('ReportSwitch.test_id' => $id), false);
 
-            $this->Session->setFlash(__('Deletion Successful'), 'alert-box', array('class'=>'alert-success'));
+			$this->Flash->alertBox(
+	        	'Deletion Successful', [
+					'key' => 'profile',
+	            	'params' => [ 'class'=>'alert-success' ]
+	        	]
+	        );
+
         }else{
-            $this->Session->setFlash(__('Error. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
+			$this->Flash->alertBox(
+	        	'Error. Please, try again.', [
+					'key' => 'profile',
+	            	'params' => [ 'class'=>'alert-success' ]
+	        	]
+	        );
+
         }
 
-        if($test_id == $id){
-            return $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true));
-        }else{
-            return $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', $test_id, 'member'=>true));
-        }
+        return $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true));
 
     }
 
@@ -223,31 +241,61 @@ class TestGroupsController extends AppController {
             echo 'You do not have permission to view this';
         }
     }
-    public function index($id=null) {
-        if(AuthComponent::user('Role.permission_level') >= 30){
-            //get children ids of the super id
-            $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
 
-            if ( empty($id ) ) {
-                $this->set( 'tests', $this->TestGroup->fullList( $group_id ));
+	public function index($id=null) {
+		if(is_null($id)){
+			if(AuthComponent::user('Role.permission_level') >= 60){
+	            $tests = $this->TestGroup->fullList();
 
-                $settings['options'] = $this->TestGroup->statusInt();
-                $this->set( 'settings', $settings );
+				$this->set( 'tests', $this->TestGroup->fullList());
+				//Show all tests
+			}
 
-                $this->render('_test_form');
+			if(AuthComponent::user('Role.permission_level') == 30 || AuthComponent::user('Role.permission_level') == 40 ){
+				$tests = $this->TestGroup->fullList( array('conditions'=>array('TestGroup.account_id' =>AuthComponent::user('AccountUser.0.account_id') )));
 
-                $this->set('breadcrumbs', array(
-                    array('title'=>'Testing', 'link'=>array('controller'=>'tests', 'action'=>'index', 'member'=>true ) ),
-                ));
-                return;
-            }
-        }
+				$this->set( 'tests', $this->TestGroup->fullList( array('conditions'=>array('TestGroup.account_id' =>AuthComponent::user('AccountUser.0.account_id') )) ));
+				//Show Account only
+			}
+
+			if(AuthComponent::user('Role.permission_level') == 50 ){
+				$group_ids = $this->Account->find('first', array(
+		            'conditions' => array(
+		                'Account.regional_admin_id' =>AuthComponent::user('id')
+		            ),
+		            'contain'=>array(
+
+		            ),
+
+		        ));
+
+				$tests = $this->TestGroup->fullList( array('conditions'=>array('TestGroup.account_id' =>$group_ids )));
+
+	            $this->set( 'tests', $this->TestGroup->fullList( array('conditions'=>array('TestGroup.account_id' =>$group_ids )) ));
+				//Show regional admin account only only
+			}
+
+            $settings['scheduleType'] = $this->TestGroup->scheduleTypeInt();
+            $settings['options'] = $this->TestGroup->statusInt();
+
+			$this->set( 'settings', $settings );
+
+	        $this->render('_test_form');
+
+	        $this->set('breadcrumbs', array(
+        		array('title'=>'Testing', 'link'=>array('controller'=>'tests', 'action'=>'index', 'member'=>true ) ),
+	        ));
+	        return;
+		}
 
         set_time_limit(60*60*24);
-        $parent = $this->TestGroup->find('first', array('conditions' => array('TestGroup.id' => $id)));
-        pr($parent);
-		exit;
-        $data = $this->TestGroup->find('threaded', array(
+        $parent = $this->TestGroup->find('first', array(
+			'conditions' => array(
+				'TestGroup.id' => $id
+			)
+		));
+
+		$data = $this->TestGroup->find('threaded', array(
             'conditions' => array(
                 'TestGroup.lft >=' => $parent['TestGroup']['lft'],
                 'TestGroup.rght <=' => $parent['TestGroup']['rght']
@@ -269,14 +317,9 @@ class TestGroupsController extends AppController {
 
         ));
         $this->set( 'testCatType', $catType );
+	}
 
-        $this->set('breadcrumbs', array(
-            array('title'=>'Creation Tool', 'link'=>array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true )),
-            array('title'=>$data[0]['TestGroup']['name'], 'link'=>array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true, $data[0]['TestGroup']['id'] )),
-        ));
-   }
-
-   public function details($id=null) {
+   	public function details($id=null) {
         //$this->request->onlyAllow('ajax'); // No direct access via browser URL - Note for Cake2.5: allowMethod()
         $this->autoRender = false;
         $id = $this->request->query('id');
