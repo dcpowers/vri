@@ -89,7 +89,8 @@ class TestSchedulesController extends AppController {
                         $user_email = $invite['user_email']['User']['email'];
                         $user_name = $invite['user_email']['User']['name'];
                         $name = $invite['name']['Test']['name'];
-						pr($invite);
+						pr($user_name);
+						pr($name);
 						pr($user_email);
 						exit;
 				        //Email Link To user
