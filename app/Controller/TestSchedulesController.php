@@ -114,14 +114,16 @@ class TestSchedulesController extends AppController {
 	                array('params' => array('class'=>'alert-success'))
 				);
 
+				return $this->redirect(array('controller'=>'tests','action' => 'view_single', $id));
+
             } else {
 				$this->Flash->alertBox(
             		'Testing Schedule Error! Please try again.',
 	                array('params' => array('class'=>'alert-danger'))
 				);
-			}
 
-            return $this->redirect(array('controller'=>'tests','action' => 'view_single', $id));
+				return $this->redirect(array('controller'=>'tests','action' => 'view_single', $id));
+			}
         }
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 
