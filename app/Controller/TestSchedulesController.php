@@ -1127,17 +1127,15 @@ class TestSchedulesController extends AppController {
         $this->AssignedTest->id = $id;
         if($this->AssignedTest->delete()){
 
-            $this->Session->setFlash(
-                __('Deletetion Successful'),
-                'alert-box',
-                array('class'=>'alert-success')
-            );
+            $this->Flash->alertBox(
+            	'Deletion Successful',
+	            array('params' => array('class'=>'alert-success'))
+			);
         } else {
-            $this->Session->setFlash(
-                __('There Was An Error! Please Try Again'),
-                'alert-box',
-                array('class'=>'alert-danger')
-            );
+            $this->Flash->alertBox(
+            	'There Was An Error! Please Try Again.',
+	            array('params' => array('class'=>'alert-danger'))
+			);
         }
 
         $data = $this->Test->find('first', array(
