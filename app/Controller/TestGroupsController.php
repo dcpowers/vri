@@ -112,13 +112,23 @@ class TestGroupsController extends AppController {
             if($error == false && !empty($this->request->data)){
                 $this->TestGroup->create();
                 if ($this->TestGroup->saveall($this->request->data)) {
-                    $this->Session->setFlash(__('Save Successful'), 'alert-box', array('class'=>'alert-success'));
+					$this->Flash->alertBox(
+						'Save Successful',
+			            array('params' => array('class'=>'alert-success'))
+			        );
+
                 } else {
-                    $this->Session->setFlash(__('Error. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
+					$this->Flash->alertBox(
+						'Error, PLease try again',
+			            array('params' => array('class'=>'alert-danger'))
+			        );
                 }
             }else{
-                $this->Session->setFlash(__('Name Cannot be empty. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
-            }
+                $this->Flash->alertBox(
+					'Name cannot be empty. PLease try again',
+		            array('params' => array('class'=>'alert-danger'))
+		        );
+			}
 
             $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', $test_id, 'member'=>true));
         }
@@ -180,21 +190,21 @@ class TestGroupsController extends AppController {
             $this->ReportSwitch->deleteAll(array('ReportSwitch.test_id' => $id), false);
 
 			$this->Flash->alertBox(
-	        	'Deletion Successful', [
+				'Successful',
+	            array(
 					'key' => 'profile',
-	            	'params' => [ 'class'=>'alert-success' ]
-	        	]
+					'params' => array('class'=>'alert-success')
+				)
 	        );
-
-        }else{
+		}else{
 			$this->Flash->alertBox(
-	        	'Error. Please, try again.', [
-					'key' => 'profile',
-	            	'params' => [ 'class'=>'alert-success' ]
-	        	]
+				'Error, please try again',
+	            array(
+					'key'=> 'profile',
+					'params' => array('class'=>'alert-danger')
+				)
 	        );
-
-        }
+		}
 
         return $this->redirect(array('controller'=>'TestGroups', 'action'=>'index', 'member'=>true));
 

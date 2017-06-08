@@ -408,16 +408,14 @@ class TestsController extends AppController {
             }
 
             #Audit::log('Group record edited', $this->request->data );
-            $this->Session->setFlash(
-                __('Test Reset'),
-                'alert-box',
-                array('class'=>'alert-success')
+            $this->Flash->alertBox(
+            	'Test Reset',
+                array('params' => array('class'=>'alert-success'))
             );
-        } else {
-            $this->Session->setFlash(
-                __('Testing Reset Error! Please try again.'),
-                'alert-box',
-                array('class'=>'alert-danger')
+		} else {
+			$this->Flash->alertBox(
+            	'Error, please try again',
+                array('params' => array('class'=>'alert-danger'))
             );
         }
 
@@ -523,21 +521,20 @@ class TestsController extends AppController {
 
                 }
                 #Audit::log('Group record edited', $this->request->data );
-                $this->Session->setFlash(
-                    __('Congratulations Your Assessment is Finished'),
-                    'alert-box',
-                    array('class'=>'alert-success')
-                );
+                $this->Flash->alertBox(
+            		'Congratulations Your Assessment is Finished',
+	                array('params' => array('class'=>'alert-success'))
+	            );
 
                 //redirect
                 $this->redirect(array('controller'=>'dashboard', 'action'=>'index', 'member'=>true));
 
             } else {
-                $this->Session->setFlash(
-                    __('There Was An Error saving your assessment. Please try again.'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
-                );
+				$this->Flash->alertBox(
+            		'There was error, please try again',
+	                array('params' => array('class'=>'alert-danger'))
+	            );
+
             }
             $this->set('content', $assignedTest[0]['Test']['conclusion']);
             $this->set('completed', $assignedTest[0]['AssignedTest']['complete']);
@@ -785,18 +782,17 @@ class TestsController extends AppController {
         if ($this->TalentpatternUser->save($save)) {
 
             #Audit::log('Group record edited', $this->request->data );
-            $this->Session->setFlash(
-                __('Talent Pattern Reset'),
-                'alert-box',
-                array('class'=>'alert-success')
-            );
+            $this->Flash->alertBox(
+				'Talent Pattern Reset',
+	            array('params' => array('class'=>'alert-success'))
+	        );
+
         } else {
-            $this->Session->setFlash(
-                __('Talent Pattern Reset Error! Please try again.'),
-                'alert-box',
-                array('class'=>'alert-danger')
-            );
-        }
+            $this->Flash->alertBox(
+				'Error, please try again',
+	            array('params' => array('class'=>'alert-success'))
+	        );
+		}
 
         $this->redirect(array('controller'=>'users','action'=>'view', $user_id, 'admin'=>true ));
 
