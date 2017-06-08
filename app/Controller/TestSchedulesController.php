@@ -89,15 +89,12 @@ class TestSchedulesController extends AppController {
                         $user_email = $invite['user_email']['User']['email'];
                         $user_name = $invite['user_email']['User']['name'];
                         $name = $invite['name']['Test']['name'];
-						pr($user_name);
-						pr($name);
-						pr($user_email);
-						exit;
-				        //Email Link To user
+
+						//Email Link To user
                         $email = new CakeEmail();
                         $email->config('smtp');
                         $email->sender('dustinpowers@vanguardresources.com', 'Dustin Powers');
-                        $email->from(array(AuthComponent::user('username') => AuthComponent::user('fullname')));
+                        $email->from(array(AuthComponent::user('email') => AuthComponent::user('fullname')));
                         $email->template('schedule');
                         $email->to(array($user_email => $user_name));
 
