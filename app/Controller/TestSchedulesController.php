@@ -35,17 +35,16 @@ class TestSchedulesController extends AppController {
             $this->AssignedTest->deleteAll(array('AssignedTest.test_schedule_id' => $id), false);
             $this->BlindTest->deleteAll(array('BlindTest.test_schedule_id' => $id), false);
 
-            $this->Session->setFlash(
-                __('Deletetion Successful'),
-                'alert-box',
-                array('class'=>'alert-success')
-            );
+			$this->Flash->alertBox(
+            	'Deletetion Successful',
+	            array('params' => array('class'=>'alert-success'))
+			);
+
         } else {
-            $this->Session->setFlash(
-                __('There Was An Error! Please Try Again'),
-                'alert-box',
-                array('class'=>'alert-danger')
-            );
+			$this->Flash->alertBox(
+            	'There Was An Error! Please Try Again.',
+	            array('params' => array('class'=>'alert-danger'))
+			);
         }
 
         return $this->redirect(array('controller'=>'tests','action' => 'view_group', 'member'=>true, $return_id));
