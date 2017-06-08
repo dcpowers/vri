@@ -76,7 +76,7 @@ class TestSchedulesController extends AppController {
                 $email_invite[$key]['user_email'] = $this->User->find('first', array(
                     'conditions' => array('User.id' => $user),
                     'contain' => array(),
-                    'fields' => array('User.username', 'User.name')
+                    'fields' => array('User.username', 'User.name', 'User.email')
                 ));
             }
 
@@ -84,13 +84,13 @@ class TestSchedulesController extends AppController {
             $this->AssignedTest->create();
             if ($this->AssignedTest->saveMany($this->request->data)) {
 
-                if (env('SERVER_NAME') != 'vri'){
+				if (env('SERVER_NAME') != 'vri'){
                     foreach($email_invite as $invite){
-                        $user_email = $invite['user_email']['User']['username'];
+                        $user_email = $invite['user_email']['User']['email'];
                         $user_name = $invite['user_email']['User']['name'];
                         $name = $invite['name']['Test']['name'];
 
-                        //Email Link To user
+				        //Email Link To user
                         $email = new CakeEmail();
                         $email->config('smtp');
                         $email->sender('dustinpowers@vanguardresources.com', 'Dustin Powers');
