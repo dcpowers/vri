@@ -37,6 +37,13 @@
 class EmailConfig {
 
 	public $default = array(
+		'transport' => 'Mail',
+		'from' => 'you@localhost',
+		//'charset' => 'utf-8',
+		//'headerCharset' => 'utf-8',
+	);
+
+	public $smtp = array(
 		'transport' => 'Smtp',
 		'from' => array('support@vrifm.com' => 'VRI Support'),
 		'host' => 'sub5.mail.dreamhost.com',
