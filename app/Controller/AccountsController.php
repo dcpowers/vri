@@ -15,6 +15,8 @@ class AccountsController extends AppController {
         'User',
         'AccountDepartment',
         'Account',
+        'AccountUser',
+        'AssignedTest',
         'Setting',
         'Department',
         'AuthRole'
@@ -151,8 +153,9 @@ class AccountsController extends AppController {
         }
 
         $this->set('pageStatus', $setStatus);
+        $user_ids = $this->AccountUser->getAccountIds($id, $pageStatus);
 
-        $account = $this->request->data = $this->Account->find('first', array(
+		$account = $this->request->data = $this->Account->find('first', array(
             'conditions' => array(
                 'Account.id' => $id
             ),
@@ -191,6 +194,7 @@ class AccountsController extends AppController {
                 ),
                 'User'=>array(
                     'conditions'=>array(
+						'User.id' => $user_ids,
                         'User.is_active'=>$pageStatus
                     ),
                     'Status'=>array(
@@ -239,15 +243,29 @@ class AccountsController extends AppController {
                             'ReqUser.last_name'
                         )
                     ),
+				),
 
-
-                )
             ),
 
         ));
 
-        #pr($account);
-        #exit;
+		$testing = $this->request->data = $this->AssignedTest->find('all', array(
+            'conditions' => array(
+                'AssignedTest.user_id' => $user_ids
+            ),
+            'contain' => array(
+                'User'=>array(
+                    'fields'=>array('User.id', 'User.first_name', 'User.last_name')
+                ),
+                'Test'=>array(
+                    'fields'=>array('Test.name')
+                )
+			),
+
+        ));
+
+		pr($testing);
+        exit;
         $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
 
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));

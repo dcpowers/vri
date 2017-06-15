@@ -745,6 +745,26 @@ class AccidentsController extends AppController {
         return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
     }
 
+	public function deleteAccidentFile($id = null, $accident_id = null) {
+        $this->AccidentFile->id = $id;
+
+		if($this->AccidentFile->delete()){
+        	$this->Flash->alertBox(
+            	'Accident File Deleted',
+	            array('params' => array('class'=>'alert-success'))
+			);
+        }else{
+			$this->Flash->alertBox(
+            	'There Was An Error! Please Try Again',
+	            array('params' => array('class'=>'alert-danger'))
+			);
+
+        }
+
+
+        return $this->redirect(array('controller'=>'Accidents','action' => 'view', $accident_id));
+    }
+
 	public function getDashboard(){
 		$v = $this->AccidentFile->find('all', array(
             'conditions' => array(
