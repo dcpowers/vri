@@ -13,27 +13,7 @@
             <?php #echo $this->element( 'Accounts/menu' );?>
         </div>
     </div>
-	<ul class="list-inline pull-right">
-		<li>
-			<?php
-			echo $this->Html->link(
-				'Request Employee Statement',
-				array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 1),
-				array('escape'=>false, 'class'=>'btn btn-xs btn-primary', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-			);
-			?>
-		</li>
 
-		<li>
-			<?php
-			echo $this->Html->link(
-				'Request Supervisor Statement',
-				array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 2),
-				array('escape'=>false, 'class'=>'btn btn-xs btn-info', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-			);
-			?>
-		</li>
-	</ul>
 	<div class="clearfix"></div>
 	<div class="row clearfix">
         <div class="col-sm-3">
@@ -215,13 +195,36 @@
             	<div class="box-header">
                     <h3 class="box-title">Accident Files</h3>
 					<div class="box-tools pull-right">
-			            <?php
-						echo $this->Html->link(
-			                '<i class="fa fa-upload fa-fw"></i> <span>Upload</span>',
-			                array('controller'=>'Accidents', 'action'=>'files', $accident['Accident']['id']),
-			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
-			            );
-                        ?>
+						<ul class="list-inline">
+							<li>
+								<?php
+								echo $this->Html->link(
+									'Request Employee Statement',
+									array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 1),
+									array('escape'=>false, 'class'=>'btn btn-xs btn-primary', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+								);
+								?>
+							</li>
+
+							<li>
+								<?php
+								echo $this->Html->link(
+									'Request Supervisor Statement',
+									array('controller'=>'Accidents', 'action'=>'sendRequest', $accident['Accident']['id'], 2),
+									array('escape'=>false, 'class'=>'btn btn-xs btn-info', 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+								);
+								?>
+							</li>
+							<li>
+					            <?php
+								echo $this->Html->link(
+					                '<i class="fa fa-upload fa-fw"></i> <span>Upload</span>',
+					                array('controller'=>'Accidents', 'action'=>'files', $accident['Accident']['id']),
+					                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+					            );
+		                        ?>
+							</li>
+						</ul>
 			        </div>
                 </div>
                     <table class="table table-striped table-condensed" id="trainingTable">
@@ -257,22 +260,37 @@
                                     <td><?=$f['CreatedBy']['first_name']?> <?=$f['CreatedBy']['last_name']?></td>
                                     <td><?php echo date('M d, Y', strtotime($f['date'])); ?></td>
 									<td>
-										<?php
-										if($f['is_active'] == 2){
-											echo $this->Html->link(
-												'<i class="fa fa-download fa-fw fa-lg"></i>',
-                                    			array('controller'=>'accidents', 'action'=>'download', $f['id']),
-                                    			array('escape'=>false)
-                                			);
-										}else{
-											?>
-											<span class="fa-stack ">
-										  		<i class="fa fa-download fa-stack-1x"></i>
-										  		<i class="fa fa-ban fa-stack-2x text-danger"></i>
-											</span>
-											<?php
-										}
-										?>
+										<ul class="list-inline">
+											<li>
+												<?php
+												if($f['is_active'] == 2){
+													echo $this->Html->link(
+														'<i class="fa fa-download fa-fw fa-lg"></i>',
+                                    					array('controller'=>'accidents', 'action'=>'download', $f['id']),
+                                    					array('escape'=>false)
+                                					);
+												}else{
+													?>
+													<span class="fa-stack ">
+										  				<i class="fa fa-download fa-stack-1x"></i>
+										  				<i class="fa fa-ban fa-stack-2x text-danger"></i>
+													</span>
+													<?php
+												}
+												?>
+											</li>
+											<li>
+												<?php
+												if($f['is_active'] != 2){
+													echo $this->Html->link(
+														'<i class="fa fa-times fa-fw fa-lg"></i>',
+                                    					array('controller'=>'accidents', 'action'=>'deleteAccidentFile', $f['id'], $accident['Accident']['id']),
+                                    					array('escape'=>false)
+                                					);
+												}
+												?>
+											</li>
+										</ul>
 									</td>
                                 </tr>
                                 <?php

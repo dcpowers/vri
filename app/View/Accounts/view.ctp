@@ -3,8 +3,11 @@
     $recordsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'records') ? 'active' : null;
     $assetsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'assets') ? 'active' : null;
     $safetyClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'safety') ? 'active' : null;
+    $awardsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'awards') ? 'active' : null;
+    $testClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'tests') ? 'active' : null;
 
     $accountClass = (empty($this->params['pass'][1]) || $this->params['pass'][1] == 'accounts') ? 'active' : null;
+
 
     ?>
 <style type="text/css">
@@ -48,6 +51,8 @@
             <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab">Training</a></li>
             <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab">Assets</a></li>
             <li class="<?=$safetyClass?>"><a href="#safety" data-toggle="tab">Safety</a></li>
+            <li class="<?=$awardsClass?>"><a href="#awards" data-toggle="tab">Awards</a></li>
+            <li class="<?=$testClass?>"><a href="#tests" data-toggle="tab">Testing</a></li>
         </ul>
 
         <div class="tab-content">
@@ -533,7 +538,11 @@
             </div>
             <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
             </div>
-        </div>
+            <div class="tab-pane fade <?=$awardsClass?> in" id="awards">
+            </div>
+			<div class="tab-pane fade <?=$testClass?> in" id="tests">
+            </div>
+		</div>
     </div>
 </div>
 
