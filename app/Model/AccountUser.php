@@ -91,16 +91,20 @@ class AccountUser extends AppModel {
         return $dataArr;
     }
 
-    public function getAccountIds($account_id=null){
+    public function getAccountIds($account_id=null, $status = null){
         $dataArr = array();
 
 
         $items = $this->find('all', array(
             'conditions' => array(
-                $this->alias.'.account_id'=>$account_id
+                $this->alias.'.account_id'=>$account_id,
+
             ),
             'contain'=>array(
                 'User'=>array(
+					'conditions'=>array(
+						'User.is_active' => $status
+					),
                     'fields'=>array(
                         'User.id',
                     )
