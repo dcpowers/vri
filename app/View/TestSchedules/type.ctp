@@ -13,7 +13,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-calendar fa-fw"></i><span class="text">Blind</span>',
                 array('controller'=>'TestSchedules', 'action'=>'Blind', $test_id),
-                array('escape' => false, 'data-dismiss'=>'modal', 'data-toggle'=>'modal', 'data-target'=>'#myModalSm', 'class'=>'btn btn-primary')
+                array('escape' => false, 'data-dismiss'=>'modal', 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'btn btn-primary')
             );
             ?>
 
@@ -21,7 +21,7 @@
             echo $this->Html->link(
                 '<i class="fa fa-calendar fa-fw"></i><span class="text">Schedule</span>',
                 array('controller'=>'TestSchedules', 'action'=>'Group', $test_id),
-                array('escape' => false, 'data-dismiss'=>'modal', 'data-toggle'=>'modal', 'data-target'=>'#myModalBig', 'class'=>'btn btn-primary')
+                array('escape' => false, 'data-dismiss'=>'modal', 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'btn btn-primary')
             );
             ?>
         </div>

@@ -127,7 +127,7 @@
             <?php
             if(!empty($tests[0]['AssignedTest'])){
                 foreach($tests as $key=>$item){
-                    $c_date = ($item['AssignedTest']['completion_date'] != '0000-00-00') ? date( APP_DATE_FORMAT,strtotime($item['AssignedTest']['completion_date'])) : null;
+                    $c_date = (!is_null($item['AssignedTest']['completion_date'])) ? date( APP_DATE_FORMAT,strtotime($item['AssignedTest']['completion_date'])) : null;
                     $warning = strtotime("-14 day", strtotime($item['AssignedTest']['expires_date']));
                     $item['AssignedTest']['complete'] = intval($item['AssignedTest']['complete']);
 

@@ -540,7 +540,63 @@
             </div>
             <div class="tab-pane fade <?=$awardsClass?> in" id="awards">
             </div>
+
 			<div class="tab-pane fade <?=$testClass?> in" id="tests">
+				<?php
+				foreach($testing as $title=>$test){
+					?>
+					<div class="hr-divider">
+                    	<h3 class="hr-divider-content hr-divider-heading">
+                        	<?=$title?>
+                        </h3>
+                    </div>
+                    <table class="table table-striped table-condensed table-hover">
+                    	<thead>
+                        	<tr>
+                            	<th class="col-md-3">Employee</th>
+                                <th class="col-md-2">Assigned On</th>
+                                <th class="col-md-2">Completed On</th>
+                                <th class="col-md-2">Expires On</th>
+                                <th class="col-md-3">Completed</th>
+                            </tr>
+                        </thead>
+						<?php
+                        foreach($test as $v){
+                            $warning = strtotime("-14 day", strtotime($v['Expires']));
+							$v['Complete'] = intval($v['Complete']);
+
+		                    $time = time();
+
+							$text_class = null;
+		                    $bar_class = 'success';
+
+		                    if(is_null($v['Completed'])){
+                                $text_class = ($time >= $warning) ? 'warning' : $text_class ;
+								$bar_class = ($time >= $warning) ? 'warning' : $bar_class ;
+
+								$text_class = (strtotime($v['Expires']) <= $time) ? 'danger' : $text_class ;
+		                        $bar_class = (strtotime($v['Expires']) <= $time) ? 'danger' : $bar_class ;
+		                    }
+                        	?>
+                            <tr class="<?=$text_class?>">
+                            	<td><?=$v['User']?></td>
+                            	<td><?=$v['Assigned']?></td>
+                            	<td><?=$v['Completed']?></td>
+                            	<td><?=$v['Expires']?></td>
+                                <td>
+		                            <div class="progress">
+		                                <div class="progress-bar progress-bar-<?=$bar_class?>" data-transitiongoal="<?=$v['Complete']?>" style="width: <?=$v['Complete']?>%; min-width: 2em;" aria-valuenow="<?=$v['Complete']?>"><?=$v['Complete']?> %</div>
+		                            </div>
+		                        </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    	</tbody>
+                	</table>
+					<?php
+				}
+				?>
             </div>
 		</div>
     </div>

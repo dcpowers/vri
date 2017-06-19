@@ -178,7 +178,7 @@
                                 echo $this->Html->link(
                                     '<i class="fa fa-calendar fa-fw"></i><span class="text">Schedule</span>',
                                     array('controller'=>'TestSchedules', 'action'=>'Type', $test['Test']['id']),
-                                    array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                                    array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModalBig')
                                 );
                                 ?>
                             </li>

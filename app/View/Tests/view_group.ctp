@@ -71,7 +71,7 @@
                         echo $this->Html->link(
                             '<i class="fa fa-calendar fa-fw"></i><span class="text">Schedule</span>',
                             array('controller'=>'TestSchedules', 'action'=>$type, $tests[0]['Test']['id']),
-                            array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModalSm', 'class'=>'btn btn-primary btn-xs')
+                            array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'btn btn-primary btn-xs')
                         );
                         ?>
                     </li>
@@ -146,7 +146,7 @@
 
                     $links[] = $this->Html->link(
                         '<i class="fa fa-trash"></i>',
-                        array('controller'=>'TestSchedules', 'member'=>true, 'action'=>'delete',$item['TestSchedule']['id'], $item['Test']['id'] ),
+                        array('controller'=>'TestSchedules', 'action'=>'delete',$item['TestSchedule']['id'], $item['Test']['id'] ),
                         array('escape'=>false),
                         "Are you Sure You Want To Delete This Scheduled Test?"
                     );
@@ -177,8 +177,9 @@
                         <?php
                             if($type != 'MultiplePeople'){
                                 $url = null;
+
                                 if(!empty($item['TestSchedule']['link'])){
-                                    $url = Router::url( array('controller'=>'','action'=>'t', 'member'=>false), true ).'/'.$item['TestSchedule']['link'];
+                                    $url = Router::url( array('controller'=>'','action'=>'t'), true ).'/'.$item['TestSchedule']['link'];
                                 }
                                 ?>
                                 <td><?=$url?></td>
@@ -210,7 +211,7 @@
                                                     <?php
                                                     echo $this->Html->link(
                                                         '<i class="fa fa-user-plus"></i>',
-                                                        array('controller'=>'TestSchedules', 'member'=>true, 'action'=>$type2, $item['Test']['id'], $item['TestSchedule']['id'] ),
+                                                        array('controller'=>'TestSchedules', 'action'=>$type2, $item['Test']['id'], $item['TestSchedule']['id'] ),
                                                         array('escape' => false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                                     );
                                                     ?>
@@ -236,7 +237,7 @@
                                                 if(!in_array('Self',$details['TestRole']) ){
                                                     $sublinks[] = $this->Html->link(
                                                         '<i class="fa fa-trash"></i>',
-                                                        array('controller'=>'TestSchedules', 'member'=>true, 'action'=>'singleUserDelete', $details['id'], $details['user_id'], $tests[0]['Test']['id'] ),
+                                                        array('controller'=>'TestSchedules', 'action'=>'singleUserDelete', $details['id'], $details['user_id'], $tests[0]['Test']['id'] ),
                                                         array('escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Delete', 'id'=>$details['id']),
                                                         "Are you Sure You Want To Delete This Scheduled Test?"
                                                     );
