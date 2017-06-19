@@ -82,4 +82,22 @@ class AccountDepartment extends AppModel {
         }
         return $dataArr;
     }
+
+	public function deptListPicks($acct_id = null){
+		$items = $this->find('all', array(
+            'conditions' => array(
+                'AccountDepartment.account_id'=>$acct_id,
+            ),
+            'contain'=>array(
+                'Department'=>array(
+                ),
+            ),
+        ));
+
+		foreach ( $items as $key=>$rec ) {
+            $dataArr[$rec['Department']['id']] = ucwords( strtolower($rec['Department']['name']));
+        }
+
+		return $dataArr;
+    }
 }

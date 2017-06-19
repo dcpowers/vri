@@ -113,7 +113,9 @@ class AccountUser extends AppModel {
             'fields'=>array(),
         ));
         foreach ( $items as $key=>$rec ) {
-            $dataArr[$rec['User']['id']] = $rec['User']['id'];
+			if(!empty($rec['User']['id'])){
+				$dataArr[$rec['User']['id']] = $rec['User']['id'];
+			}
         }
         return $dataArr;
     }
