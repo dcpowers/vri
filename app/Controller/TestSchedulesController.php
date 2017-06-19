@@ -18,7 +18,8 @@ class TestSchedulesController extends AppController {
         'AssignedTest',
         'User',
         'Short',
-		'AccountUser'
+		'AccountUser',
+		'AccountDepartment'
     );
 
     function beforeFilter() {
@@ -47,7 +48,7 @@ class TestSchedulesController extends AppController {
 			);
         }
 
-        return $this->redirect(array('controller'=>'tests','action' => 'view_group', 'member'=>true, $return_id));
+        return $this->redirect(array('controller'=>'tests','action' => 'view_group', $return_id));
     }
 
     public function Single($id=null){
@@ -125,12 +126,16 @@ class TestSchedulesController extends AppController {
 				return $this->redirect(array('controller'=>'tests','action' => 'view_single', $id));
 			}
         }
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 
 		#pr($account_ids);
 		#exit;
 		if(AuthComponent::user('Role.permission_level') >= 30){
-            $user_ids = $this->AccountUser->getAccountIds($account_ids);
+            $user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
+            #pr($account_ids);
+            #pr($user_ids);
+			#exit;
 
 			$exempt_list = $this->AssignedTest->find('list', array(
                 'conditions' => array(
@@ -145,7 +150,7 @@ class TestSchedulesController extends AppController {
 			$users = $this->User->find('list', array(
                 'conditions' => array(
                     'User.id'=>$user_ids,
-                    'User.id !='=>$exempt_list,
+                    #'User.id !='=>$exempt_list,
                     'User.is_active'=>1,
                 ),
                 'contain' => array(
@@ -296,15 +301,9 @@ class TestSchedulesController extends AppController {
             return $this->redirect(array('controller'=>'Tests','action' => 'view_group', 'member'=>true, $id));
         }
 
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
+        $acct_id = Set::extract( AuthComponent::user(), '/AccountUser/0/account_id' );
 
-        if(!empty($supervisorOf_id) ){
-            $group_ids = $this->Group->getChildren($supervisorOf_id);
-
-            $groups = $this->Group->generateTreeList(array('Group.id'=>$group_ids),NULL,NULL,' -');
-
-
-        }
+		$groups = $this->AccountDepartment->deptListPicks($acct_id[0]);
 
         $title = "Schedule Testing";
 
@@ -776,36 +775,7 @@ class TestSchedulesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $id=$this->request->data['TestSchedule']['test_id'];
 
-            //********************** Credits ***************///////////////
-            $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-
-            $group_id = (empty($supervisorOf_id)) ? AuthComponent::user('parent_group_ids.1') : $supervisorOf_id[0] ;
-            //Get number of credits needed for that test
-            $test_credit = $this->Test->find('list', array(
-                'conditions' => array(
-                    'Test.id' => $this->request->data['TestSchedule']['test_id']
-                ),
-                'contain' => array(
-                ),
-                'fields'=>('Test.credits')
-            ));
-
-            $creditCost = $test_credit[$this->request->data['TestSchedule']['test_id']];
-
-            $burn_credit = $this->GroupCredit->useCredit(AuthComponent::user('parent_group_ids.1'), $creditCost);
-
-            if($burn_credit[0] == true){
-                $this->Session->setFlash(
-                    __('You do not have enough credits to schedule testing.'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
-                );
-
-                return $this->redirect(array('controller'=>'Tests','action' => 'view_group', 'member'=>true, $id));
-            }
-            //*****************End Credits ***********************//
-
-            if(empty($this->request->data['TestSchedule']['name'])){
+			if(empty($this->request->data['TestSchedule']['name'])){
                  $info = $this->Test->testDetails($this->request->data['TestSchedule']['test_id']);
                  $this->request->data['TestSchedule']['name'] = $info['Test']['name'] . date(' (M d, Y)', strtotime(date(DATE_MYSQL_DATE)));
             }
@@ -813,10 +783,13 @@ class TestSchedulesController extends AppController {
             $num = str_pad(mt_rand(1,99999999),5,'0',STR_PAD_LEFT);
 
             $link = $this->Short->build_url($num);
+            #pr(AuthComponent::user());
+			#exit;
+			$acct_id = Set::extract( AuthComponent::user(), '/AccountUser/0/account_id' );
 
-            $this->request->data['TestSchedule']['link'] = $link;
+			$this->request->data['TestSchedule']['link'] = $link;
             $this->request->data['TestSchedule']['link_num'] = $num;
-            $this->request->data['TestSchedule']['group_id'] = AuthComponent::user('parent_group_ids.1');
+            $this->request->data['TestSchedule']['group_id'] = $acct_id[0];
             $this->request->data['TestSchedule']['assigned_on'] = date(DATE_MYSQL_DATE);
             $this->request->data['TestSchedule']['expires_on'] = date(DATE_MYSQL_DATE, strtotime( Configure::read('expired_testing') ) );
 
@@ -824,11 +797,10 @@ class TestSchedulesController extends AppController {
 
             if($this->TestSchedule->save($this->request->data['TestSchedule'])){
                 #Audit::log('Group record added', $this->request->data );
-                $this->Session->setFlash(
-                    __('Testing has been scheduled! You have: ' . $burn_credit[1] .' credit(s) left' ),
-                    'alert-box',
-                    array('class'=>'alert-success')
-                );
+                $this->Flash->alertBox(
+            		'Testing has been scheduled!',
+	                array('params' => array('class'=>'alert-success'))
+				);
             } else {
                 $this->Session->setFlash(
                     __('Testing Schedule Error! Please try again.'),

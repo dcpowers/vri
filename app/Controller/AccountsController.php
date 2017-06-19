@@ -249,7 +249,7 @@ class AccountsController extends AppController {
 
         ));
 
-		$testing = $this->request->data = $this->AssignedTest->find('all', array(
+		$testing = $this->AssignedTest->find('all', array(
             'conditions' => array(
                 'AssignedTest.user_id' => $user_ids
             ),
@@ -258,15 +258,31 @@ class AccountsController extends AppController {
                     'fields'=>array('User.id', 'User.first_name', 'User.last_name')
                 ),
                 'Test'=>array(
-                    'fields'=>array('Test.name')
+                    'fields'=>array('Test.name'),
+					'order'=>array('Test.name' => 'ASC')
                 )
 			),
+			#'order'=>array('AssignedTest.assigned_date' => 'DESC')
 
         ));
 
-		pr($testing);
-        exit;
-        $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
+        if(!empty($testing)){
+			$c = 0;
+			foreach($testing as $v){
+				$index = $v['Test']['name'];
+
+				$g[$index][$c]['User'] = $v['User']['first_name']. ' '. $v['User']['last_name'];
+				$g[$index][$c]['Assigned'] = date('F d,Y', strtotime($v['AssignedTest']['assigned_date']));
+				$g[$index][$c]['Completed'] = (is_null($v['AssignedTest']['completion_date'])) ? null : date('F d,Y', strtotime($v['AssignedTest']['completion_date']));
+				$g[$index][$c]['Expires'] = date('F d,Y', strtotime($v['AssignedTest']['expires_date']));
+				$g[$index][$c]['Complete'] = $v['AssignedTest']['complete'];
+
+				$c++;
+			}
+
+		}
+
+		$dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
 
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
 
@@ -364,6 +380,7 @@ class AccountsController extends AppController {
         $this->set('assets', $assets);
         $this->set('employees', $users);
         $this->set('trainings', $training);
+        $this->set('testing', $g);
 
         $this->set('userList', $userList);
         $this->set('status', $this->Setting->pickList('status'));

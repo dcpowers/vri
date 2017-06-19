@@ -7,11 +7,11 @@ App::uses('AppController', 'Controller');
 class AccountDepartmentsController extends AppController {
     public function beforeFilter() {
         parent::beforeFilter();
-        
+
         $this->Auth->allow(
         );
     }
-    
+
     public function pickListByDept($id=null){
         $items = $this->AccountDepartment->find('all', array(
             'conditions' => array(
@@ -40,13 +40,15 @@ class AccountDepartmentsController extends AppController {
             ),
             'fields'=>array(),
         ));
-        
+
         pr($items);
         exit;
         foreach ( $items as $key=>$rec ) {
             $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
         }
-        
+
         return $dataArr;
     }
+
+
 }

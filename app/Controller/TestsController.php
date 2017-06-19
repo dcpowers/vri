@@ -227,7 +227,7 @@ class TestsController extends AppController {
     public function view_single($id=null) {
         if(AuthComponent::user('Role.permission_level') >= 30){
             $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-            $user_ids = $this->AccountUser->getAccountIds($account_ids);
+            $user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
             #pr($data);
             #exit;
             $this->Paginator->settings = array(
@@ -395,7 +395,7 @@ class TestsController extends AppController {
         $this->request->data['AssignedTest']['user_id'] = $user_id;
         $this->request->data['AssignedTest']['assigned_date'] = date(DATE_MYSQL_DATE);
         $this->request->data['AssignedTest']['expires_date'] = date(DATE_MYSQL_DATE, strtotime( Configure::read('expired_testing') ) );
-        $this->request->data['AssignedTest']['completion_date'] = '0000-00-00';
+        $this->request->data['AssignedTest']['completion_date'] = null;
         $this->request->data['AssignedTest']['t_ans'] = '';
         $this->request->data['AssignedTest']['t_marks'] = '';
         $this->request->data['AssignedTest']['complete'] = 0;
@@ -419,7 +419,7 @@ class TestsController extends AppController {
             );
         }
 
-        $this->redirect(array('controller'=>'tests','action'=>'view', $test_id ));
+        $this->redirect(array('controller'=>'Tests','action'=>'view', $test_id ));
 
     }
 
