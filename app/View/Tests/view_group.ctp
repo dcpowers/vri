@@ -316,18 +316,3 @@
         <div class="clearfix"></div>
     </div>
 </div>
-
-<div class="modal bootstrap-dialog type-primary fade size-normal in" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
-
-<script type="text/javascript">
-    jQuery(window).ready( function($) {
-        $("#myModal").on('hidden.bs.modal', function () {
-            $(this).data('bs.modal', null);
-        });
-    });
-</script>

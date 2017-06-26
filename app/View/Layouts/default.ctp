@@ -71,6 +71,8 @@
             <?php echo $this->Html->script('../plugins/slimScroll/jquery.slimscroll.min'); ?>
             <!-- FastClick -->
             <?php echo $this->Html->script('../plugins/fastclick/fastclick.min'); ?>
+
+			<?php echo $this->Html->script('jquery.bootstrap-duallistbox.min' ); ?>
             <!-- AdminLTE App -->
             <?php echo $this->Html->script('../dist/js/app.min'); ?>
             <?php echo $this->Html->script('../dist/js/demo'); ?>
@@ -85,6 +87,7 @@
             <?php echo $this->Html->css('bootstrap-chosen.css'); ?>
             <?php echo $this->Html->css('app.css'); ?>
             <?php echo $this->Html->css('bootstrap-datetimepicker.css'); ?>
+			<?php echo $this->Html->css('bootstrap-duallistbox.min' ); ?>
             <?php echo $this->Html->css('bootstrap-editable.css'); ?>
             <?php echo $this->Html->css('../plugins/iCheck/square/blue.css'); ?>
             <?php echo $this->Html->css('../dist/css/skins/_all-skins.min.css'); ?>

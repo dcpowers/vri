@@ -2,10 +2,10 @@
     .label-as-badge {
         border-radius: 5em;
     }
-    
+
     .radio, .form-horizontal .checkbox{
         min-height: 0;
-        
+
     }
     .progress {
     overflow: hidden;
@@ -143,19 +143,19 @@
     background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 
-@-webkit-keyframes progress-bar-stripes { 
+@-webkit-keyframes progress-bar-stripes {
     from { background-position: 0 0 }
 
     to { background-position: 40px 0 }
 }
 
-@-moz-keyframes progress-bar-stripes { 
+@-moz-keyframes progress-bar-stripes {
     from { background-position: 0 0 }
 
     to { background-position: 40px 0 }
 }
 
-@keyframes progress-bar-stripes { 
+@keyframes progress-bar-stripes {
     from { background-position: 0 0 }
 
     to { background-position: 40px 0 }
@@ -163,11 +163,11 @@
 </style>
 <section class="page-block">
 
-<div class="container">
+
     <?php
     echo $this->Form->create('BlindTest', array(
         'type' => 'file',
-        'url' => array('controller'=>'BlindTests', 'action'=>'process'), 
+        'url' => array('controller'=>'BlindTests', 'action'=>'process'),
         'role'=>'form',
         'class'=>'form-horizontal',
         'inputDefaults' => array(
@@ -176,9 +176,9 @@
             'class'=>'form-control',
             'error'=>false
         )
-    )); 
+    ));
     echo $this->Form->hidden( 'id', array( 'value' => $id ) );
-    
+
     $new[] = $content[0]['Test']['id'];
     ?>
     <div class="well">
@@ -186,7 +186,7 @@
             <div class="col-md-2">
                 <?php
                 $image = (!empty($content[0]['Test']['logo'])) ? $content[0]['Test']['logo'] : 'testing.jpg' ;
-                            
+
                 echo $this->Html->image($image, array('class'=>'img-responsive img-thumbnail'));
                 ?>
             </div>
@@ -197,16 +197,16 @@
             </div>
         </div>
     </div>
-            
+
     <div class="progress active">
         <div class="bar progress-bar progress-bar-primary" data-transitiongoal="<?=$completed?>" style="width: <?=$completed?>%; min-width: 3em;" aria-valuenow="<?=$completed?>"><?=$completed?>%</div>
     </div>
-            
+
     <?=showTest($content[0]['children'], $new) ?>
-    
+
     <?php echo $this->Form->button('<i class="fa fa-floppy-o"></i> Save', array('type'=>'submit', 'div'=>false, 'label'=>false, 'class'=>'btn btn-primary col-md-offset-6')); ?>
-    <?php echo $this->Form->end(); ?> 
-</div>
+    <?php echo $this->Form->end(); ?>
+
 </section>
 <?php
     function showTest($array){
@@ -219,12 +219,12 @@
                 <hr class="solid" />
                 <?php
                 list($next, $value) = each($vals['children']);
-                
+
                 switch($value['Test']['category_type']){
                     case '2':
                         showTest($vals['children']);
                         break;
-                    
+
                     case '3':
                         getQuestions($vals['children']);
                         break;
@@ -232,7 +232,7 @@
             }
         }
     }
-    
+
     function getQuestions($array){
         if (count($array)) {
             foreach ($array as $key=>$vals) {
@@ -246,11 +246,11 @@
                                 <label class="col-sm-6 control-label">
                                     <?=$vals['Test']['name']?> <?=$vals['Test']['introduction']?>
                                 </label>
-                                
+
                                 <div class="col-md-6">
                                     <?php
                                     foreach($vals['children'] as $answer){
-                                        
+
                                         ?>
                                         <div class="radio col-md-12" style="min-height: 0px;">
                                             <label>
@@ -258,7 +258,7 @@
                                                 <?=$answer['Test']['name']?>
                                             </label>
                                         </div>
-                                        <?php    
+                                        <?php
                                     }
                                     ?>
                                 </div>
@@ -271,7 +271,7 @@
             }
         }
     }
-    
+
     function getCommentBox($vals=null){
         ?>
         <div class="form-group">
@@ -280,7 +280,7 @@
                     <label class="col-sm-6 control-label">
                         <?=$vals['Test']['name']?> <?=$vals['Test']['introduction']?>
                     </label>
-                            
+
                     <div class="col-md-6">
                         <textarea rows="4" cols="50" name="t_ans[<?=$vals['Test']['id']?>]"></textarea>
                     </div>
@@ -290,5 +290,5 @@
         </div>
         <?php
     }
-    
+
 ?>
