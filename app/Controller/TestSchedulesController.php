@@ -19,7 +19,8 @@ class TestSchedulesController extends AppController {
         'User',
         'Short',
 		'AccountUser',
-		'AccountDepartment'
+		'AccountDepartment',
+		'DepartmentUser'
     );
 
     function beforeFilter() {
@@ -83,32 +84,9 @@ class TestSchedulesController extends AppController {
             unset($this->request->data['AssignedTest']);
             $this->AssignedTest->create();
             if ($this->AssignedTest->saveMany($this->request->data)) {
-
-				if (env('SERVER_NAME') != 'vri'){
-                    foreach($email_invite as $invite){
-                        $user_email = $invite['user_email']['User']['email'];
-                        $user_name = $invite['user_email']['User']['name'];
-                        $name = $invite['name']['Test']['name'];
-
-						//Email Link To user
-                        $email = new CakeEmail();
-                        $email->config('smtp');
-                        $email->sender('support@vrifm.com', 'One System Support');
-                        $email->from(array(AuthComponent::user('email') => AuthComponent::user('fullname')));
-                        $email->template('schedule');
-                        $email->to(array($user_email => $user_name));
-
-                        $email->subject(AuthComponent::user('first_name').' '. AuthComponent::user('last_name') .' has scheduled you for the iWorkZone: '.$name);
-                        $email->emailFormat('both');
-
-                        $this->set('user_email', $user_email);
-                        $this->set('name', $name);
-                        $email->viewVars(array('user_email' => $user_email));
-                        $email->viewVars(array('name' => $name));
-
-                        $email->send();
-                    }
-                }
+                if (env('SERVER_NAME') != 'vri'){
+					$this->sendMail($email_invite);
+				}
                 #Audit::log('Group record added', $this->request->data );
                 $this->Flash->alertBox(
             		'Testing has been scheduled!',
@@ -174,6 +152,8 @@ class TestSchedulesController extends AppController {
     }
 
     public function Group($id=null){
+		$acct_id = Set::extract( AuthComponent::user(), '/AccountUser/0/account_id' );
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['TestSchedule']['groups_id'] = $this->request->data['groups_id'];
             unset($this->request->data['groups_id']);
@@ -188,50 +168,34 @@ class TestSchedulesController extends AppController {
             $this->request->data['TestSchedule']['assigned_on'] = date(DATE_MYSQL_DATE);
             $this->request->data['TestSchedule']['expires_on'] = date(DATE_MYSQL_DATE, strtotime( Configure::read('expired_testing') ) );
 
-            //********************** Credits ***************///////////////
-            $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-
-            $group_id = (empty($supervisorOf_id)) ? AuthComponent::user('parent_group_ids.1') : $supervisorOf_id[0] ;
-            //Get number of credits needed for that test
-            $test_credit = $this->Test->find('list', array(
+			$user_list = $this->AccountUser->find('list', array(
                 'conditions' => array(
-                    'Test.id' => $this->request->data['TestSchedule']['test_id']
+                    'AccountUser.account_id' => $acct_id[0]
                 ),
                 'contain' => array(
                 ),
-                'fields'=>('Test.credits')
+                'fields'=>array('AccountUser.user_id', 'AccountUser.user_id')
             ));
 
-            $creditCost = $test_credit[$this->request->data['TestSchedule']['test_id']];
-
-            $burn_credit = $this->GroupCredit->useCredit(AuthComponent::user('parent_group_ids.1'), $creditCost);
-
-            if($burn_credit[0] == true){
-                $this->Session->setFlash(
-                    __('You do not have enough credits to schedule testing.'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
-                );
-
-                return $this->redirect(array('controller'=>'Tests','action' => 'view_group', 'member'=>true, $id));
-            }
-            //*****************End Credits ***********************//
-
-            $users = $this->GroupMembership->find('list', array(
+            $users = $this->DepartmentUser->find('list', array(
                 'conditions' => array(
-                    'GroupMembership.group_id' => $this->request->data['TestSchedule']['groups_id']
+                    'DepartmentUser.department_id' => $this->request->data['TestSchedule']['groups_id'],
+                    'DepartmentUser.user_id' => $user_list
                 ),
                 'contain' => array(
                 ),
-                'fields'=>array('GroupMembership.user_id')
+                'fields'=>array('DepartmentUser.user_id', 'DepartmentUser.user_id')
             ));
-            $this->request->data['TestSchedule']['group_id'] = AuthComponent::user('parent_group_ids.1');
+            $this->request->data['TestSchedule']['group_id'] = $acct_id[0];
+
             $this->TestSchedule->create();
             $this->TestSchedule->save($this->request->data['TestSchedule']);
             $test_schedule_id = $this->TestSchedule->id;
 
             $email_invite = array();
             $key = 0;
+
+			$this->User->virtualFields['fullname'] = 'CONCAT(first_name, " " , last_name)';
 
             foreach($users as $user){
                 $this->request->data[$key]['AssignedTest']['assigned_date'] = date(DATE_MYSQL_DATE);
@@ -259,34 +223,12 @@ class TestSchedulesController extends AppController {
             $this->AssignedTest->create();
             if ($this->AssignedTest->saveMany($this->request->data)) {
 
-                if (env('SERVER_NAME') != 'iwz-3.0'){
-                    foreach($email_invite as $invite){
-                        $user_email = $invite['user_email']['User']['username'];
-                        $user_name = $invite['user_email']['User']['fullname'];
-                        $name = $invite['name']['Test']['name'];
-
-                        //Email Link To user
-                        $email = new CakeEmail();
-                        $email->config('smtp');
-                        $email->sender('admin@iworkzone.com', 'iWorkZone Administrator');
-                        $email->from(array(AuthComponent::user('username') => AuthComponent::user('fullname')));
-                        $email->template('schedule');
-                        $email->to(array($user_email => $user_name));
-
-                        $email->subject(AuthComponent::user('fullname').' has scheduled you for the iWorkZone: '.$name);
-                        $email->emailFormat('both');
-
-                        $this->set('user_email', $user_email);
-                        $this->set('name', $name);
-                        $email->viewVars(array('user_email' => $user_email));
-                        $email->viewVars(array('name' => $name));
-
-                        $email->send();
-                    }
-                }
+                if (env('SERVER_NAME') != 'vri'){
+					$this->sendMail($email_invite);
+				}
                 #Audit::log('Group record added', $this->request->data );
                 $this->Session->setFlash(
-                    __('Testing has been scheduled! You have: ' . $burn_credit[1] .' credit(s) left' ),
+                    __('Testing has been scheduled!' ),
                     'alert-box',
                     array('class'=>'alert-success')
                 );
@@ -301,9 +243,7 @@ class TestSchedulesController extends AppController {
             return $this->redirect(array('controller'=>'Tests','action' => 'view_group', 'member'=>true, $id));
         }
 
-        $acct_id = Set::extract( AuthComponent::user(), '/AccountUser/0/account_id' );
-
-		$groups = $this->AccountDepartment->deptListPicks($acct_id[0]);
+        $groups = $this->AccountDepartment->deptListPicks($acct_id[0]);
 
         $title = "Schedule Testing";
 
@@ -809,7 +749,7 @@ class TestSchedulesController extends AppController {
                 );
             }
 
-            return $this->redirect(array('controller'=>'tests','action' => 'view_group', 'member'=>true, $id));
+            return $this->redirect(array('controller'=>'tests','action' => 'view_group', $id));
         }
 
         $title = "Schedule Testing";
@@ -1024,37 +964,6 @@ class TestSchedulesController extends AppController {
             'fields'=>array('AssignedTest.complete')
         ));
 
-        if(is_null($assigned[0]['AssignedTest']['complete'])){
-            //Get number of Credits
-            $credit_id = $this->GroupCredit->find('all', array(
-                'conditions' => array(
-                    'GroupCredit.group_id' => AuthComponent::user('parent_group_ids.1')
-                ),
-                'contain' => array(
-                ),
-            ));
-
-            //Get number of credits needed for that test
-            $test_credit = $this->Test->find('list', array(
-                'conditions' => array(
-                    'Test.id' => $return_id
-                ),
-                'contain' => array(
-                ),
-                'fields'=>('Test.credits')
-            ));
-
-            $creditCost = $test_credit[$return_id];
-
-            $groupCreditId = $credit_id[0]['GroupCredit']['id'];
-            $newCredits = $credit_id[0]['GroupCredit']['credits'] + $creditCost;
-            $usedCredits = $credit_id[0]['GroupCredit']['used'] - $creditCost;
-
-            $data['GroupCredit'] = array('id' => $groupCreditId, 'credits' => $newCredits, 'used' => $usedCredits);
-
-            $this->GroupCredit->save($data);
-        }
-
         if($this->AssignedTest->delete()){
 
             //if($assigned
@@ -1094,7 +1003,7 @@ class TestSchedulesController extends AppController {
                 $type = 'group';
                 break;
         }
-        return $this->redirect(array('controller'=>'tests','action' => 'view_'.$type, 'member'=>true, $return_id));
+        return $this->redirect(array('controller'=>'tests','action' => 'view_'.$type, $return_id));
     }
 
     public function singleUserDelete($id = null, $user_id = null, $return_id=null) {
@@ -1131,7 +1040,35 @@ class TestSchedulesController extends AppController {
                 $type = 'group';
                 break;
         }
-        return $this->redirect(array('controller'=>'tests','action' => 'view_'.$type, 'member'=>true, $return_id));
+        return $this->redirect(array('controller'=>'tests','action' => 'view_'.$type, $return_id));
     }
+
+	public function sendMail($email_invite = null){
+		if(!is_null($email_invite)){
+			foreach($email_invite as $invite){
+        		$user_email = $invite['user_email']['User']['email'];
+            	$user_name = $invite['user_email']['User']['name'];
+                $name = $invite['name']['Test']['name'];
+
+				//Email Link To user
+                $email = new CakeEmail();
+                $email->config('smtp');
+                $email->sender('support@vrifm.com', 'One System Support');
+                $email->from(array(AuthComponent::user('email') => AuthComponent::user('fullname')));
+                $email->template('schedule');
+                $email->to(array($user_email => $user_name));
+
+                $email->subject(AuthComponent::user('first_name').' '. AuthComponent::user('last_name') .' has scheduled you for the One System: '.$name);
+                $email->emailFormat('both');
+
+                $this->set('user_email', $user_email);
+                $this->set('name', $name);
+                $email->viewVars(array('user_email' => $user_email));
+                $email->viewVars(array('name' => $name));
+
+                $email->send();
+            }
+		}
+	}
 }
 ?>

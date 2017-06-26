@@ -293,6 +293,8 @@ class TestsController extends AppController {
             $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
             $user_ids = $this->AccountUser->getAccountIds($account_ids);
 
+			$this->User->virtualFields['fullname'] = 'CONCAT(first_name, " " , last_name)';
+
             $this->Paginator->settings = array(
                 'conditions' => array(
                     'TestSchedule.group_id'=>$account_ids,
