@@ -1,5 +1,5 @@
 <?php
-    $apps = $this->requestAction('Applications/getLeftMenu/'); 
+    $apps = $this->requestAction('Applications/getLeftMenu/');
 ?>
     <div class="collapse navbar-collapse pull-left" id="navbar-collapse" style="min-width: 100%; padding: 0px; margin: 0px; height: 50px;">
         <nav class="navbar navbar-inverse navbar-static-top skin-border">
@@ -26,12 +26,12 @@
                                             <?php
                                             echo $this->Html->link(
                                                 '<i class="'. $child['Application']['iconCls'] .'"></i> <span>'. $child['Application']['name'] . '</span>',
-                                                array('controller'=>$child['Application']['controller'], 'action'=>$child['Application']['action']),
+                                                array('plugin'=>false, 'controller'=>$child['Application']['controller'], 'action'=>$child['Application']['action']),
                                                 array('escape'=>false)
                                             );
                                             ?>
                                         </li>
-                                        <?php      
+                                        <?php
                                     }
                                     ?>
                                 </ul>
@@ -44,7 +44,7 @@
                                 <?php
                                 echo $this->Html->link(
                                     '<i class="'. $menu_item['Application']['iconCls'] .'"></i> <span>'. $menu_item['Application']['name'] . '</span>',
-                                    array('controller'=>$menu_item['Application']['controller'], 'action'=>$menu_item['Application']['action']),
+                                    array('plugin'=>false, 'controller'=>$menu_item['Application']['controller'], 'action'=>$menu_item['Application']['action']),
                                     array('escape'=>false)
                                 );
                                 ?>
