@@ -135,7 +135,7 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 
-/*
+
 Configure::write('Pdf', array(
     'prefix' => 'pdf',
     'engine' => 'CakePdf.WkHtmlToPdf',
@@ -146,4 +146,3 @@ Configure::write('Pdf', array(
     //Windows
     'binary'=>'c:\wkhtmltopdf\bin\wkhtmltopdf.exe'
 ));
-*/
