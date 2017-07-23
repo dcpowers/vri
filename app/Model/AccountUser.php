@@ -94,6 +94,8 @@ class AccountUser extends AppModel {
     public function getAccountIds($account_id=null, $status = null){
         $dataArr = array();
 
+		$status = (is_null($status)) ? 1 : $status ;
+		$status = ($status == 'All') ? array(1,2) : $status ;
 
         $items = $this->find('all', array(
             'conditions' => array(

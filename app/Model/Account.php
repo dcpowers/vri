@@ -112,6 +112,22 @@ class Account extends AppModel {
         return $data;
     }
 
+	public function fullListActive(){
+        $data = $this->find('list', array(
+            'conditions'=>array(
+                'Account.is_active' => 1,
+            ),
+            'contain'=>array(),
+            'fields'=>array('Account.id', 'Account.name'),
+            'order'=>array('Account.name')
+        ));
+        #debug($this->validationErrors); //show validationErrors
+        #debug($this->getDataSource()->getLog(false, false)); //show last sql query
+        #pr($data);
+        #exit;
+        return $data;
+    }
+
     public function myAccounts(){
         $ids = $this->find('list', array(
             'conditions'=>array(
