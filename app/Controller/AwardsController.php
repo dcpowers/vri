@@ -15,6 +15,7 @@ class AwardsController extends AppController {
         'Award',
 		'AccountUser',
 		'User',
+		'Account',
 		'Department',
 		'DepartmentUser',
 		'Accident'
@@ -60,7 +61,7 @@ class AwardsController extends AppController {
 		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
 
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-		$user_ids = $this->AccountUser->getAccountIds($account_ids);
+		$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 		$users = $this->User->pickListByStartDate($user_ids, $end);
 
         $depts = $this->Department->pickList();
@@ -155,6 +156,80 @@ class AwardsController extends AppController {
         $this->set('accident', $accident);
         $this->set('setting', $this->Accident->yesNo());
         $this->set('status', $this->Accident->statusInt());
+    }
+
+	public function report(){
+		$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
+        $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
+
+		$dateObj   = DateTime::createFromFormat('!m', $month);
+		$monthName = $dateObj->format('F'); // March
+
+		$numDays = cal_days_in_month(CAL_GREGORIAN, $month, $year) - 1;
+		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
+		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
+
+		for($i=1; $i<=12; $i++){
+			$months[$i] = date( 'F', mktime( 0, 0, 0, $i + 1, 0, 0, 0 ) );
+		}
+
+		$current_year = date('Y', strtotime('now'));
+
+		for($y=2013; $y<=$current_year; $y++){
+			$years[$y] = $y;
+		}
+
+        $this->set('month', $month);
+        $this->set('months', $months);
+        $this->set('year', $year);
+        $this->set('years', $years);
+        $acct_ids = $this->Account->fullListActive();
+
+		foreach($acct_ids as $id=>$name){
+			$awards[$name] = $this->Award->find('all', array(
+	    		'conditions' => array(
+		            'Award.account_id >=' => $id,
+		            'Award.date >=' => $start,
+		            'Award.date <=' => $end,
+		        ),
+		        'contain' => array(
+            		'Type'=>array(),
+	                'CreatedBy'=>array(),
+					'User'=>array(
+						'fields'=>array(
+							'User.first_name',
+							'User.last_name',
+						)
+					),
+					'Account'=>array()
+		        ),
+	        ));
+		}
+        $c=0;
+		if(!empty($awards)){
+			foreach($awards as $comp_name=>$item){
+				$key = $comp_name;
+
+				if(!empty($item)){
+					foreach($item as $v){
+						$results[$key][$c]['award']['monthYear'] = date('F Y', strtotime($v['Award']['date']));
+						$results[$key][$c]['award']['ver_by'] = $v['CreatedBy']['first_name'] .' '.$v['CreatedBy']['last_name'];
+						$results[$key][$c]['award']['ver_date'] = date('F d, Y', strtotime($v['Award']['verified_date']));
+						$results[$key][$c]['award']['user'] = $v['User']['first_name'] .' '.$v['User']['last_name'];
+						$results[$key][$c]['award']['type'] = $v['Type']['award'];
+						$results[$key][$c]['award']['amount'] = $v['Award']['amount'];
+
+						$c++;
+					}
+				}else{
+					$results[$key][]['award']['error'] = 'No Records Found';
+				}
+				#$results[$key][]['info'][''] = $item;
+				#$results[$key][]['info'][''] = $item;
+				#$results[$key][]['info'][''] = $item;
+            }
+        }
+		$this->set('results', $results);
     }
 
     public function process($id=null){

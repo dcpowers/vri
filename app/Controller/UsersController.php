@@ -206,7 +206,7 @@ class UsersController extends AppController {
 		#pr($account_ids);
 		#exit;
 		if(AuthComponent::user('Role.permission_level') >= 30){
-            $user_ids = $this->AccountUser->getAccountIds($account_ids);
+            $user_ids = $this->AccountUser->getAccountIds($account_ids, $status);
 			$option = array('conditions'=>array('User.id' => $user_ids));
         	$options = array_merge_recursive($options,$option);
         }

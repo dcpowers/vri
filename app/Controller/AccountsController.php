@@ -266,6 +266,7 @@ class AccountsController extends AppController {
 
         ));
 
+		$g = array();
         if(!empty($testing)){
 			$c = 0;
 			foreach($testing as $v){
