@@ -14,7 +14,15 @@
             <h3 class="dashhead-title"><i class="fa fa-trophy fa-fw"></i>Awards</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php #echo $this->element( 'Accounts/search' );?>
+            <?php
+			if(AuthComponent::user('Role.permission_level') >= 60){
+				echo $this->Html->link(
+                	'Admin Report',
+                    array('controller'=>'Awards', 'action'=>'report'),
+                    array('escape'=>false, 'class'=>'btn btn-primary' )
+                );
+			}
+			?>
         </div>
     </div>
     <div class="flextable">

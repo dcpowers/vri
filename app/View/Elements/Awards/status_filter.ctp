@@ -48,6 +48,7 @@
                 ?>
 
 			</li>
+
 		</ul>
         <?php echo $this->Form->end(); ?>
     </div>
