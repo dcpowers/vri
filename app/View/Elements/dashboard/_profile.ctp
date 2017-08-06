@@ -5,7 +5,7 @@
 ?>
 
 <div class="profile dashboard">
-    <div class="box box-default" style="border-left: 1px solid #D2D6DE; border-right: 1px solid #D2D6DE;">
+    <div class="box box-primary">
     	<div class="box-body">
 			<?php
 			clearstatcache();
@@ -53,6 +53,6 @@
 				<dd><?=$this->request->data['Supervisor']['first_name']?> <?=$this->request->data['Supervisor']['last_name']?></dd>
 			</dl>
 		</div>
-		<div class="box-footer" style="border-bottom: 1px solid #D2D6DE;"></div>
+
 	</div>
 </div>

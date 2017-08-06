@@ -1,6 +1,6 @@
 <?php
     echo $this->Form->create('Accidents', array(
-        'url' => array('controller'=>'Accidents', 'action'=>'statements'),
+        'url' => array('controller'=>'AccidentStatements', 'action'=>'statements'),
         'role'=>'form',
 		'type'=>'file',
         #'class'=>'form-horizontal',
@@ -51,7 +51,8 @@
 	        	'type'=>$type,
 				'rows'=>$row,
 				'options'=>$option,
-				'class'=>$class
+				'class'=>$class,
+				'empty'=>true
 	        ));
 	        ?>
 		</div>

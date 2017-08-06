@@ -3,8 +3,8 @@
 ?>
     <div class="collapse navbar-collapse pull-left" id="navbar-collapse" style="min-width: 100%; padding: 0px; margin: 0px; height: 50px;">
         <nav class="navbar navbar-inverse navbar-static-top skin-border">
-            <div class="container">
-                <ul class="nav navbar-nav">
+            <!--<div class="container">-->
+                <ul class="nav navbar-nav" style="margin-left: 30px;">
                     <?php
                     foreach($apps as $menu_item){
                         if(!empty($menu_item['children'])){
@@ -54,6 +54,6 @@
                     }
                     ?>
                 </ul>
-            </div>
+            <!--</div>-->
         </nav>
     </div>

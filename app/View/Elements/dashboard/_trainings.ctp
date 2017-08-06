@@ -3,7 +3,7 @@
     #pr($data);
 ?>
 
-<div class="box box-warning" style="border-left: 1px solid #F39C12; border-right: 1px solid #F39C12;">
+<div class="box box-warning">
     <div class="box-header">
         <h3 class="box-title">My Required Training</h3>
         <div class="box-tools pull-right">
@@ -104,5 +104,5 @@
                                 </tbody>
         </table>
 
-    <div class="box-footer" style="border-bottom: 1px solid #F39C12;"></div>
+    <div class="box-footer" style="border-bottom: 1px solid #C0C0C0;"></div>
 </div>

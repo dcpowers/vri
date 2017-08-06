@@ -3,7 +3,7 @@
     	$dashboardData = $this->requestAction('/BingoGame/getDashboard/');
 	    #pr($data);
 	    ?>
-		<div class="box box-default" style="border-left: 1px solid #D2D6DE; border-right: 1px solid #D2D6DE;">
+		<div class="box box-default">
 	    	<div class="box-header">
         		<h3 class="box-title">Bingo</h3>
 				<div class="box-tools pull-right">
@@ -16,7 +16,7 @@
             ?>
         </div>
 			</div>
-			<div class="box-body">
+
             	<table class="table table-striped table-condensed" id="accountsTable">
 	            	<thead>
 	                	<tr class="tr-heading">
@@ -91,8 +91,8 @@
 						?>
 					</tbody>
 				</table>
-			</div>
-			<div class="box-footer" style="border-bottom: 1px solid #D2D6DE;"></div>
+
+			<div class="box-footer" style="border-bottom: 1px solid #C0C0C0;"></div>
 		</div>
 		<?php
 	}

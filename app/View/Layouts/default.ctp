@@ -130,19 +130,19 @@
         <![endif]-->
     </head>
     <body class="hold-transition layout-top-nav skin-red">
-        <div class="wrapper bg-white">
+        <div class="wrapper">
             <?php echo $this->element('header'); ?>
             <?php echo $this->element('menu'); ?>
             <div class="content-wrapper">
-                <div class="container">
+                <!--<div class="container">-->
                     <section class="content-header">
                         <?php echo $this->element('breadcrumbs'); ?>
                     </section>
-                    <section class="content bg-white">
+                    <section class="content">
                         <?php echo $this->Flash->render(); ?>
                         <?php echo $this->fetch('content'); ?>
                     </section>
-                </div>
+                <!--</div>-->
             </div>
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">

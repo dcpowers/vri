@@ -537,6 +537,70 @@
                 </table>
             </div>
             <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
+				<table class="table table-striped" id="accountsTable">
+			        <thead>
+			            <tr class="tr-heading">
+			                <th class="text-center col-md-1">Id</th>
+			                <th class="col-md-2">Name</th>
+			                <th class="col-md-2">Department</th>
+							<th class="col-md-2">Date</th>
+							<th class="col-md-3">Description</th>
+                            <th class="col-md-2"></th>
+                        </tr>
+			        </thead>
+
+			        <tbody>
+			            <?php
+			            foreach($account['Accident'] as $a){
+							$class= ($a['is_active'] == 2) ? 'danger' : null ;
+							$date = date('F d, Y', strtotime($a['date']));
+			                ?>
+			                <tr class="<?=$class?>">
+								<td class="text-center"><?=$a['id']?></td>
+			                    <td>
+			                        <?php
+			                        echo $this->Html->link(
+			                            $a['first_name'].' '.$a['last_name'],
+			                            array('controller'=>'Accidents', 'action'=>'view', $a['id']),
+			                            array('escape'=>false)
+			                        );
+			                        ?>
+			                    </td>
+
+			                    <td><?=$a['Dept']['name']?></td>
+
+			                    <td><?=$date?></td>
+			                    <td><?=$a['description']?></td>
+		                        <td>
+									<ul class="list-inline">
+										<li>
+											<?php
+											if($a['is_active'] == 1){
+												echo $this->Html->link(
+						                            '<i class="fa fa-fw fa-unlock"></i>',
+						                            array('controller'=>'Accidents', 'action'=>'open', $a['id']),
+						                            array('escape'=>false)
+						                        );
+											}else{
+												echo $this->Html->link(
+						                            '<i class="fa fa-fw fa-lock"></i>',
+						                            array('controller'=>'Accidents', 'action'=>'close', $a['id']),
+						                            array('escape'=>false)
+						                        );
+											}
+
+
+											?>
+										</li>
+		                            </ul>
+								</td>
+			                </tr>
+			                <?php
+			            }
+			            ?>
+			        </tbody>
+			    </table>
+
             </div>
             <div class="tab-pane fade <?=$awardsClass?> in" id="awards">
             </div>

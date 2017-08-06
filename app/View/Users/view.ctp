@@ -2,10 +2,12 @@
     $doh = (!empty($this->request->data['User']['doh'])) ? date('F d, Y', strtotime($this->request->data['User']['doh'])) : 'N/A' ;
     $dob = (!empty($this->request->data['User']['dob'])) ? date('F d, Y', strtotime($this->request->data['User']['dob'])) : 'N/A' ;
 
-	$jobClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'employees') ? 'active' : null;
-    $recordsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'records') ? 'active' : null;
-    $assetsClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'assets') ? 'active' : null;
-    $safetyClass = (!empty($this->params['pass'][1]) && $this->params['pass'][1] == 'safety') ? 'active' : null;
+	$jobClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'employees') ? 'active' : null;
+    $recordsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'records') ? 'active' : null;
+    $assetsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'assets') ? 'active' : null;
+    $testingClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'testing') ? 'active' : null;
+    $awardClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'award') ? 'active' : null;
+    $safetyClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'safety') ? 'active' : null;
 
     $personalClass = (empty($this->params['pass'][1]) || $this->params['pass'][1] == 'info') ? 'active' : null;
 
@@ -68,42 +70,40 @@
         </div>
         <div id="employeeList">
             <div class="row">
-                <div class="col-md-3 headerContent">
-					<div class="col-md-10 col-md-offset-1">
-	                    <div class="form-group">
-	                        <div class="fileupload fileupload-new " data-provides="fileupload">
-	                            <div class="fileupload-new thumbnail">
-	                                <div class="effect3 thumbnail">
-	                                <?php
-	                                #pr($this->request->data);
-	                                #exit;
-	                                clearstatcache();
-	                                $image = (file_exists('img/profiles/'.$this->request->data['User']['id'].'.png')) ? '/img/profiles/'.$this->request->data['User']['id'].'.png' : '/img/profiles/noImage.png' ;
-	                                echo $this->Html->image($image, array('class'=>'img-responsive'));
-	                                #echo $this->Html->image('/img/profiles/'.$this->request->data['User']['id'].'.png', array('class'=>'img-responsive'));
-	                                ?>
-	                                </div>
-	                            </div>
+                <div class="col-md-2 headerContent bg-white">
+					<div class="form-group">
+                        <div class="fileupload fileupload-new " data-provides="fileupload">
+                            <div class="fileupload-new thumbnail">
+                                <div class="effect3 thumbnail">
+                                <?php
+                                #pr($this->request->data);
+                                #exit;
+                                clearstatcache();
+                                $image = (file_exists('img/profiles/'.$this->request->data['User']['id'].'.png')) ? '/img/profiles/'.$this->request->data['User']['id'].'.png' : '/img/profiles/noImage.png' ;
+                                echo $this->Html->image($image, array('class'=>'img-responsive'));
+                                #echo $this->Html->image('/img/profiles/'.$this->request->data['User']['id'].'.png', array('class'=>'img-responsive'));
+                                ?>
+                                </div>
+                            </div>
 
-	                            <div class="effect3 thumbnail">
-	                                <div class="fileupload-preview fileupload-exists thumbnail"></div>
-	                            </div>
+                            <div class="effect3 thumbnail">
+                                <div class="fileupload-preview fileupload-exists thumbnail"></div>
+                            </div>
 
 
-	                            <div class="text-center">
-	                                <span class="btn btn-file">
-	                                    <span class="text-danger"><small>( 2mb Limit )</small></span><br />
-	                                    <span class="fileupload-new">Select Image</span>
-	                                    <span class="fileupload-exists">Select New Image</span>
-	                                    <?php echo $this->Form->file('file'); ?>
-	                                </span>
+                            <div class="text-center">
+                                <span class="btn btn-file">
+                                    <span class="text-danger"><small>( 2mb Limit )</small></span><br />
+                                    <span class="fileupload-new">Select Image</span>
+                                    <span class="fileupload-exists">Select New Image</span>
+                                    <?php echo $this->Form->file('file'); ?>
+                                </span>
 
-	                                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+                                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
 
-	                            </div>
-	                        </div>
+                            </div>
+                        </div>
 
-	                    </div>
                     </div>
 					<div style="color: #000;">
                     	<div class="form-group">
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-10">
                     <div class="row">
                         <div class="col-md-12 headerContent">
                             <h2 class="title">
@@ -171,11 +171,13 @@
                         </div>
                         <div class="col-md-12">
 
-                            <div class="tabbable" style="margin-top: 20px;">
+                            <div class="tabbable bg-white" style="margin-top: 20px;">
                                 <ul class="nav nav-tabs">
                                     <li class="<?=$personalClass?>"><a href="#info" data-toggle="tab"><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</a></li>
                                     <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training</a></li>
+									<li class="<?=$testingClass?>"><a href="#testing" data-toggle="tab"><i class="fa fa-clipboard fa-fw" aria-hidden="true"></i> Testing</a></li>
                                     <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab"><i class="fa fa-car fa-fw" aria-hidden="true"></i> Assets</a></li>
+                                    <li class="<?=$awardClass?>"><a href="#award" data-toggle="tab"><i class="fa fa-trophy fa-fw" aria-hidden="true"></i> Awards</a></li>
                                     <li class="<?=$safetyClass?>"><a href="#safety" data-toggle="tab"><i class="fa fa-ambulance fa-fw" aria-hidden="true"></i> Safety</a></li>
                                 </ul>
 
@@ -607,6 +609,131 @@
                                                 ?>
                                             </tbody>
                                         </table>
+                                    </div>
+									<div class="tab-pane fade <?=$testingClass?> in" id="testing">
+										<?php #pr($user['AssignedTest']); ?>
+										<table class="table table-hover table-condensed">
+									        <thead>
+									            <tr class="tr-heading">
+									                <th>Test</th>
+									                <th>Scheduled Date</th>
+									                <th>Expires Date</th>
+													<th>Completion Date</th>
+													<th>Completed</th>
+													<th></th>
+												</tr>
+									        </thead>
+									        <tbody>
+									            <?php
+									            if(!empty($user['AssignedTest'])){
+									                foreach($user['AssignedTest'] as $key=>$item){
+														#pr($item);
+									                    $c_date = (!is_null($item['completion_date'])) ? date( APP_DATE_FORMAT,strtotime($item['completion_date'])) : null;
+									                    $warning = strtotime("-14 day", strtotime($item['expires_date']));
+									                    $item['complete'] = intval($item['complete']);
+
+									                    $time = time();
+                                                        $link = array();
+									                    $text_class = 'text-success';
+									                    $bar_class = 'success';
+
+									                    if(is_null($c_date)){
+									                        $text_class = ($time >= $warning) ? 'text-warning' : $text_class ;
+									                        $bar_class = ($time >= $warning) ? 'warning' : $bar_class ;
+
+									                        $text_class = (strtotime($item['expires_date']) <= $time) ? 'text-danger' : $text_class ;
+									                        $bar_class = (strtotime($item['expires_date']) <= $time) ? 'danger' : $bar_class ;
+									                    }
+
+									                    if(!is_null($c_date)){
+															#pr($item['Test']);
+									                        foreach($item['Test']['ReportSwitch'] as $report){
+									                            if(($report['Report']['is_user_report'] == 2 || is_null($report['Report']['is_user_report']))){
+									                                $link[] = $this->Html->link(
+									                                    '<i class="fa fa-pie-chart"></i>',
+									                                    array('member'=>false, 'plugin'=>'report', 'controller'=>'report', 'action'=>$report['Report']['action'], $item['id'] ),
+									                                    array('escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'top', 'title'=>'Available Report')
+									                                );
+									                            }
+									                        }
+									                    }
+
+
+									                    ?>
+									                    <tr>
+															<td><?=$item['Test']['name']?></td>
+									                        <td><?php echo date( APP_DATE_FORMAT,strtotime($item['assigned_date'])); ?></td>
+									                        <td class="<?=$text_class?>"><?php echo date( APP_DATE_FORMAT,strtotime($item['expires_date'])); ?></td>
+									                        <td><?=$c_date?></td>
+									                        <td>
+									                            <div class="progress">
+									                                <div class="progress-bar progress-bar-<?=$bar_class?>" data-transitiongoal="<?=$item['complete']?>" style="width: <?=$item['complete']?>%; min-width: 2em;" aria-valuenow="<?=$item['complete']?>"><?=$item['complete']?> %</div>
+									                            </div>
+									                        </td>
+									                        <td>
+									                            <ul class="list-inline pull-right">
+									                                <?php
+									                                foreach($link as $reportLink){
+									                                    ?>
+									                                    <li><?=$reportLink?></li>
+									                                    <?php
+									                                }
+									                                ?>
+									                            </ul>
+									                        </td>
+									                    </tr>
+									                    <?php
+									                    unset($link);
+									                }
+									            }else{
+									                ?>
+									                <tr>
+									                    <td colspan="5">No Records Found</td>
+									                </tr>
+									                <?php
+									            }
+									            ?>
+									        </tbody>
+									    </table>
+                                        <?php #pr(); ?>
+                                    </div>
+
+									<div class="tab-pane fade <?=$awardClass?> in" id="award">
+
+										<table class="table table-striped table-condensed" id="assetsTable">
+                                            <thead>
+                                                <tr class="tr-heading">
+                                                    <th class="col-md-6">Award</th>
+                                                    <th class="col-md-3">Amount</th>
+                                                    <th class="col-md-3">Paid Date</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <?php
+                                                foreach($user['Award'] as $award){
+													$paid_date = (!empty($award['paid_date'])) ? date('F d, Y', strtotime($award['paid_date'])) : '<span class="fa-stack fa-lg"><i class="fa fa-dollar fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>' ;
+													?>
+                                                    <tr>
+                                                        <td><?=$award['Type']['award']?></td>
+                                                        <td><?php echo $this->Number->currency($award['amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></td>
+                                                        <td><?=$paid_date?></td>
+                                                    </tr>
+                                                    <?php
+                                                }
+
+                                                if(empty($user['Award'])){
+                                                    ?>
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">No Records Found</td>
+                                                    </tr>
+                                                    <?php
+                                                }
+
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                        <?php #pr(); ?>
                                     </div>
 
                                 </div>

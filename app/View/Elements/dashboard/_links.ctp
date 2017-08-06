@@ -5,7 +5,7 @@
 
 ?>
 
-<div class="box box-success" style="border-left: 1px solid #00A65A; border-right: 1px solid #00A65A;">
+<div class="box box-success">
     <div class="box-header">
         <h3 class="box-title">Quick Links</h3>
         <div class="box-tools pull-right">
@@ -40,5 +40,5 @@
 		</ul>
 	</div>
 
-    <div class="box-footer" style="border-bottom: 1px solid #00A65A;"></div>
+    <div class="box-footer" style="border-bottom: 1px solid #C0C0C0;"></div>
 </div>

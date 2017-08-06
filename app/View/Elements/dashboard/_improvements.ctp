@@ -13,7 +13,7 @@
     unset($data);
 ?>
 
-<div class="box box-info" style="border-left: 1px solid #00C0EF; border-right: 1px solid #00C0EF;">
+<div class="box box-info">
     <div class="box-header">
         <h3 class="box-title">Suggestions/Improvements</h3>
         <div class="box-tools pull-right">
@@ -107,6 +107,6 @@
             </div>
         </div>
     </div>
-    <div class="box-footer" style="border-bottom: 1px solid #00A65A;"></div>
+    <div class="box-footer" style="border-bottom: 1px solid #C0C0C0;"></div>
 </div>
 
