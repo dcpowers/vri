@@ -74,7 +74,8 @@ class Account extends AppModel {
         'AccountUser',
         'User',
         'Asset',
-
+		'Accident',
+		'Test',
     );
 
 

@@ -49,7 +49,9 @@ class User extends AppModel {
         'Asset',
         'TrainingRecord',
         'TrainingExempt',
-		'Accident'
+		'Accident',
+		'AssignedTest',
+		'Award'
     );
     /*
     public $validate = array(
@@ -370,12 +372,13 @@ class User extends AppModel {
         return $dataArr;
     }
 
-    public function pickListByAccount( $account_id = null ) {
+    public function pickListByAccount( $account_id = null, $status = 1 ) {
         $dataArr = array();
 
         $find_options = array(
             'conditions'=>array(
-                $this->alias.'.account_id'=>$account_id
+                $this->alias.'.account_id'=>$account_id,
+                $this->alias.'.is_active'=>$status
             ),
             'contain'=>array(
                 'AccountUser'=>array(

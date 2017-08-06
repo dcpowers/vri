@@ -27,11 +27,12 @@ class TestSchedule extends AppModel {
 		'AssignedTest',
         'BlindTest'
 	);
-    
-    public $belongsTo = array( 
+
+    public $belongsTo = array(
         'Test',
+		'User'
     );
-    
+
     public function getAssignedTestingInfo($id=null, $blindTestId=null) {
         $data = $this->find('first', array(
             'conditions' => array(
@@ -48,10 +49,10 @@ class TestSchedule extends AppModel {
                 )
             )
         ));
-        
+
         return $data;
     }
-    
-    
+
+
 
 }

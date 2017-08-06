@@ -119,7 +119,7 @@ class AccountUser extends AppModel {
 				$dataArr[$rec['User']['id']] = $rec['User']['id'];
 			}
         }
-        return $dataArr;
+		return $dataArr;
     }
 
     public function pick_list_user(){
