@@ -185,6 +185,14 @@ class AccountsController extends AppController {
                     ),
                     'order'=>array('Asset.asset_type_id'=> 'asc', 'Asset.asset' => 'asc'),
                 ),
+				'Accident'=>array(
+					'Dept'=>array(
+						'fields'=>array('Dept.name')
+					),
+					'order'=>array(
+						'Accident.date' => 'DESC'
+					)
+				),
                 'AccountDepartment'=>array(
                     'Department'=>array(
                         'fields'=>array(
@@ -213,7 +221,7 @@ class AccountsController extends AppController {
                             'fields'=>array('Department.name', 'Department.abr')
                         )
                     ),
-                    'fields'=>array(
+					'fields'=>array(
                         'User.id',
                         'User.first_name',
                         'User.last_name',
@@ -262,7 +270,7 @@ class AccountsController extends AppController {
 					'order'=>array('Test.name' => 'ASC')
                 )
 			),
-			#'order'=>array('AssignedTest.assigned_date' => 'DESC')
+			'order'=>array('AssignedTest.assigned_date' => 'DESC')
 
         ));
 
@@ -601,20 +609,12 @@ class AccountsController extends AppController {
             if ($this->Account->saveAll($this->request->data)) {
                 $this->Flash->alertBox(
                     'The Account: "'.$this->request->data['Account']['name'].'" has been saved',
-                    array(
-                        'params' => array(
-                            'class'=>'alert-success'
-                        )
-                    )
+                    array('params' => array('class'=>'alert-success'))
                 );
             } else {
                 $this->Flash->alertBox(
                     'The Account could not be saved. Please, try again.',
-                    array(
-                        'params' => array(
-                            'class'=>'alert-success'
-                        )
-                    )
+                    array('params' => array('class'=>'alert-success'))
                 );
 
                 $this->set( compact( 'validationErrors' ) );

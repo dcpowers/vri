@@ -235,19 +235,21 @@ class AwardsController extends AppController {
     public function process($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
 
-			foreach($this->request->data['Awards'] as $v){
-				if($v['verify'] == 1 AND $v['amount'] >= 1){
-					unset($v['verify']);
-					$data['Award'] = $v;
-					$this->Award->create();
-					$this->Award->save($v);
+			if(!empty($this->request->data)){
+				foreach($this->request->data['Awards'] as $v){
+					if($v['verify'] == 1 AND $v['amount'] >= 1){
+						unset($v['verify']);
+						$data['Award'] = $v;
+						$this->Award->create();
+						$this->Award->save($v);
+					}
 				}
-			}
 
-			$this->Flash->alertBox(
-            	'Awards Have Been Verified',
-                array('params' => array('class'=>'alert-success'))
-			);
+				$this->Flash->alertBox(
+            		'Awards Have Been Verified',
+	                array('params' => array('class'=>'alert-success'))
+				);
+			}
 
 			$this->redirect(array('controller'=>'Awards', 'action'=>'index'));
         }
@@ -348,14 +350,16 @@ class AwardsController extends AppController {
 	        'contain'=>array(),
             'fields'=>array('Accident.department_id')
 	    ));
-
-		$user_ids = $this->AccountUser->getAccountIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 		$ids = $this->DepartmentUser->removeUserIdsByDept($user_ids, $accidents);
 		$users = $this->User->pickListByStartDateAndType($ids, $end, $accidents);
         $depts = $this->Department->pickList();
-
+        #pr($user_ids);
+		#pr($ids);
+		#pr($users);
 		$results = array();
-
+        #pr($users);
+		#exit;
 		foreach($users as $key=>$u){
 			$count = $this->Award->find('count', array(
 	            'conditions' => array(

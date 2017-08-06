@@ -35,7 +35,7 @@ App::uses('HttpSocket', 'Network/Http');
 class AppController extends Controller {
     public $components = array(
         #'Security',
-        'DebugKit.Toolbar',
+        #'DebugKit.Toolbar',
         'Session',
         'Cookie',
         'RequestHandler',

@@ -718,6 +718,33 @@ class UsersController extends AppController {
 					'AccidentArea'=>array(
 						'AccidentAreaLov'=>array()
 					)
+				),
+				'AssignedTest'=>array(
+					'Test'=>array(
+						'ReportSwitch'=>array(
+							'Report'=>array(
+								'fields'=>array(
+									'Report.id',
+									'Report.name',
+									'Report.is_user_report',
+									'Report.action',
+								)
+							)
+						),
+						'fields'=>array(
+							'Test.name'
+						),
+					),
+					'fields'=>array(
+						'AssignedTest.assigned_date',
+						'AssignedTest.completion_date',
+						'AssignedTest.expires_date',
+						'AssignedTest.complete',
+						'AssignedTest.id'
+					)
+				),
+				'Award'=>array(
+					'Type'=>array()
 				)
             ),
 
@@ -841,12 +868,40 @@ class UsersController extends AppController {
                 'Status'=>array(
                     'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
-                'TrainingExempt'=>array()
+                'TrainingExempt'=>array(),
+                'AssignedTest'=>array(
+					'Test'=>array(
+						'ReportSwitch'=>array(
+							'Report'=>array(
+								'fields'=>array(
+									'Report.id',
+									'Report.name',
+									'Report.is_user_report',
+									'Report.action',
+								)
+							)
+						),
+						'fields'=>array(
+							'Test.name'
+						),
+					),
+					'fields'=>array(
+						'AssignedTest.assigned_date',
+						'AssignedTest.completion_date',
+						'AssignedTest.expires_date',
+						'AssignedTest.complete',
+						'AssignedTest.id'
+					)
+				),
+				'Award'=>array(
+					'Type'=>array()
+				)
             ),
 
         ));
 
-
+        #pr($user);
+		#exit;
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
 
