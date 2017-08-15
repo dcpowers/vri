@@ -4261,7 +4261,7 @@ table.text-center th {
 }
 .bg-white {
     background-color: #ffffff !important;
-
+    padding: 0px 10px;
 }
 .bg-light-blue,
 .label-primary,
