@@ -139,6 +139,7 @@
                         <?php echo $this->element('breadcrumbs'); ?>
                     </section>
                     <section class="content">
+						<div style="min-height: 1000px;"
                         <?php echo $this->Flash->render(); ?>
                         <?php echo $this->fetch('content'); ?>
                     </section>
