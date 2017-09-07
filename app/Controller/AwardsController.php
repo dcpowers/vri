@@ -61,12 +61,28 @@ class AwardsController extends AppController {
 		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
 
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-		$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
-		$users = $this->User->pickListByStartDate($user_ids, $end);
+		#$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
+		#$users = $this->User->pickListByStartDate($user_ids, $end);
 
         $depts = $this->Department->pickList();
         $results = array();
+        ////
+        $accidents = $this->Accident->find('list', array(
+	    	'conditions' => array(
+	        	'Accident.account_id' => $account_ids,
+	        	'Accident.date >=' => $start,
+	        	'Accident.date <=' => $end,
+			),
+	        'contain'=>array(),
+            'fields'=>array('Accident.department_id')
+	    ));
 
+		$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
+		$ids = $this->DepartmentUser->removeUserIdsByDept($user_ids, $accidents);
+		$users = $this->User->pickListByStartDateAndType($ids, $end, $accidents);
+		#pr($users);
+		#exit;
+		////
 		foreach($users as $key=>$u){
 			$awards = $this->Award->find('all', array(
 	            'conditions' => array(
@@ -80,9 +96,11 @@ class AwardsController extends AppController {
 	            ),
 
 	        ));
-
+            $results[$key]['User'] = $u['User'];
+            #pr($awards);
+			#exit;
 			if(!empty($awards)){
-				$results[$key]['User'] = $u['User'];
+
 				$results[$key]['User']['is_paid'] = 1;
 				$results[$key]['User']['is_verified'] = 1;
 				foreach($awards as $akey=>$item){
@@ -92,11 +110,16 @@ class AwardsController extends AppController {
 
 					if(empty($item['Award']['verified_date'])){
 						$results[$key]['User']['is_verified'] = 0;
+					}else{
+						$results[$key]['User']['verified_date'] = $item['Award']['verified_date'];
 					}
 
 					$results[$key]['Awards'][] = $item;
 				}
 
+			}else{
+				$results[$key]['User']['is_paid'] = 0;
+				$results[$key]['User']['is_verified'] = 0;
 			}
 		}
 
@@ -109,7 +132,6 @@ class AwardsController extends AppController {
 		for($y=2013; $y<=$current_year; $y++){
 			$years[$y] = $y;
 		}
-
         $this->set('month', $month);
         $this->set('months', $months);
         $this->set('year', $year);
