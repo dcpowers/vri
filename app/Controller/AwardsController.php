@@ -327,10 +327,11 @@ class AwardsController extends AppController {
         return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
     }
 
-	public function verify(){
-    	$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
-        $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
-
+	public function verify($month = null, $year = null){
+    	$month = (!is_null($month)) ? $month : date('n', strtotime('now'));
+        $year = (!is_null($year)) ? $year : date('Y', strtotime('now'));
+        #pr($month);
+		#exit;
 		$dateObj   = DateTime::createFromFormat('!m', $month);
 		$monthName = $dateObj->format('F'); // March
 
@@ -350,7 +351,8 @@ class AwardsController extends AppController {
 	        'contain'=>array(),
             'fields'=>array('Accident.department_id')
 	    ));
-        $user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
+
+		$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 		$ids = $this->DepartmentUser->removeUserIdsByDept($user_ids, $accidents);
 		$users = $this->User->pickListByStartDateAndType($ids, $end, $accidents);
         $depts = $this->Department->pickList();
