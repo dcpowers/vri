@@ -2,11 +2,7 @@
     #pr($accidents);
     #exit;
 ?>
-<style type="text/css">
-	.checkbox{
-        margin-top: 0px;
-	}
-</style>
+
 <div class="account index bg-white">
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">

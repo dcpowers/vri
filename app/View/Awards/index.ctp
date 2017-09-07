@@ -2,11 +2,7 @@
     #pr($accidents);
     #exit;
 ?>
-<style type="text/css">
-	.hr-divider:before{
-        background-color: #00A65A;
-	}
-</style>
+
 <div class="account index bg-white">
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
@@ -27,7 +23,7 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php echo $this->element( 'Awards/menu' );?>
+            <?php echo $this->element( 'Awards/menu', ['month'=>$month, 'year'=>$year] );?>
         </div>
         <div class="flextable-item">
 			<?php echo $this->element( 'Awards/status_filter', ['month'=>$month, 'year'=>$year, 'months'=>$months, 'years'=>$years] );?>
