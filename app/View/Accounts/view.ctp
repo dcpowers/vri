@@ -603,6 +603,40 @@
 
             </div>
             <div class="tab-pane fade <?=$awardsClass?> in" id="awards">
+				<div class="row">
+					<?php
+					foreach($awards as $title=>$a){
+						?>
+						<div class="col-md-2">
+						<div class="hr-divider">
+                    		<h3 class="hr-divider-content hr-divider-heading">
+                        		<?=$title?>
+	                        </h3>
+	                    </div>
+						<ul class="list-unstyled">
+							<?php
+							foreach($a as $month=>$v){
+								$m = date('m', strtotime($month));
+								?>
+								<li>
+									<?php
+									echo $this->Html->link(
+										$month .' ( '. $v['count'] .' ) ',
+						                array('controller'=>'Awards', 'action'=>'monthView', $title, $m),
+						                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
+						            );
+									?>
+
+								</li>
+								<?php
+							}
+							?>
+						</ul>
+						</div>
+						<?php
+					}
+					?>
+				</div>
             </div>
 
 			<div class="tab-pane fade <?=$testClass?> in" id="tests">

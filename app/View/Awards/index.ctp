@@ -10,7 +10,15 @@
             <h3 class="dashhead-title"><i class="fa fa-trophy fa-fw"></i>Awards</h3>
         </div>
         <div class="dashhead-toolbar">
-            <?php #echo $this->element( 'Accounts/search' );?>
+            <?php
+			if(AuthComponent::user('Role.permission_level') >= 60){
+				echo $this->Html->link(
+                	'Admin Report',
+                    array('controller'=>'Awards', 'action'=>'report'),
+                    array('escape'=>false, 'class'=>'btn btn-primary' )
+                );
+			}
+			?>
         </div>
     </div>
     <div class="flextable">
@@ -80,16 +88,22 @@
 					<tr>
 						<td>
 							<?php
-							if($month<$current_month && $year<=$current_year && $r['User']['is_verified'] == 0){
-                                $edit = true;
-								?>
-								<div class="form-group" >
-                        			<label class="sr-only control-label">Eligible Bingo:</label>
-                            		<div class="checkbox">
-			                			<label> <?php echo $this->Form->checkbox($c.'.verify', array('checked'=>true)); ?></label>
-									</div>
-                        		</div>
-								<?php
+							if($year<=$current_year && $r['User']['is_verified'] == 0){
+								if($month<$current_month){
+	                                $edit = true;
+									?>
+									<div class="form-group" >
+                        				<label class="sr-only control-label">Eligible Bingo:</label>
+                            			<div class="checkbox">
+			                				<label> <?php echo $this->Form->checkbox($c.'.verify', array('checked'=>true)); ?></label>
+										</div>
+                        			</div>
+									<?php
+								}else{
+									?>
+									&nbsp;
+									<?php
+								}
 							}else{
 								?>
 								&nbsp;

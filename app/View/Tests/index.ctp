@@ -1,7 +1,7 @@
 <?php
     $editable_group_id = AuthComponent::user('AccountUser.0.account_id');
 ?>
-<div class="training index">
+<div class="training index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">All Testing:</h6>
@@ -126,13 +126,13 @@
             <?php
             foreach($surveys as $test){
                 ?>
-                <div class="row">
-                    <div class="col-md-2">
+                <div class="media">
+					<div class="media-left media-middle">
                         <?php
                         $image = (!empty($test['Test']['logo'])) ? $test['Test']['logo'] : 'testing.jpg' ;
 
                         echo $this->Html->link(
-                            $this->Html->image($image, array('class'=>'img-responsive img-thumbnail')),
+                            $this->Html->image($image, array('class'=>'media-object', 'style'=>'width: 136px;')),
                             array('controller'=>'tests', 'action'=>'view_group', $test['Test']['id']),
                             array('escape' => false)
                         );
@@ -156,7 +156,7 @@
                         ?>
                     </div>
 
-                    <div class="col-md-10">
+                    <div class="media-body">
                         <?php
                         echo $this->Html->link(
                             '<h2 class="no-margin">'. $test['Test']['name'].'</h2>',

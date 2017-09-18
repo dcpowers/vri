@@ -139,9 +139,10 @@
                         <?php echo $this->element('breadcrumbs'); ?>
                     </section>
                     <section class="content">
-						<div style="min-height: 1000px;"
-                        <?php echo $this->Flash->render(); ?>
-                        <?php echo $this->fetch('content'); ?>
+						<div style="min-height: 1000px;">
+                        	<?php echo $this->Flash->render(); ?>
+                        	<?php echo $this->fetch('content'); ?>
+						</div>
                     </section>
                 <!--</div>-->
             </div>
@@ -155,30 +156,30 @@
             <?php echo $this->element('sidebar'); ?>
 
         </div>
-        <!-- Normal Model -->
-        <div class="modal bootstrap-dialog type-primary fade in" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
+        <!-- Large Model -->
+        <div class="modal fade bs-example-modal-lg" tabindex="-1" id="myLgModal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="false">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                </div> <!-- /.model-content -->
+            </div> <!-- /.model-dialog -->
+        </div> <!-- /.model -->
+
+        <!-- Normal Size -->
+        <div class="modal fade" tabindex="-1" role="dialog" id="myModal" aria-labelledby="myRegularModalLabel" aria-hidden="false">
             <div class="modal-dialog">
                 <div class="modal-content">
-                </div> <!-- /.modal-content -->
-            </div> <!-- /.modal-dialog -->
-        </div> <!-- /.modal -->
 
-        <!-- Big Model -->
-        <div class="modal bootstrap-dialog type-primary fade modal-wide in" id="myModalBig" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
-            <div class="modal-dialog">
+                </div> <!-- /.model-content -->
+            </div> <!-- /.model-dialog -->
+        </div> <!-- /.model -->
+
+        <!-- Small Model -->
+        <div class="modal fade bs-example-modal-sm" tabindex="-1" id="mySmModal" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="false">
+            <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
-                </div> <!-- /.modal-content -->
-            </div> <!-- /.modal-dialog -->
-        </div> <!-- /.modal -->
-
-        <!-- small Model -->
-        <div class="modal bootstrap-dialog type-primary fade in" id="myModalSm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" >
-            <div class="modal-dialog">
-                <div class="modal-content">
-                </div> <!-- /.modal-content -->
-            </div> <!-- /.modal-dialog -->
-        </div> <!-- /.modal -->
-
+                </div> <!-- /.model-content -->
+            </div> <!-- /.model-dialog -->
+        </div> <!-- /.model -->
         <script type="text/javascript">
             jQuery(document).ready( function($) {
                 $("#myModal").on('hidden.bs.modal', function(){
