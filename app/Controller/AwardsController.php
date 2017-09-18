@@ -140,6 +140,39 @@ class AwardsController extends AppController {
 
     }
 
+	public function monthView($y=null, $m=null){
+		$month = (!is_null($m)) ? $m : date('n', strtotime('now'));
+        $year = (!is_null($y)) ? $y : date('Y', strtotime('now'));
+
+		$dateObj   = DateTime::createFromFormat('!m', $month);
+		$monthName = $dateObj->format('F'); // March
+
+		$numDays = cal_days_in_month(CAL_GREGORIAN, $month, $year) - 1;
+		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
+		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
+
+		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+		#$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
+		#$users = $this->User->pickListByStartDate($user_ids, $end);
+
+        $awards = $this->Award->find('all', array(
+	    	'conditions' => array(
+	        	'Award.account_id' => $account_ids,
+	            'Award.date >=' => $start,
+	            'Award.date <=' => $end,
+	        ),
+	        'contain' => array(
+            	'Type'=>array(),
+                'CreatedBy'=>array(),
+                'User'=>array(),
+	        ),
+        ));
+
+		$this->set('awards', $awards);
+		$this->set('year', $y);
+		$this->set('month', $monthName);
+	}
+
     public function view($id=null){
         $this->Accident->id = $id;
         if (!$this->Accident->exists()) {

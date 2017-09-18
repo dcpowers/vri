@@ -252,11 +252,38 @@ class AccountsController extends AppController {
                         )
                     ),
 				),
+				'Award'=>array(
+					'Type'=>array(
+						'fields'=>array('Type.award')
+					),
+					'User'=>array(
+						'fields' => array('User.id', 'User.first_name', 'User.last_name'),
+					),
+					'Dept'=>array(
+						'fields'=>array('Dept.name')
+					),
+					'order'=>array('Award.date' => 'DESC')
+				)
 
             ),
 
         ));
 
+		$awardList = array();
+
+		foreach($account['Award'] as $v){
+			$p = explode("-", $v['date']);
+
+			$m = date('F', strtotime($v['date']));
+
+			if (isset($awardList[$p[0]][$m]['count'])) {
+				$awardList[$p[0]][$m]['count']++;
+			}else{
+				$awardList[$p[0]][$m]['count'] = 1;
+			}
+        }
+
+		unset($account['Award']);
 		$testing = $this->AssignedTest->find('all', array(
             'conditions' => array(
                 'AssignedTest.user_id' => $user_ids
@@ -390,6 +417,7 @@ class AccountsController extends AppController {
         $this->set('employees', $users);
         $this->set('trainings', $training);
         $this->set('testing', $g);
+        $this->set('awards', $awardList);
 
         $this->set('userList', $userList);
         $this->set('status', $this->Setting->pickList('status'));
