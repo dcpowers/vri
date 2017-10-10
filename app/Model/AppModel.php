@@ -79,4 +79,103 @@ class AppModel extends Model {
         return array('Single'=>'Single', 'Group'=>'Group', 'MultiplePeople' => 'Multiple People', 'Blind' => 'Blind');
     }
 
+	function jobStatusInt() {
+        return array('0'=>null, '1' => 'Open', '2' => 'Draft', '3' =>'Closed');
+    }
+
+	function raceInt() {
+        return array(
+            '0'=>null,
+            '1' => 'Hispanic or Latino',
+            '2' => 'White',
+            '3' => 'Black or African American',
+            '4' => 'Native Hawaiian or Other Pacific Islander',
+            '5' => 'Asian',
+            '6' => 'Armerican Indian or Alaska Native',
+            '7' => 'Other'
+        );
+    }
+
+    function questionOpt() {
+        return array(
+            '0'=>null,
+            '1' => 'Required',
+            '2' => 'Preferred',
+        );
+    }
+
+    function surName() {
+        return array(
+            '0'=>null,
+            '1' => 'Mr.',
+            '2' => 'Mrs',
+            '3' => 'Ms.',
+            '4' => 'Miss',
+        );
+    }
+
+    function applicantFullStatus(){
+        return array(
+            '0' => array('name'=>'New', 'controller'=>'', 'action'=>'', 'class'=>'disabled'),
+            '1' => array('name'=>'Reviewed', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '2' => array('name'=>'Schedule Phone Screen', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '3' => array('name'=>'Interviewed', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '4' => array('name'=>'Checking References', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '5' => array('name'=>'Put on hold', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '6' => array('name'=>'Make offer', 'controller'=>'Jobseekers', 'action'=>'make_offer', 'class'=>''),
+            //'7' => array('name'=>'Not Hired Because...', 'controller'=>'', 'action'=>'', 'class'=>''),
+            '8' => array('name'=>'Not a fit', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            '9' => array('name'=>'Declined Offer', 'controller'=>'Jobseekers', 'action'=>'update_applicant', 'class'=>''),
+            //'10' => 'Hired'
+
+        );
+    }
+
+    function applicantStatus(){
+        return array(
+            '0' => 'New',
+            '1' => 'Reviewed',
+            '2' => 'Schedule Phone Screen',
+            '3' => 'Interviewed',
+            '4' => 'Checking References',
+            '5' => 'Put on hold',
+            '6' => 'Make offer',
+            '7' => 'Invited To Apply',
+            '8' => 'Not a fit',
+            '9' => 'Declined Offer',
+            '10' => 'Accepted Offer',
+
+        );
+    }
+
+    function applicantChangeStatus(){
+        return array(
+            '1' => 'Reviewed',
+            '2' => 'Schedule Phone Screen',
+            '3' => 'Interviewed',
+            '4' => 'Checking References',
+            '5' => 'Put on hold',
+            //'7' => array('name'=>'Not Hired Because...', 'controller'=>'', 'action'=>'', 'class'=>''),
+            '8' => 'Not a fit',
+            '9' => 'Declined Offer',
+            '10' => 'Accepted Offer',
+        );
+    }
+
+    function miles(){
+        return array(
+            '20'=>'20 Mile Radius',
+            '50'=>'50 Mile Radius',
+            '100'=>'100 Mile Radius',
+            '250'=>'250 Mile Radius',
+            '3959'=>'Everywhere',
+        );
+    }
+
+    function searchType(){
+        return array(
+            '0'=>'Strict',
+            '1'=>'Loose'
+        );
+    }
 }
