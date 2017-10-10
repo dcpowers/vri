@@ -1,0 +1,351 @@
+<?php
+    //pr($jobPosting);
+    //pr($jobs);
+    //pr($jobTalentpattern);
+    //pr($jobQuestion);
+    //pr($settings);
+    //exit;
+    $this->Html->addCrumb('Jobs', array('controller' => 'jobs', 'action' => 'index', 'member'=>true));
+    $role_names = Set::extract( AuthComponent::user(), '/AuthRole/tag' );
+    
+?>
+<style type="text/css">
+.label-as-badge {
+    border-radius: 3em;
+}
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 with-right-border">
+            <div class="widget widget-no-header">
+                <div class="widget-content">
+                    <h2>Job Openings</h2>
+                    <hr />
+                <div class="pull-right">
+                    <div data-placement="top" data-toggle="tooltip" title="Add a New Job Listing"> 
+                    <?php
+                    if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                        echo $this->Html->link(
+                            '<span class="badge element-bg-color-blue"><i class="icon ion-plus"></i></span> Add Job',
+                            array('controller'=>'jobs', 'member'=>true, 'action'=>'add', $group_id),
+                            array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'pull-right')
+                        );
+                    }
+                    ?>
+                    </div>
+                </div>
+                <h3><small><span class="label label-success label-as-badge">1</span> Job Listing</small></h3>
+                <hr />
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php 
+                    foreach($jobs as $key => $job){
+                        ?>
+                        <tr>
+                            <td>
+                                <?php
+                                if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                    ?>
+                                    <div data-placement="top" data-toggle="tooltip" title="Edit Job Listing"> 
+                                    <?php
+                                    echo $this->Html->link(
+                                        $job, 
+                                        array('controller'=>'jobs', 'member'=>true, 'action'=>'edit', $key),
+                                        array(
+                                            'escape'=>false, 
+                                            'data-toggle'=>'modal', 
+                                            'data-target'=>'#myModal'
+                                        )
+                                    );
+                                    ?>
+                                    </div> 
+                                    <?php
+                                }else{
+                                    echo $job;
+                                }
+                                ?>
+                            </td>
+                                
+                            <td>
+                                <?php
+                                if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                    echo $this->Html->link(
+                                        '<i class="icon ion-android-trash"></i>', 
+                                        array('controller'=>'jobs', 'member'=>true, 'action'=>'delete', $key),
+                                        array(
+                                            'escape'=>false,
+                                            'id'=>$key,
+                                            'data-toggle'=>'tooltip',
+                                            'data-placement'=>'top',
+                                            'title'=>'Delete Job Listing'
+                                        ),
+                                        "Are you Sure You Want To Delete This Job?"
+                                    );
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    </tbody>
+                </table>
+                <div class="pull-right">
+                        <?php
+                        
+                        if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                            echo $this->Html->link(
+                                '<span class="badge element-bg-color-blue"><i class="icon ion-plus"></i></span> Add Talent Pattern',
+                                array('controller'=>'jobTalentpatterns', 'member'=>true, 'action'=>'add', $group_id),
+                                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'pull-right')
+                            );
+                        }
+                        ?>
+                    </div>
+                    <h2><small><span class="label label-success label-as-badge">2</span> Talent Patterns</small></h2>
+                    <hr />
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php 
+                        foreach($jobTalentpattern as $key => $item){
+                            ?>
+                            <tr>
+                                <td><?=$item?></td>
+                                <td>
+                                    <?php
+                                    if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                        echo $this->Html->link(
+                                            '<i class="icon ion-android-trash"></i>', 
+                                            array('controller'=>'jobTalentpatterns', 'member'=>true, 'action'=>'delete', $key),
+                                            array(
+                                                'escape'=>false,
+                                                'class'=>'confirm_tp_delete',
+                                                'id'=>$key,
+                                                'data-toggle'=>'tooltip',
+                                                'data-placement'=>'top',
+                                                'title'=>'Delete Talent Pattern'
+                                            ),
+                                            "Are you Sure You Want To Delete This Talent Pattern?"
+                                        );
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                    
+                    <div class="pull-right">
+                        <?php
+                        if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                            echo $this->Html->link(
+                                '<span class="badge element-bg-color-blue"><i class="icon ion-plus"></i></span> Add Questions',
+                                array('controller'=>'jobQuestions', 'member'=>true, 'action'=>'add', $group_id),
+                                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'pull-right')
+                            );
+                        }
+                        ?>
+                    </div>
+                    <h2><small><span class="label label-success label-as-badge">3</span> Question Bank</small></h2>
+                    <hr />
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            foreach($jobQuestion as $key => $item){
+                                ?>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                            echo $this->Html->link(
+                                                $item, 
+                                                array('controller'=>'jobQuestions', 'member'=>true, 'action'=>'edit', $key),
+                                                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
+                                            );
+                                        }else{
+                                            echo $item;
+                                        }
+                                        ?>
+                                    </td>
+                                    
+                                    <td>
+                                        <?php
+                                        if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                            echo $this->Html->link(
+                                                '<i class="icon ion-android-trash"></i>', 
+                                                array('controller'=>'jobQuestions', 'member'=>true, 'action'=>'delete', $key),
+                                                array(
+                                                    'escape'=>false,
+                                                    'class'=>'confirm_q_delete',
+                                                    'id'=>$key,
+                                                    'data-toggle'=>'tooltip',
+                                                    'data-placement'=>'top',
+                                                    'title'=>'Delete Question Set'
+                                                ),
+                                                "Are you Sure You Want To Delete This Question Set?"
+                                            );
+                                        }
+                                        ?>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="widget widget-no-header">
+                <div class="widget-content">
+                    <div class="pull-right">
+                        <?php
+                        if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                            echo $this->Html->link(
+                                '<span class="badge element-bg-color-blue"><i class="icon ion-plus"></i></span> Add Job Posting',
+                                array('controller'=>'jobPostings', 'member'=>true, 'action'=>'add', $group_id),
+                                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal', 'class'=>'pull-right')
+                            );
+                        }
+                        ?>
+                    </div>
+                    <h2><small><span class="label label-success label-as-badge">4</span> Job Postings</small></h2>
+                    <hr />
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Talent Pattern</th>
+                                <th>Question Set</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php 
+                        foreach($jobPosting as $item){
+                            ?>
+                            <tr>
+                                <td><?=$item['Job']['name']?></td>
+                                <td><?=$item['JobTalentpattern']['name']?></td>
+                                <td><?=$item['JobQuestion']['name']?></td>
+                                <td><?php echo $settings['status'][$item['JobPosting']['status']]; ?></td>
+                                <td>
+                                    <div class="btn-toolbar" role="toolbar" aria-label="Actions">
+                                        <div class="btn-group btn-group-xs" role="group" aria-label="View Applicants">
+                                            <?php
+                                            if( in_array('superAdmin', $role_names ) || in_array('compAdmin', $role_names ) ){
+                                                echo $this->Html->link(
+                                                    '<i class="icon ion-eye"></i>', 
+                                                    array('controller'=>'jobPostings', 'member'=>true, 'action'=>'view_applicants', $item['JobPosting']['id']),
+                                                    array(
+                                                        'escape'=>false,
+                                                        'id'=>$item['JobPosting']['id'],
+                                                        'class'=>'btn btn-default',
+                                                        'data-toggle'=>'tooltip',
+                                                        'data-placement'=>'top',
+                                                        'title'=>'View Applicants'
+                                                    )
+                                                );
+                                            
+                                            
+                                                echo $this->Html->link(
+                                                    '<i class="icon ion-search"></i>', 
+                                                    array('controller'=>'jobPostings', 'member'=>true, 'action'=>'search_applicants', $item['JobPosting']['id']),
+                                                    array(
+                                                        'escape'=>false,
+                                                        'id'=>$item['JobPosting']['id'],
+                                                        'class'=>'btn btn-default',
+                                                        'data-toggle'=>'tooltip',
+                                                        'data-placement'=>'top',
+                                                        'title'=>'Search Applicants'
+                                                    )
+                                                );
+                                                ?>
+                                                <span class="btn-group-xs" data-placement="top" data-toggle="tooltip" title="Edit Job Post">
+                                                <?php
+                                                
+                                                echo $this->Html->link(
+                                                    '<i class="icon ion-compose"></i>', 
+                                                    array('controller'=>'jobPostings', 'member'=>true, 'action'=>'edit', $item['JobPosting']['id']),
+                                                    array(
+                                                        'escape'=>false, 
+                                                        'data-toggle'=>'modal', 
+                                                        'data-target'=>'#myModal',
+                                                        'class'=>'btn btn-default',
+                                                        
+                                                    )
+                                                );
+                                                ?>
+                                                </span>
+                                                <?php
+                                            
+                                                echo $this->Html->link(
+                                                    '<i class="icon ion-android-trash"></i>', 
+                                                    array('controller'=>'jobPostings', 'member'=>true, 'action'=>'delete', $item['JobPosting']['id']),
+                                                    array(
+                                                        'escape'=>false,
+                                                        'id'=>$item['JobPosting']['id'],
+                                                        'class'=>'btn btn-default',
+                                                        'data-toggle'=>'tooltip',
+                                                        'data-placement'=>'top',
+                                                        'title'=>'Delete Job Post'
+                                                    ),
+                                                    "Are you Sure You Want To Delete This Job Posting?"
+                                                );
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <?php
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
+
+<script type="text/javascript">
+    jQuery(window).ready( function($) {
+        $("#myModal").on('hidden.bs.modal', function () {
+    $(this).data('bs.modal', null);
+});
+    });
+</script>            

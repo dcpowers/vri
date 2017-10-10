@@ -1,0 +1,365 @@
+<?php
+    #pr($item);
+    #exit;
+?>
+<style type="text/css">
+    .btn-file {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+    }
+    .label-as-badge {
+        border-radius: 3em;
+    }
+    
+    .border-yellow{
+        border: 1px #FFFF00 solid;
+    }
+    
+    #myModal.modal-dialog{
+        width: 900px !important;
+    }
+    .totals{
+        margin-top: 120px;
+        font-size: 3em;
+    }
+    
+</style>
+
+<div style="margin-top: -20px">
+    <div class="headerDiv">
+        
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="effect3 thumbnail headerContent">
+                    <?php
+                    $name = '../'.$item['User']['DetailUser']['uploadDir'].'/'.$item['User']['DetailUser']['img'];
+                    $image = (!empty($item['User']['DetailUser']['img'])) ? $name : 'noImage.jpg' ;
+                                        
+                    echo $this->Html->image($image, array('class'=>'img-thumbnail img-responsive'));
+                    
+                    ?>
+                </div>
+                <?php
+                if($item['JobPosting']['posted_by'] == AuthComponent::user('id')){
+                    ?>
+                    <div class="btn-group dropdown" style="padding: 15px 0px">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Status<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <?php
+                            foreach($settings['applicant_status'] as $key=>$settingsitem){
+                                //pr($item);
+                                $class = ($key == $item['ApplyJob']['status']) ? 'active' : NULL ;
+                                ?>
+                                <li class="<?=$class?> <?=$settingsitem['class']?>">
+                                    <?php
+                                    echo $this->Html->link(
+                                        $settingsitem['name'],
+                                        array('controller'=>$settingsitem['controller'], 'action'=>$settingsitem['action'], 'member'=>true, $item['ApplyJob']['id'], $key, $item['User']['pin_number']),
+                                        array(
+                                            'escape'=>false, 
+                                            'data-dismiss'=>'modal',
+                                            'aria-hidden'=>'true',
+                                            'data-toggle'=>'modal', 
+                                            'data-target'=>'#myModal',
+                                        )
+                                    );
+                                    ?>
+                                </li>
+                                <?php
+                            }
+                            ?>
+                        </ul>
+                    </div>
+                    <?php
+                }
+                
+                ?>    
+                
+                <address class="spacer">
+                    <?=$item['User']['DetailUser']['address']?><br />
+                    <?=$item['User']['DetailUser']['city']?>
+                    <?=$item['User']['DetailUser']['State']['state_name']?>,
+                    <?=$item['User']['DetailUser']['zip']?><br />
+                    <abbr title="Phone">P:</abbr>&nbsp; <?=$item['User']['DetailUser']['phone']?><br />
+                    <abbr title="Mobile">M:</abbr>&nbsp; <?=$item['User']['DetailUser']['mobile']?><br />
+                    <a href="mailto:<?=$item['User']['username']?>"><?=$item['User']['username']?></a>
+                </address>
+            </div>
+            <div class="col-md-7">
+                <div class="row">
+                    <div class="col-md-12 headerContent">
+                        <h2 class="title">
+                            <?=$item['User']['first_name']?> <?=$item['User']['last_name']?>
+                        </h2>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div role="tabbable-panel">
+                            <div class="tabbable-line tabs-below">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#hiring" aria-controls="job" role="tab" data-toggle="tab">FIT Report</a></li>
+                                    <li role="presentation"><a href="#documents" aria-controls="testing" role="tab" data-toggle="tab">User Documents</a></li>
+                                </ul>
+                                
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <!-- Begin: Job Tab -->
+                                    <div role="tabpanel" class="tab-pane active fade in"  id="hiring">
+                                        <h3>
+                                            Overall Match: <?=$tp['total']?>% 
+                                            [ 
+                                                <?php
+                                                //pr($applicants);
+                                                //pr($jobPosting);
+                                                echo $this->Html->link(
+                                                    'View Full Hiring Report',
+                                                    array('member'=>false, 'plugin'=>'report', 'controller'=>'report', 'action'=>'iWRaCIP_hiring', $item['User']['AssignedTest'][0]['id'], $item['JobPosting']['id'] ),
+                                                    array('escape'=>false,)
+                                                );
+                                                ?> 
+                                                ]
+                                            
+                                        </h3>
+                                                
+                                        <table class="table table-hover table-condensed">
+                                            <thead>
+                                                <tr class="tr-heading">
+                                                    <th style="width: 20%">Categories</th>
+                                                    <th style="width: 20%"><?=$item['User']['first_name']?> <?=$item['User']['last_name']?></th>
+                                                    <th style="width: 25%">
+                                                        Talent Pattern 
+                                                        <small>( <?=$item['JobPosting']['JobTalentpattern']['name']?> )</small>
+                                                    </th>
+                                                    <th style="width: 15%">Variation</th>
+                                                    <th style="width: 20%">Pattern Match</th>
+                                                </tr>
+                                            </thead>
+                                            
+                                            <tbody>
+                                                <tr>
+                                                    <td>Realistic</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['realistic']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['realistic']?></td>
+                                                    <td><?=$tp['rel_diff']?></td>
+                                                    <td rowspan="6"><span class="totals"><?=$tp['total_cat1']?>%</span></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Investigative</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['investigative']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['investigative']?></td>
+                                                    <td><?=$tp['inv_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Conventional</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['conventional']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['conventional']?></td>
+                                                    <td><?=$tp['con_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Social</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['social']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['social']?></td>
+                                                    <td><?=$tp['soc_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Enterprising</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['enterprising']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['enterprising']?></td>
+                                                    <td><?=$tp['ent_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Artistic</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['artistic']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['artistic']?></td>
+                                                    <td><?=$tp['art_diff']?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                                
+                                        <table class="table table-hover table-condensed">
+                                            <thead>
+                                                <tr class="tr-heading">
+                                                    <th style="width: 20%">Categories</th>
+                                                    <th style="width: 20%"><?=$item['User']['first_name']?> <?=$item['User']['last_name']?></th>
+                                                    <th style="width: 25%">
+                                                        Talent Pattern 
+                                                        <small>( <?=$item['JobPosting']['JobTalentpattern']['name']?> )</small>
+                                                    </th>
+                                                    <th style="width: 15%">Variation</th>
+                                                    <th style="width: 20%">Pattern Match</th>
+                                                </tr>
+                                            </thead>
+                                            
+                                            <tbody>
+                                                <tr>
+                                                    <td>Competitor</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['competitor']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['competitor']?></td>
+                                                    <td><?=$tp['com_diff']?></td>
+                                                    <td rowspan="4"><span class="totals"><?=$tp['total_cat2']?>%</span></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Communicator</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['communicator']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['communicator']?></td>
+                                                    <td><?=$tp['comm_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Cooperator</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['cooperator']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['cooperator']?></td>
+                                                    <td><?=$tp['coo_diff']?></td>
+                                                </tr>
+                                                            
+                                                <tr>
+                                                    <td>Coordinator</td>
+                                                    <td><?=$item['User']['TalentpatternUser'][0]['coordinator']?></td>
+                                                    <td><?=$item['JobPosting']['JobTalentpattern']['coordinator']?></td>
+                                                    <td><?=$tp['coor_diff']?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        
+                                        <?php
+                                        if(!empty($item['JobPosting']['JobQuestion'])){
+                                            ?>
+                                            <h3 class="spacer">Screening Questions</h3>
+                                            <div>
+                                                <table class="table table-hover table-condensed">
+                                                    <thead>
+                                                        <tr class="tr-heading">
+                                                            <th style="width: 40%">Question</th>
+                                                            <th style="width: 30%">Desired Answer</th>
+                                                            <th style="width: 30%">Answer</th>
+                                                        </tr>
+                                                    </thead>
+                                                    
+                                                    <tbody>
+                                                        <?php
+                                                        foreach($item['JobPosting']['JobQuestion']['JobQuestionDetail'] as $q){
+                                                            ?>
+                                                            <tr>
+                                                                <td><?=$q['question']?></td>
+                                                                <td><?=$settings['questionOpt'][$q['option']]?></td>
+                                                                <td><?=$settings['yesNoInt'][$q['JobQuestionAnswer'][0]['answer']]?></td>
+                                                            </tr>
+                                                            <?php
+                                                        }
+                                                        ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <?php
+                                        }
+                                        ?>
+                                    </div>
+                                    <!-- End: Hiring -->
+                                    
+                                    <!-- Begin: Documents -->
+                                    <div role="tabpanel" class="tab-pane in" id="documents">
+                                        <h3>User Files</h3>
+                                        <ul class="list-unstyled">
+                                            <?php
+                                            foreach($item['User']['FileUser'] as $file){
+                                                ?>
+                                                <li>
+                                                    <?php
+                                                    echo $this->Html->link(
+                                                        $file['name'],
+                                                        '/'. $file['file'],
+                                                        array('escape'=>false, 'target' => '_blank')
+                                                    );
+                                                    ?>
+                                                </li>
+                                                <?php
+                                            }
+                                            ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <?php
+                echo $this->Form->create('Job', array(
+                        'url' => array('controller'=>'jobseekers', 'action'=>'add_rating_collaborater', 'member'=>true), 
+                        'role'=>'form',
+                        'class'=>'form-horizontal',
+                        'inputDefaults' => array(
+                            'label' => false,
+                            'div' => false,
+                            'class'=>'form-control',
+                            'error'=>false
+                        )
+                    ));
+                echo $this->Form->hidden('job_posting_id', array('value'=>$item['JobPosting']['id']));
+                
+                ?>
+                <div class="form-group">
+                    <label class="control-label" for="notes">Rating:</label>
+                    <div class="rating " style="cursor: pointer; padding:0px; margin:0px;">
+                    </div>
+                </div>
+                    
+                <div class="form-group">
+                    <label class="control-label" for="notes">Notes:</label>
+                    <?php
+                    echo $this->Form->input('notes', array (
+                        'type'=>'textarea',
+                        //'value'=>$info[0]['ApplyJob']['notes'],
+                    ));
+                    ?>
+                </div>
+                
+                <div class="form-group">
+                    <?php echo $this->Form->button('<i class="fa fa-floppy-o"></i> Save', array('type'=>'submit', 'div'=>false, 'label'=>false, 'class'=>'btn btn-primary btn-xs')); ?>
+                </div>
+                <?php echo $this->Form->end();?>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(window).ready( function($) {
+        $('.rating').raty({
+            'cancel' : false,
+            'half': true,
+            'halfShow' : true,
+            'path': '/img/stars/',
+            'scoreName': 'Job[score]'
+            
+        })
+ });
+</script>            

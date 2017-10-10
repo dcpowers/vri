@@ -1,0 +1,341 @@
+<?php
+    //pr($this->Session->read('Auth.User.Location.name'));
+    #pr($user);
+    #exit;
+    
+    $this->Html->addCrumb('Users', array('controller' => 'users', 'action' => 'index', 'member'=>true));
+    $this->Html->addCrumb($user[0]['User']['first_name'].' '.$user[0]['User']['last_name'], array('controller' => 'users', 'action' => 'view', 'member'=>true, $user[0]['User']['id']));
+    
+    $this->Html->script('plugins/bootstrap-editable/jquery.mockjax.min.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/moment/moment.min.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/bootstrap-datepicker/bootstrap-datepicker.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/bootstrap-editable/bootstrap-editable.min.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/typeahead/typeahead.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/typeahead/typeaheadjs.1.5.1.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/select2/select2.min.js', array('block' => 'scriptsBottom'));
+    //$this->Html->script('plugins/bootstrap-editable/address.custom.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/bootstrap-editable/demo-mock.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/select2/select2.min.js', array('block' => 'scriptsBottom'));
+    $this->Html->script('plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js', array('block' => 'scriptsBottom'));
+    //$this->Html->script('queen-elements.js', array('block' => 'scriptsBottom'));
+    #pr($user);
+    #exit;
+?>
+
+<div class="container">
+    <div class="row">
+        <div class="users form">
+            <h1>Employee: <small><?=$user[0]['User']['first_name']?> <?=$user[0]['User']['last_name']?></small></h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="widget widget-no-header">
+                        <div class="widget-content">
+                            <?php echo $this->Form->create('User', array(
+                                'url' => array('controller'=>'users', 'action'=>'edituser', 'member'=>true), 
+                                'role'=>'form',
+                                'class'=>'form-horizontal',
+                                'inputDefaults' => array(
+                                    'label' => false,
+                                    'div' => false,
+                                    'class'=>'form-control',
+                                    'error'=>false
+                                )
+                            )); 
+                            echo $this->Form->hidden( 'id', array( 'value' => $user[0]['User']['id'] ) );
+                            echo $this->Form->hidden( 'GroupMembership.id', array( 'value' => $user[0]['GroupMembership'][0]['id'] ) );
+                            ?>
+                    
+                            <!-- Firstname -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="firstname">Firstname:</label>
+                                <div class="col-sm-8">
+                                    <?php echo $this->Form->input('first_name', array (
+                                        'type'=>'text',
+                                        'id'=> 'first_name', 
+                                        'placeholder'=>'Firstname',
+                                        'value'=>$user[0]['User']['first_name']
+                                    ));?>
+                                </div>
+                            </div>
+                            
+                            <!-- lastname -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="lastname">Lastname:</label>
+                                <div class="col-sm-8">
+                                    <?php echo $this->Form->input('last_name', array (
+                                        'type'=>'text',
+                                        'id'=> 'last_name', 
+                                        'placeholder'=>'Lastname',
+                                        'value'=>$user[0]['User']['last_name']
+                                    ));?>
+                                </div>
+                            </div>
+                            
+                            <!-- Username -->
+                            <?php 
+                            unset($class,$error);
+                            $class = !empty($validationErrors['User']['username']) ? 'has-error has-feedback' : ''; 
+                            $error = !empty($validationErrors['User']['username']) ? $validationErrors['User']['username'][0] : '';
+                            ?>
+                            <div class="form-group <?=$class?>">
+                                <label class="col-sm-4 control-label" for="Username">E-Mail Address / Username:</label>
+                                <div class="col-sm-8">
+                                    <?=$error?>
+                                    <?php echo $this->Form->input('username', array (
+                                        'type'=>'email',
+                                        'id'=> 'username', 
+                                        'placeholder'=>'Username',
+                                        'value'=>$user[0]['User']['username']
+                                    ));?>
+                                    <small>An employee's email, whether company provided or private, will be their username</small>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="password_confirm">Select Group:</label>
+                                <div class="col-sm-8">
+                                    <?=$error?>
+                                    <?php echo $this->Form->input('GroupMembership.group_id', array (
+                                        'type'=>'select',
+                                        'options'=> $groups, 
+                                        'selected'=>$user[0]['GroupMembership'][0]['group_id']
+                                    ));?>
+                                </div>
+                            </div>
+                        
+                            <!-- Password -->
+                            <?php 
+                            unset($class,$error);
+                            $class = !empty($validationErrors['User']['password']) ? 'has-error has-feedback' : ''; 
+                            $error = !empty($validationErrors['User']['password']) ? $validationErrors['User']['password'][0] : '';
+                            ?>
+                            <div class="form-group <?=$class?>">
+                                <label class="col-sm-4 control-label" for="password">Password:</label>
+                                <div class="col-sm-8">
+                                    <?=$error?>
+                                    <?php echo $this->Form->input('password', array (
+                                        'type'=>'password',
+                                        'id'=> 'password', 
+                                        'placeholder'=>'Password'
+                                    ));?>
+                                    <small>Password must have a mimimum of 6 characters</small><br />
+                                    <small>Leave blank if no change</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Repeat Password -->
+                            <?php 
+                            unset($class,$error);
+                            $class = !empty($validationErrors['User']['password_confirm']) ? 'has-error has-feedback' : ''; 
+                            $error = !empty($validationErrors['User']['password_confirm']) ? $validationErrors['User']['password_confirm'][0] : '';
+                            ?>
+                            <div class="form-group <?=$class?>">
+                                <label class="col-sm-4 control-label" for="password_confirm">Repeat Password:</label>
+                                <div class="col-sm-8">
+                                    <?=$error?>
+                                    <?php echo $this->Form->input('password_confirm', array (
+                                        'type'=>'password',
+                                        'id'=> 'password_confirm', 
+                                        'placeholder'=>'Repeat Password',
+                                        'value'=>''
+                                    ));?>
+                                    <small>Password must have a mimimum of 6 characters</small><br />
+                                    <small>Leave blank if no change</small>
+                                </div>
+                            </div>    
+                        </div>
+                        
+                        <div class="widget-footer">
+                            <div class="widget-header-toolbar">
+                                <input type="submit" class="btn btn-success pull-right" value="Save">
+                            </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="widget widget-no-header">
+                        <div class="widget-content">
+                            <h2>Testing</h2>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                    <th style="width: 30%">Name</th>
+                                    <th style="width: 10%">Scheduled</th>
+                                    <th style="width: 10%">Expires</th>
+                                    <th style="width: 10%">Completed</th>
+                                    <th style="width: 20%">% Complete</th>
+                                    <th style="width: 20%">Options</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    foreach($user[0]['AssignedTest'] as $test){
+                                        
+                                        #pr($test);
+                                        $date = explode('-', $test['completion_date']);
+                                        $m = $date[1];
+                                        $d = $date[2];
+                                        $y = $date[0];
+                                        
+                                        $c_date = (checkdate($m, $d, $y)) ? date( APP_DATE_FORMAT, strtotime($test['completion_date'])) : null;
+                                        $a_date = (!empty($test['assigned_date'])) ? date( APP_DATE_FORMAT, strtotime($test['assigned_date'])) : null;
+                                        $e_date = (checkdate($m, $d, $y)) ? null : date( APP_DATE_FORMAT, strtotime($test['expires_date']));
+                                        $percent = $test['complete'];
+                                        
+                                        //lets get all avaialbe reports
+                                        if(!empty($test['report']) && checkdate($m, $d, $y)){
+                                            foreach($test['report'] as $report){
+                                                $link[] = $this->Html->link(
+                                                    '<span class="label label-success label-as-badge"><i class="icon ion-compose"></i></span><br /><span><small>'.$report['Report']['name'].'</small></span>',
+                                                    array('member'=>false, 'plugin'=>'report', 'controller'=>'report', 'action'=>$report['Report']['action'], $test['id'] ),
+                                                    array('escape'=>false)
+                                                );
+                                            }
+                                        }else{
+                                            if($percent >= 1){
+                                                $link[] = $this->Html->link(
+                                                    'Reset Test',
+                                                    array('member'=>true, 'controller'=>'users', 'action'=>'reset', $test['id'], $user[0]['User']['id'] ),
+                                                    array('escape'=>false)
+                                                );
+                                            }else{
+                                                $link = array();
+                                            }
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td><?=$test['Test']['name']?></td>
+                                            <td><?=$a_date?></td>
+                                            <td><?=$e_date?></td>
+                                            <td><?=$c_date?></td>
+                                            <td>
+                                                <div class="progress demo-only progress-striped active">
+                                                    <div class="progress-bar progress-bar-info" data-transitiongoal="<?=$percent?>" style="width: <?=$percent?>%;" aria-valuenow="<?=$percent?>"><?=$percent?>%</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <?php
+                                                foreach($link as $reportLink){
+                                                    ?>
+                                                    <div class="pull-left text-center">
+                                                        <?=$reportLink?> 
+                                                    </div>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                        unset($link);
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+            
+            
+                <div class="widget widget-no-header">
+                    <div class="widget-content">
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+        
+<script type="text/javascript">
+    jQuery(window).ready( function($) {
+        $('#editButton').click(function() {
+            $('#userInfo .editable').editable('toggleDisabled');
+            $(this).html($(this).html() == 'Done' ? 'Edit' : 'Done');
+        });
+        
+        $('#userInfo .address').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .city').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .state').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .zip').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .phone').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .mobile').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .fax').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .dob').editable({
+            disabled: true,
+            format: 'yyyy-mm-dd',
+            viewformat: 'dd/mm/yyyy',
+            datepicker: {
+                weekStart: 1
+            }
+        });
+        
+        $('#userInfo .soc').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .gender').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+        
+        $('#userInfo .county').editable({
+            disabled: true,
+            validate: function(value) {
+                if($.trim(value) == '') return 'This field is required';
+            }
+        });
+    });
+   
+</script>
+
+            

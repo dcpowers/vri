@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="row">
+        <div class="users form">
+            <?php echo $this->Form->create('User', array(
+                'class' => 'form-inline', 
+                'role' => 'form', 
+                'style'=>'padding: 15px 1px;',
+                'url' => array('controller' => 'associates', 'action' => 'login')
+            )); ?>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon">@</div>
+                    <?php echo $this->Form->input('username', array (
+                        'class' => 'form-control',
+                        'type' => 'email',
+                        'placeholder' => 'Enter email',
+                        'label' => false
+                    ));?>
+                </div>
+            </div>
+                    
+            <div class="form-group">
+                <label class="sr-only" for="exampleInputPassword2">Password</label>
+                <?php echo $this->Form->input('password', array (
+                    'class' => 'form-control',
+                    'type' => 'password',
+                    'placeholder' => 'Password',
+                    'label' => false
+                ));?>
+            </div>
+            
+            <?php echo $this->Form->end(__('Login')); ?>
+        </div>
+    </div>
+</div>
