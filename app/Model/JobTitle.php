@@ -22,9 +22,10 @@ class JobTitle extends AppModel {
     }
 
     //The Associations below have been created with all possible keys, those that are not needed can be removed
+    public $actsAs = array('Containable', 'Multivalidatable');
 
     public $hasMany = array(
-		'Job',
+		#'Job',
     );
     /**
      * belongsTo associations
