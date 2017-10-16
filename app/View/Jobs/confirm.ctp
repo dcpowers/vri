@@ -1,6 +1,6 @@
 <?php
     echo $this->Form->create('Job', array(
-    'url' => array('controller'=>'jobs', 'action'=>'delete', $id, 'member'=>true), 
+    'url' => array('controller'=>'jobs', 'action'=>'delete', $id),
     'role'=>'form',
     //'class'=>'form-horizontal',
     'inputDefaults' => array(
@@ -48,17 +48,17 @@
                 <p>There are no job openings that use this job title</p>
                 <?php
             }
-            ?>    
+            ?>
         </div>
     </div>
 </div>            <!-- /modal-body -->
 
 <div class="modal-footer">
     <div class="bootstrap-dialog-footer">
-        <div class="bootstrap-dialog-footer-buttons">  
+        <div class="bootstrap-dialog-footer-buttons">
             <?php echo $this->Form->button('<i class="fa fa-times"></i> No! Close This Window', array('class'=>'btn btn-danger', 'data-dismiss'=>'modal')); ?>
             <?php echo $this->Form->button('<i class="fa fa-trash"></i> Yes! Delete', array('type'=>'submit', 'div'=>false, 'label'=>false, 'class'=>'btn btn-success')); ?>
         </div>
     </div>
 </div>
-<?php echo $this->Form->end();?> 
+<?php echo $this->Form->end();?>
