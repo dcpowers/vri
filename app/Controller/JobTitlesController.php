@@ -7,7 +7,7 @@ App::uses('CakePdf', 'CakePdf.Pdf');
  * Apps Controller
  *
  */
-class JobsController extends AppController {
+class JobTitlesController extends AppController {
 
 /**
  * Scaffold
@@ -27,8 +27,7 @@ class JobsController extends AppController {
         'ApplyJob',
         'User',
         'DetailUser',
-        'State',
-		'Account'
+        'State'
     );
 
     //beforeFilter callback
@@ -50,16 +49,12 @@ class JobsController extends AppController {
     }
 
     public function index() {
-        $job_titles = $this->Job->find('all', array(
+
+		$job_titles = $this->JobTitle->find('all', array(
 			'conditions' => array(
         	),
             'contain'=>array(
-				'Account'=>array(
-					'fields'=>array(
-						'Account.name',
-						'Account.abr'
-					)
-				)
+				#'Job'=>array()
             ),
         ));
 
@@ -500,65 +495,80 @@ class JobsController extends AppController {
 
     //add new job title //used on accoun t settings and job posting
     //redirect used if account settings page
-    public function add(){
+    public function add($group_id=null, $redirect=null){
 
         if ($this->request->is('post') || $this->request->is('put')) {
-			#pr($this->request->data);
-			#exit;
+            $this->request->data['Job']['group_id'] = AuthComponent::user('parent_group_ids.1');
 
-            if ($this->Job->saveAll($this->request->data)) {
+            if ($this->Job->saveall($this->request->data)) {
                 //Audit::log('Group record edited', $this->request->data );
-                $this->Flash->alertBox(
-	            	'Job Title Added',
-	                array( 'params' => array( 'class'=>'alert-success' ))
-	            );
+                $this->Session->setFlash(
+                    __('Job Title Has Been saved'),
+                    'alert-box',
+                    array('class'=>'alert-success')
+                );
             } else {
-				$this->Flash->alertBox(
-	            	'There Was An Error! Job title was not saved. Please try again.',
-	                array( 'params' => array( 'class'=>'alert-danger' ))
-	            );
-			}
+                $this->Session->setFlash(
+                    __('There Was An Error! Job title was not saved. Please try again.'),
+                    'alert-box',
+                    array('class'=>'alert-danger')
+                );
+            }
 
-			return $this->redirect(array('controller'=>'jobs','action' => 'index'));
+            return $this->redirect(array('controller'=>'jobs','action' => 'index', 'member'=>true));
 
         }
-
-
-        $this->set( 'accounts', $this->Account->pickListActive() );
+        $this->set( 'group_id', $group_id );
+        $this->set('breadcrumbs', array(
+            array('title'=>'Account Settings', 'link'=>array('controller'=>'groups', 'action'=>'index', 'member'=>true ) ),
+            array('title'=>'Job Titles', 'link'=>array('controller'=>'jobs', 'action'=>'index', 'member'=>true ) ),
+            array('title'=>'New Job Title', 'link'=>array('controller'=>'jobs', 'action'=>'add', 'member'=>true ) ),
+        ));
     }
 
-    public function edit($id=null){
+    public function edit($id=null, $redirect=null){
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            if ($this->Job->saveAll($this->request->data)) {
+            if ($this->Job->saveall($this->request->data)) {
                 //Audit::log('Group record edited', $this->request->data );
-                $this->Flash->alertBox(
-	            	'Job Title Updated',
-	                array( 'params' => array( 'class'=>'alert-success' ))
-	            );
-            }else{
-				$this->Flash->alertBox(
-	            	'There Was An Error! Job title was not saved. Please try again.',
-	                array( 'params' => array( 'class'=>'alert-danger' ))
-	            );
-
+                $this->Session->setFlash(
+                    __('Job Title Has Been saved'),
+                    'alert-box',
+                    array('class'=>'alert-success')
+                );
+            } else {
+                $this->Session->setFlash(
+                    __('There Was An Error! Job title was not saved. Please try again.'),
+                    'alert-box',
+                    array('class'=>'alert-danger')
+                );
             }
 
             return $this->redirect(array('controller'=>'jobs','action' => 'index', 'member'=>true));
 
         }
 
-        $jobs = $this->Job->find('first', array(
-        	'conditions' => array(
-            	'Job.id' => $id
-            ),
-            'contain' => array(
+        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
 
-            )
+        if(!empty($supervisorOf_id) ){
+            //Get Jobs
+            $jobs = $this->Job->find('first', array(
+                'conditions' => array(
+                    'Job.id' => $id
+                ),
+                'contain' => array(
+                )
+
+            ));
+
+            $this->set( 'jobs', $jobs );
+        }
+
+        $this->set('breadcrumbs', array(
+            array('title'=>'Account Settings', 'link'=>array('controller'=>'groups', 'action'=>'index', 'member'=>true ) ),
+            array('title'=>'Job Titles', 'link'=>array('controller'=>'jobs', 'action'=>'index', 'member'=>true ) ),
+            array('title'=>'Edit Job Title', 'link'=>array('controller'=>'jobs', 'action'=>'edit', $id, 'member'=>true ) ),
         ));
-		$this->set( 'jobs', $jobs );
-        $this->set( 'accounts', $this->Account->pickListActive() );
-
     }
 
     //delete job title //used on account settings and job posting
@@ -570,18 +580,20 @@ class JobsController extends AppController {
 
             $this->JobPosting->deleteAll(array('JobPosting.job_id' => $id), true);
 
-            $this->Flash->alertBox(
-	            	'Job Title Deleted',
-	                array( 'params' => array( 'class'=>'alert-success' ))
-	            );
-            }else{
-				$this->Flash->alertBox(
-	            	'There Was An Error! Please try again.',
-	                array( 'params' => array( 'class'=>'alert-danger' ))
-	            );
+            $this->Session->setFlash(
+                __('Deletetion Successful'),
+                'alert-box',
+                array('class'=>'alert-success')
+            );
+        } else {
+            $this->Session->setFlash(
+                __('There Was An Error! Please Try Again'),
+                'alert-box',
+                array('class'=>'alert-danger')
+            );
         }
 
-        return $this->redirect(array('controller'=>'jobs','action' => 'index'));
+        return $this->redirect(array('controller'=>'jobs','action' => 'index', 'member'=>true));
     }
 
     public function confirm($id=null, $app=null){
