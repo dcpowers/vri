@@ -113,14 +113,6 @@ class JobPostingsController extends AppController {
     }
 
     public function add(){
-        $supervisorOf_id = Set::extract( AuthComponent::user(), '/SupervisorOf/id' );
-        $role_ids = Set::extract( AuthComponent::user(), '/AuthRole/id' );
-
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids)){
-            $group_id = (!empty($supervisorOf_id)) ? $supervisorOf_id : array(AuthComponent::user('parent_group_ids.1')) ;
-            $group_ids = $this->Group->getChildren($group_id);
-        }
-
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['JobPosting']['posted_by'] = AuthComponent::user('id');
 
@@ -184,94 +176,76 @@ class JobPostingsController extends AppController {
             }
         }
 
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids)){
+        //Get Jobs
+        $jobs = $this->Job->find('list', array(
+        	'conditions' => array(
+            	'Job.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
 
-            //Get Jobs
-            $jobs = $this->Job->find('list', array(
-                'conditions' => array(
-                    'Job.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
+        //Get Talent Patterns
+        $jobTalentpattern = $this->JobTalentpattern->find('list', array(
+        	'conditions' => array(
+            	'JobTalentpattern.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
 
-            //Get Talent Patterns
-            $jobTalentpattern = $this->JobTalentpattern->find('list', array(
-                'conditions' => array(
-                    'JobTalentpattern.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
+        //Get Questions
+        $jobQuestion = $this->JobQuestion->find('list', array(
+        	'conditions' => array(
+            	'JobQuestion.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
 
-            //Get Questions
-            $jobQuestion = $this->JobQuestion->find('list', array(
-                'conditions' => array(
-                    'JobQuestion.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
+        //Get Percent Match options
+        $group_list = $this->Group->find('list', array(
+        	'conditions' => array(
+            	'Group.id' => $group_ids,
+                'Group.zip !=' => '',
+                'Group.city !=' => '',
+                'Group.state !=' => '',
+            ),
+            'contain' => array(
+            ),
+        ));
 
-            //Get Percent Match options
-            $group_list = $this->Group->find('list', array(
-                'conditions' => array(
-                    'Group.id' => $group_ids,
-                    'Group.zip !=' => '',
-                    'Group.city !=' => '',
-                    'Group.state !=' => '',
+        $group = $this->Group->find('first', array(
+        	'conditions' => array(
+            	'Group.id' => AuthComponent::user('parent_group_ids.1')
+            ),
+            'contain' => array(
+            ),
+            'fields'=>array('Group.id', 'Group.group_type_id')
+        ));
 
-                ),
-                'contain' => array(
-                ),
-
-            ));
-
-            $group = $this->Group->find('first', array(
-                'conditions' => array(
-                    'Group.id' => AuthComponent::user('parent_group_ids.1')
-                ),
-                'contain' => array(
-                ),
-                'fields'=>array('Group.id', 'Group.group_type_id')
-            ));
-
-
-            if($group['Group']['group_type_id'] >= 1){
-                $percent_match_options = 'true';
-            }else{
-                $percent_match_options = 'false';
-            }
-
-            $settings['status'] = $this->Job->jobStatusInt();
-            $settings['salaryTypes'] = $this->Job->salaryTypesInt();
-            $employmentTypes = $this->EmploymentType->pick_list();
-
-            $this->set( 'locations', $group_list );
-            $this->set( 'jobs', $jobs );
-            $this->set( 'percent_match_options', $percent_match_options );
-            $this->set( 'jobTalentpattern', $jobTalentpattern );
-            $this->set( 'jobQuestion', $jobQuestion );
-            $this->set( 'settings', $settings );
-
-            $title = "Create New Job Posting";
-            $this->set( 'group_id', $group_id[0]);
-            $this->set( 'title', $title );
-            $this->set( 'employmentTypes', $employmentTypes );
-
-            $m = date('m');
-            $d = date('d');
-            $y = date('Y');
-
-            $today = $m.'-'.$d.'-'.$y;
-
-            $this->set( 'today', $today );
-
-            $this->set('breadcrumbs', array(
-                array('title'=>'Job Openings', 'link'=>array('controller'=>'JobPostings', 'action'=>'index', 'member'=>true ) ),
-                array('title'=>'New Job Opening', 'link'=>array('controller'=>'JobPostings', 'action'=>'add', 'member'=>true ) ),
-            ));
+        if($group['Group']['group_type_id'] >= 1){
+        	$percent_match_options = 'true';
+        }else{
+        	$percent_match_options = 'false';
         }
+
+        $settings['status'] = $this->Job->jobStatusInt();
+        $settings['salaryTypes'] = $this->Job->salaryTypesInt();
+        $employmentTypes = $this->EmploymentType->pick_list();
+
+        $this->set( 'locations', $group_list );
+        $this->set( 'jobs', $jobs );
+        $this->set( 'percent_match_options', $percent_match_options );
+        $this->set( 'jobTalentpattern', $jobTalentpattern );
+        $this->set( 'jobQuestion', $jobQuestion );
+        $this->set( 'settings', $settings );
+
+        $this->set( 'group_id', $group_id[0]);
+        $this->set( 'title', $title );
+        $this->set( 'employmentTypes', $employmentTypes );
+
+        $this->set( 'today', date('m-d-Y', strtotime('now')) );
     }
 
     public function edit($id=null){
@@ -336,96 +310,82 @@ class JobPostingsController extends AppController {
             }
         }
 
-        if(!empty($supervisorOf_id) || in_array(4,$role_ids)){
+		$jobPosting = $this->JobPosting->find('first', array(
+        	'conditions' => array(
+            	'JobPosting.id' => $id
+            ),
+        ));
+        $this->set( 'jobPosting', $jobPosting );
 
-            $jobPosting = $this->JobPosting->find('first', array(
-                'conditions' => array(
-                    'JobPosting.id' => $id
-                ),
-            ));
-            $this->set( 'jobPosting', $jobPosting );
+        //Get Jobs
+        $jobs = $this->Job->find('list', array(
+        	'conditions' => array(
+            	#'Job.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
+        $this->set( 'jobs', $jobs );
 
-            //Get Jobs
-            $jobs = $this->Job->find('list', array(
-                'conditions' => array(
-                    'Job.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
-            $this->set( 'jobs', $jobs );
+        //Get Talent Patterns
+        $jobTalentpattern = $this->JobTalentpattern->find('list', array(
+        	'conditions' => array(
+            	'JobTalentpattern.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
+        $this->set( 'jobTalentpattern', $jobTalentpattern );
 
-            //Get Talent Patterns
-            $jobTalentpattern = $this->JobTalentpattern->find('list', array(
-                'conditions' => array(
-                    'JobTalentpattern.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
-            $this->set( 'jobTalentpattern', $jobTalentpattern );
+        //Get Questions
+        $jobQuestion = $this->JobQuestion->find('list', array(
+        	'conditions' => array(
+            	#'JobQuestion.group_id' => $group_ids
+            ),
+            'contain' => array(
+            )
+        ));
+        $this->set( 'jobQuestion', $jobQuestion );
 
-            //Get Questions
-            $jobQuestion = $this->JobQuestion->find('list', array(
-                'conditions' => array(
-                    'JobQuestion.group_id' => $group_ids
-                ),
-                'contain' => array(
-                )
-            ));
-            $this->set( 'jobQuestion', $jobQuestion );
+        //Get Percent Match options
+        $group_upgrade = $this->Group->find('all', array(
+        	'conditions' => array(
+            	'Group.id' => $group_ids
+            ),
+            'contain' => array(
+            ),
+            'fields'=>array('Group.id', 'Group.name', 'Group.group_type_id', 'Group.zip')
+        ));
 
-            //Get Percent Match options
-            $group_upgrade = $this->Group->find('all', array(
-                'conditions' => array(
-                    'Group.id' => $group_ids
-                ),
-                'contain' => array(
-                ),
-                'fields'=>array('Group.id', 'Group.name', 'Group.group_type_id', 'Group.zip')
-            ));
-
-            $locations= array();
-            foreach($group_upgrade as $item){
-                if(!empty($item['Group']['zip'])){
-                    $locations[$item['Group']['id']] = $item['Group']['name'];
-                }
+        $locations= array();
+        foreach($group_upgrade as $item){
+        	if(!empty($item['Group']['zip'])){
+            	$locations[$item['Group']['id']] = $item['Group']['name'];
             }
-
-            $this->set( 'locations', $locations );
-
-            if($group_upgrade[0]['Group']['group_type_id'] >= 1){
-                $percent_match_options = 'true';
-            }else{
-                $percent_match_options = 'false';
-            }
-            $this->set( 'percent_match_options', $percent_match_options );
-
-            $settings['status'] = $this->Job->jobStatusInt();
-            $settings['salaryTypes'] = $this->Job->salaryTypesInt();
-            $this->set( 'settings', $settings );
-
-            $employmentTypes = $this->EmploymentType->pick_list();
-            $this->set( 'employmentTypes', $employmentTypes );
-
-            $this->set( 'id', $id );
-
-            $m = date('m');
-            $d = date('d');
-            $y = date('Y');
-
-            $today = $m.'-'.$d.'-'.$y;
-
-            $this->set( 'today', $today );
-
-            $this->set('breadcrumbs', array(
-                array('title'=>'Job Openings', 'link'=>array('controller'=>'JobPostings', 'action'=>'index', 'member'=>true ) ),
-                array('title'=>'View Job Opening', 'link'=>array('controller'=>'JobPostings', 'action'=>'view', $id, 'member'=>true ) ),
-                array('title'=>'Edit Job Opening', 'link'=>array('controller'=>'JobPostings', 'action'=>'edit', $id, 'member'=>true ) ),
-            ));
         }
 
-    }
+        $this->set( 'locations', $locations );
+
+        if($group_upgrade[0]['Group']['group_type_id'] >= 1){
+        	$percent_match_options = 'true';
+        }else{
+        	$percent_match_options = 'false';
+        }
+        $this->set( 'percent_match_options', $percent_match_options );
+
+        $settings['status'] = $this->Job->jobStatusInt();
+        $settings['salaryTypes'] = $this->Job->salaryTypesInt();
+        $this->set( 'settings', $settings );
+
+        $employmentTypes = $this->EmploymentType->pick_list();
+        $this->set( 'employmentTypes', $employmentTypes );
+
+        $this->set( 'id', $id );
+
+        $today = date('m-d-Y', strtotime('now'));
+
+        $this->set( 'today', $today );
+	}
 
     public function search($job_posting_id=null){
 
@@ -694,11 +654,11 @@ class JobPostingsController extends AppController {
                     'conditions'=>array(
                         'User.is_active'=>1
                     ),
-                    'DetailUser'=>array(
-                        'fields'=>array(
-                            'DetailUser.phone'
-                        ),
-                    ),
+                    #'DetailUser'=>array(
+                    #    'fields'=>array(
+                    #        'DetailUser.phone'
+                    #    ),
+                    #),
                     'fields'=>array('User.id', 'User.first_name', 'User.last_name', 'User.username',),
                 ),
 
@@ -706,8 +666,8 @@ class JobPostingsController extends AppController {
             'order'=>array('ApplyJob.created DESC'),
         ));
 
-        //pr($applicants);
-        //exit;
+        #pr($applicants);
+        #exit;
         $jobInfo = $this->JobPosting->find('first', array(
             'conditions' => array(
                 'JobPosting.id' => $id
@@ -717,13 +677,13 @@ class JobPostingsController extends AppController {
                     'fields'=>array('Job.name')
                 ),
                 'User'=>array(
-                    'fields'=>array('User.fullname', 'User.id')
+                    'fields'=>array('User.first_name', 'User.last_name', 'User.id')
                 ),
                 'EmploymentType',
                 'SalaryType',
-                'Group'=>array(
+                'Account'=>array(
                     'State',
-                    'fields'=>array('Group.city', 'Group.state')
+                    'fields'=>array('Account.city', 'Account.state')
                 ),
             ),
         ));
