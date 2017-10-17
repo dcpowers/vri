@@ -1,43 +1,9 @@
-<?php
-    $role_names = Set::extract( AuthComponent::user(), '/AuthRole/tag' );
 
-?>
-<style type="text/css">
-    .border {
-        border: 1px #ff0000 solid;
-    }
-
-    .label-as-badge {
-        border-radius: 3em;
-    }
-
-    .list-item{
-        padding-bottom: 3px;
-    }
-
-    #myModal2 .modal-dialog{width:75%;}
-
-    @media screen and (min-width: 768px) {
-        #myModal2 .modal-dialog{width:900px;}
-    }
-
-    #ex2Slider .slider-selection {
-        background: #BABABA;
-
-    }
-
-    #ex2Slider {
-        height: 30px;
-
-    }
-
-
-</style>
 <div class="account index bg-white">
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">Job Postings</h6>
-            <h3 class="dashhead-title"><i class="fa fa-thumb-tack fa-fw"></i>Jobs</h3>
+            <h6 class="dashhead-subtitle">Job Postings List</h6>
+            <h3 class="dashhead-title"><i class="fa fa-thumb-tack fa-fw"></i>Job Postings</h3>
         </div>
         <div class="dashhead-toolbar">
             <?php #echo $this->element( 'Accounts/search' );?>
@@ -45,7 +11,7 @@
     </div>
     <div class="flextable">
         <div class="flextable-item">
-            <?php echo $this->element( 'Jobs/menu' );?>
+            <?php echo $this->element( 'Jobs/job_posting_menu' );?>
         </div>
         <div class="flextable-item">
 			<?php echo $this->element( 'Jobs/status_filter' );?>
@@ -121,7 +87,7 @@
                             <?php
                             echo $this->Html->link(
                                 '<i class="fa fa-users "></i>&nbsp;' . $number_applicants . $count_item,
-                                array('controller'=>'JobPostings', 'member'=>true, 'action'=>'view', $item['JobPosting']['id']),
+                                array('controller'=>'JobPostings', 'action'=>'view', $item['JobPosting']['id']),
                                 array('escape'=>false,'data-toggle'=>'tooltip','data-placement'=>'top','title'=>'View Applicants')
                             );
                             ?>
