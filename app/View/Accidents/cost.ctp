@@ -12,6 +12,10 @@
 ));
 
 echo $this->Form->hidden('accident_id', array('value'=>$this->request->data['Accident']['id']));
+
+if(!empty($this->request->data['AccidentCost']['id'])){
+    echo $this->Form->hidden('AccidentCost.id', array('value'=>$this->request->data['AccidentCost']['id']));
+}
 ?>
 <div class="modal-header modal-header-success">
     <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>

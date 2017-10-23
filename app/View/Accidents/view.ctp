@@ -2,7 +2,7 @@
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">Accident Details: <?=$accident['User']['first_name']?> <?=$accident['User']['last_name']?></h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accidents</h3>
+            <h3 class="dashhead-title"><i class="fa fa-ambulance fa-fw"></i> Accidents</h3>
         </div>
         <div class="dashhead-toolbar">
             <?php #echo $this->element( 'Accounts/search' );?>
@@ -54,22 +54,15 @@
 				<div class="box-header">
 					<div class="box-tools pull-right">
 			            <?php
-                        /*
-						echo $this->Html->link(
-			                '<i class="fa fa-plus fa-fw"></i> <span>Add</span>',
-			                array('controller'=>'Improvements', 'action'=>'add'),
-			                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
-			            );
-
-			            if(AuthComponent::user('Role.permission_level') >= 60){
-			                echo $this->Html->link(
-			                    '<i class="fa fa-wrench fa-fw"></i> <span>Manage</span>',
-			                    array('controller'=>'Improvements', 'action'=>'index'),
-			                    array('escape'=>false)
-			                );
+						if(AuthComponent::user('Role.permission_level') >= 60){
+							echo $this->Html->link(
+				                '<i class="fa fa-pencil fa-fw"></i> <span>Edit</span>',
+				                array('controller'=>'Accidents', 'action'=>'edit', $accident['Accident']['id'] ),
+				                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+				            );
 
 			            }
-						*/
+
 			            ?>
 			        </div>
 				</div>
@@ -165,6 +158,7 @@
                                 <th class="text-center">Restricted Days</th>
                                 <th>Added By</th>
                                 <th>Date Added</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -180,6 +174,29 @@
                                     <td class="text-center"><?=$file['num_days']?></td>
                                     <td><?=$file['CreatedBy']['first_name']?> <?=$file['CreatedBy']['last_name']?></td>
                                     <td><?php echo date('F d, Y', strtotime($file['created'])); ?></td>
+									<td>
+										<ul class="list-inline">
+											<li>
+												<?php
+												echo $this->Html->link(
+									                '<i class="fa fa-pencil fa-fw"></i>',
+									                array('controller'=>'Accidents', 'action'=>'cost', $accident['Accident']['id'], $file['id']),
+									                array('escape'=>false,'data-toggle'=>'modal', 'data-target'=>'#myModal', )
+									            );
+						                        ?>
+											</li>
+											<li>
+												<?php
+												echo $this->Html->link(
+									                '<i class="fa fa-trash fa-fw"></i>',
+									                array('controller'=>'Accidents', 'action'=>'deleteCostFile', $file['id'], $accident['Accident']['id']),
+									                array('escape'=>false),
+													array('Are You Sure You Want To Delete This Record?')
+									            );
+						                        ?>
+											</li>
+										</ul>
+									</td>
                                 </tr>
                                 <?php
                             }

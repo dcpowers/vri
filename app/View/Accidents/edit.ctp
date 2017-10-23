@@ -1,227 +1,161 @@
-<div class="account index bg-white">
-    <div class="dashhead">
-        <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">Edit Account: <?=$account['Account']['name']?></h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i> Accounts</h3>
-        </div>
-        <div class="dashhead-toolbar">
-            <?php echo $this->element( 'Accounts/search' );?>
-        </div>
-    </div>
-    <div class="flextable">
-        <div class="flextable-item">
-            <?php echo $this->element( 'Accounts/menu' );?>                
-        </div>
-    </div>
-    <?php 
-    echo $this->Form->create('Account', array(
-        'url'=>array('controller'=>'Accounts', 'action'=>'edit'),
-        #'class'=>'form-horizontal',
-        'role'=>'form',
-        'inputDefaults'=>array(
-            'label'=>false,
-            'div'=>false,
-            'class'=>'form-control',
-            'error'=>false
-        )
-    ));
-                                
-    echo $this->Form->hidden('id', array('value'=>$this->request->data['Account']['id'])); 
-    ?>
-    <div class="box box-info" style="border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
-        <div class="box-header with-border">
-            <h3 class="box-title"><?=$this->request->data['Account']['name']?></h3>
-        </div>
-        <div class="box-body">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label for="name" class="control-label">Name:</label>
-                        <?php 
-                        echo $this->Form->input( 'name', array()); 
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="abr" class="control-label">Abbreviation:</label>
-                        <?php 
-                        echo $this->Form->input( 'abr', array()); 
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="address" class="control-label">Address:</label>
-                        <?php 
-                        echo $this->Form->input( 'address', array()); 
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="supervisor" class="control-label">Supervisor:</label>
-                        <?php 
-                        echo $this->Form->input( 'manager_id', array(
-                            'options'=>$userList,
-                            'class'=>'chzn-select form-control', 
-                            'empty' => true,
-                            'data-placeholder'=>'Select a Supervisor.....',
-                        ));
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="manager" class="control-label">Systems Coordinator:</label>
-                        <?php 
-                        echo $this->Form->input('coordinator_id', array(
-                            'options'=>$userList,
-                            'class'=>'chzn-select form-control', 
-                            'empty' => true,
-                            'data-placeholder'=>'Select a Systems Coordinator.....',
-                        ));
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="regional_admin" class="control-label">Regional Administrator:</label>
-                        <?php 
-                        echo $this->Form->input('regional_admin_id', array(
-                            'options'=>$userList['Vanguard Resources'],
-                            'class'=>'chzn-select form-control', 
-                            'empty' => true,
-                            'data-placeholder'=>'Select a Regional Administrator.....',
-                        ));
-                        ?>
-                    </div>
-                </div>
-                                    
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label for="status" class="control-label">Account Status:</label>
-                        <?php 
-                        echo $this->Form->input('is_active', array(
-                            'options'=>$status,
-                            'value'=>$account['Status']['id'],
-                            'class'=>'chzn-select-status form-control', 
-                            'empty' => true,
-                            'multiple'=>false,
-                            'data-placeholder'=>'Select Account Status.....',
-                        ));
-                        ?>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="SprocketDB" class="control-label">SprocketDB:</label>
-                        <?php 
-                        echo $this->Form->input('SprocketDB', array()); 
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="AllPayID" class="control-label">All Pay Id:</label>
-                        <?php 
-                        echo $this->Form->input('AllPayID', array()); 
-                        ?>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="department" class="control-label">Current Department(s):</label>
-                        <?php 
-                        echo $this->Form->input('AccountDepartment.department_id', array(
-                            'options'=>$departments,
-                            'class'=>'chzn-select form-control', 
-                            'empty' => true,
-                            'multiple'=>true,
-                            'data-placeholder'=>'Select Department(s).....',
-                        ));
-                        ?>
-                    </div>
-                                        
-                    <div class="form-group">
-                        <label for="AllPayID" class="control-label">Old Department(s):</label>
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('EVS', array()); 
-                                ?>
-                                EVS
-                            </label>
-                        </div>
+<?php
+    echo $this->Form->create('Accident', array(
+    'url' => array('controller'=>'Accidents', 'action'=>'edit', $this->request->data['Accident']['id']),
+    'role'=>'form',
+    'class'=>'form-horizontal',
+    'inputDefaults' => array(
+        'label' => false,
+        'div' => false,
+        'class'=>'form-control',
+        'error'=>false
+    )
+));
 
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('CE', array()); 
-                                ?>
-                                CE
-                            </label>
-                        </div>
+echo $this->Form->hidden('id', array('value'=>$this->request->data['Accident']['id']));
 
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('Food', array()); 
-                                ?>
-                                Food
-                            </label>
-                        </div>
-                                                
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('POM', array()); 
-                                ?>
-                                POM
-                            </label>
-                        </div>
-                                                
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('LAU', array()); 
-                                ?>
-                                LAU
-                            </label>
-                        </div>
-                                                
-                        <div class="checkbox">
-                            <label>
-                                <?php 
-                                echo $this->Form->checkbox('SEC', array()); 
-                                ?>
-                                SEC
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="box-footer">
-            <?php
-            echo $this->Html->link(
-                'Cancel',
-                array('controller'=>'Accounts', 'action'=>'view', $this->request->data['Account']['id']),
-                array('escape'=>false, 'class'=>'btn btn-default')
-            );
-            ?>
-            
-            <?php 
-            echo $this->Form->button('Save', array(
-                'type'=>'submit', 
-                'class'=>'btn btn-primary'
-            )); 
-            ?>
-        </div>
-    </div>
-    <?php echo $this->Form->end(); ?>
+$areaId = array();
+if(!empty($this->request->data['AccidentArea'])){
+	foreach($this->request->data['AccidentArea'] as $v){
+		$areaId[] = $v['accident_area_lov_id'];
+	}
+}
+
+?>
+<div class="modal-header modal-header-success">
+    <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
+    <h2><?php echo __('Edit Accident Report:'); ?></h2>
 </div>
-  
+
+<div class="modal-body">
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Employee:</label>
+        <div class="col-sm-8">
+            <?=$this->request->data['User']['first_name']?>
+            <?=$this->request->data['User']['last_name']?>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Date Of Accident:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'date', array(
+                'type'=>'text',
+                'value'=>date('m/d/Y', strtotime('now')),
+                'class'=>'datepicker form-control'
+            ));
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Current Wage:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'hourly_rate', array(
+            ));
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Current Position:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'EPosition', array(
+            ));
+            ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Area(s) Of Injury:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input('AccidentArea.accident_area_lov_id', array (
+                'options'=>$areas,
+				'empty'=>false,
+                'class'=>'form-select chzn-select',
+				'multiple'=>true,
+				'default' => $areaId,
+				'data-placeholder'=>'Select Area(s) of Injury On Body'
+            ));
+            ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Brief Description of Accident:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'description', array(
+                'type'=>'textarea'
+            ));
+            ?>
+        </div>
+    </div>
+
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Reported To Workmans Comp?:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'is_insurance', array(
+                'options'=>array(1=>'Yes', 2=>'No'),
+				'empty'=>false,
+                'class'=>'form-select chzn-select',
+				'multiple'=>false,
+				'data-placeholder'=>'Reported To Workmans Comp?'
+            ));
+            ?>
+        </div>
+    </div>
+
+	<div class="form-group">
+        <label class="col-sm-4 control-label" for="name">Reported To OSHA?:</label>
+        <div class="col-sm-8">
+            <?php
+            echo $this->Form->input( 'is_osha', array(
+                'options'=>array(1=>'Yes', 2=>'No'),
+				'empty'=>false,
+                'class'=>'form-select chzn-select',
+				'multiple'=>false,
+				'data-placeholder'=>'Reported To OSHA?'
+            ));
+            ?>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <?php
+    echo $this->Form->button(
+        '<i class="fa fa-times fa-fw"></i> Close',
+        array('class'=>'btn btn-default pull-left', 'data-dismiss'=>'modal')
+    );
+
+	echo $this->Form->button(
+        '<i class="fa fa-save fa-fw"></i> Save',
+        array('type'=>'submit', 'class'=>'btn btn-primary pull-left')
+    );
+    ?>
+</div>
+<?php echo $this->Form->end();?>
 <script type="text/javascript">
-    jQuery(document).ready( function($) {
+    jQuery(window).ready( function($) {
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
-        
-        $(".chzn-select-status").chosen({
-            allow_single_deselect: false
-        });
+
+        $('.datepicker').datetimepicker({
+                'format': 'MM/DD/YYYY',
+                'showTodayButton': true,
+                'icons': {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down",
+                    close: "fa fa-trash",
+
+                }
+            });
     });
 </script>
