@@ -34,4 +34,15 @@ class AccidentCost extends AppModel {
     public $hasMany = array(
 
     );
+
+	public function get_info($id=null){
+		$info = $this->find('first', array(
+			'conditions'=>array(
+				'AccidentCost.id'=>$id
+			)
+		));
+
+		return $info;
+
+	}
 }
