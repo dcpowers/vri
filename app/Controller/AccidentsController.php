@@ -15,8 +15,9 @@ class AccidentsController extends AppController {
         'Accident',
         'AccidentCost',
         'AccidentArea',
-        'AccidentFile',
+		'AccidentFile',
 		'AccidentCostLov',
+		'AccidentCost',
 		'User',
         'AccountDepartment',
         'AccountUser',
@@ -336,98 +337,66 @@ class AccidentsController extends AppController {
 
     public function edit($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
-            $error = false;
-            $validationErrors = array();
-
-            $this->request->data['Account']['is_active'] = (empty($this->request->data['Account']['is_active'])) ? 1 : $this->request->data['Account']['is_active'] ;
-
-            $this->request->data['Account']['EVS'] = (empty($this->request->data['Account']['EVS'])) ? 0 : $this->request->data['Account']['EVS'] ;
-            $this->request->data['Account']['CE'] = (empty($this->request->data['Account']['CE'])) ? 0 : $this->request->data['Account']['CE'] ;
-            $this->request->data['Account']['Food'] = (empty($this->request->data['Account']['Food'])) ? 0 : $this->request->data['Account']['Food'] ;
-            $this->request->data['Account']['POM'] = (empty($this->request->data['Account']['POM'])) ? 0 : $this->request->data['Account']['POM'] ;
-            $this->request->data['Account']['LAU'] = (empty($this->request->data['Account']['LAU'])) ? 0 : $this->request->data['Account']['LAU'] ;
-            $this->request->data['Account']['SEC'] = (empty($this->request->data['Account']['SEC'])) ? 0 : $this->request->data['Account']['SEC'] ;
-
-            if(!empty($this->request->data['AccountDepartment'])){
-                $this->AccountDepartment->deleteAll(array('AccountDepartment.account_id' => $this->request->data['Account']['id']), false);
-
-                foreach($this->request->data['AccountDepartment'] as $item){
-                    foreach($item as $key=>$val){
-                        $this->request->data['AccountDepartment'][$key]['account_id'] = $this->request->data['Account']['id'];
-                        $this->request->data['AccountDepartment'][$key]['department_id'] = $val;
-                    }
+            $this->request->data['Accident']['date'] = (!empty($this->request->data['Accident']['date'])) ? date('Y-m-d', strtotime($this->request->data['Accident']['date'])) : date('Y-m-d', strtotime('now')) ;
+			$this->AccidentArea->deleteAll(array('AccidentArea.accident_id' => $this->request->data['Accident']['id']), false);
+            $c = 0;
+            if(!empty($this->request->data['AccidentArea']['accident_area_lov_id'])){
+                foreach ($this->request->data['AccidentArea']['accident_area_lov_id'] as $account_id){
+                    $this->request->data['AccidentArea'][$c]['accident_id'] = $this->request->data['Accident']['id'];
+                    $this->request->data['AccidentArea'][$c]['accident_area_lov_id'] = $account_id;
+                    $c++;
                 }
-                unset($this->request->data['AccountDepartment']['department_id']);
+
+                unset($this->request->data['AccidentArea']['accident_area_lov_id']);
             }
             #pr($this->request->data);
-            #exit;
-            if ($this->Account->saveAll($this->request->data)) {
-                $this->Flash->alertBox(
-                    'The Account: "'.$this->request->data['Account']['name'].'" has been saved',
-                    array(
-                        'params' => array(
-                            'class'=>'alert-success'
-                        )
-                    )
-                );
-            } else {
-                $this->Flash->alertBox(
-                    'The Account could not be saved. Please, try again.',
-                    array(
-                        'params' => array(
-                            'class'=>'alert-success'
-                        )
-                    )
-                );
+			#exit;
+			if(empty($this->request->data['Accident']['description'])){
+				$this->Flash->alertBox(
+	            	'Please Enter A Description Of What Happened',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
 
-                $this->set( compact( 'validationErrors' ) );
+				$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $this->request->data['Accident']['id']));
+			}
 
-                $id = $this->request->data['Account']['id'];
+			#pr($this->request->data);
+			#exit;
+
+			if ($this->Accident->saveAll($this->request->data)) {
+            	#Audit::log('Group record added', $this->request->data );
+
+				$this->Flash->alertBox(
+	            	'Accident Report Updated',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
+            }else{
+            	$this->Flash->alertBox(
+	            	'There Were Problems, Please Try Again',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
             }
 
-            $this->redirect(array('controller'=>'Accounts', 'action'=>'view', $id));
+			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $this->request->data['Accident']['id']));
         }
 
-        $account = $this->request->data = $this->Account->find('first', array(
+        $accident = $this->request->data = $this->Accident->find('first', array(
             'conditions' => array(
-                'Account.id' => $id
+                'Accident.id' => $id
             ),
             'contain' => array(
-                'Manager'=>array(
-                    'fields'=>array('Manager.id', 'Manager.first_name', 'Manager.last_name')
+            	'AccidentArea'=>array(
+					'AccidentAreaLov'=>array(),
                 ),
-                'Coordinator'=>array(
-                    'fields'=>array('Coordinator.id', 'Coordinator.first_name', 'Coordinator.last_name')
-                ),
-                'RegionalAdmin'=>array(
-                    'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
-                ),
-                'Status'=>array(),
-                'AccountDepartment'=>array(
-                    'Department'=>array(
-                        'fields'=>array(
-                            'Department.name'
-                        )
-                    )
-                ),
-
-            ),
+				'User'=>array(
+				)
+        	),
 
         ));
 
-        $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
-
-        $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
-
-        $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
-        $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
-
-        $this->set('account', $account);
-        $this->set('account', $account);
-
-        $this->set('userList', $userList);
-        $this->set('status', $this->Setting->pickList('status'));
-        $this->set('departments', $this->Department->pickList());
+		$this->set('areas', $this->AccidentAreaLov->pickList());
+		#pr($accident);
+		#exit;
     }
 
     public function add($id=null){
@@ -582,7 +551,7 @@ class AccidentsController extends AppController {
 
 	}
 
-	public function cost($id=null){
+	public function cost($id=null, $record_id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
             #pr($user);
 			$this->request->data['AccidentCost']['created_by'] = AuthComponent::user('id');
@@ -604,6 +573,10 @@ class AccidentsController extends AppController {
 
         $this->set('costLov', $this->AccidentCostLov->pickList());
         $this->request->data['Accident']['id'] = $id;
+		if(!empty($record_id)){
+			$this->request->data = $this->AccidentCost->get_info($record_id);
+			$this->request->data['AccidentCost']['id'] = $record_id;
+		}
     }
 
 	public function files($id=null){
@@ -709,6 +682,26 @@ class AccidentsController extends AppController {
 		if($this->AccidentFile->delete()){
         	$this->Flash->alertBox(
             	'Accident File Deleted',
+	            array('params' => array('class'=>'alert-success'))
+			);
+        }else{
+			$this->Flash->alertBox(
+            	'There Was An Error! Please Try Again',
+	            array('params' => array('class'=>'alert-danger'))
+			);
+
+        }
+
+
+        return $this->redirect(array('controller'=>'Accidents','action' => 'view', $accident_id));
+    }
+
+	public function deleteCostFile($id = null, $accident_id = null) {
+        $this->AccidentCost->id = $id;
+
+		if($this->AccidentCost->delete()){
+        	$this->Flash->alertBox(
+            	'Record Deleted',
 	            array('params' => array('class'=>'alert-success'))
 			);
         }else{
