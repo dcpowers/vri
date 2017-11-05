@@ -41,7 +41,7 @@ class User extends AppModel {
             'fields' => '',
             'order' => ''
         ),
-    );
+	);
 
     public $hasMany = array(
         'DepartmentUser',
@@ -51,7 +51,8 @@ class User extends AppModel {
         'TrainingExempt',
 		'Accident',
 		'AssignedTest',
-		'Award'
+		'Award',
+		'EmailList'
     );
     /*
     public $validate = array(
