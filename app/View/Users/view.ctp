@@ -176,7 +176,7 @@
                                     <li class="<?=$personalClass?>"><a href="#info" data-toggle="tab"><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</a></li>
                                     <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training</a></li>
 									<li class="<?=$testingClass?>"><a href="#testing" data-toggle="tab"><i class="fa fa-clipboard fa-fw" aria-hidden="true"></i> Testing</a></li>
-                                    <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab"><i class="fa fa-car fa-fw" aria-hidden="true"></i> Assets</a></li>
+                                    <!--<li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab"><i class="fa fa-car fa-fw" aria-hidden="true"></i> Assets</a></li>-->
                                     <li class="<?=$awardClass?>"><a href="#award" data-toggle="tab"><i class="fa fa-trophy fa-fw" aria-hidden="true"></i> Awards</a></li>
                                     <li class="<?=$safetyClass?>"><a href="#safety" data-toggle="tab"><i class="fa fa-ambulance fa-fw" aria-hidden="true"></i> Safety</a></li>
                                 </ul>

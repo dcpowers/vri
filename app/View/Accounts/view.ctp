@@ -49,7 +49,7 @@
             <li class="<?=$accountClass?>"><a href="#info" data-toggle="tab">Account Details</a></li>
             <li class="<?=$employeesClass?>"><a href="#users" data-toggle="tab">Employees</a></li>
             <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab">Training</a></li>
-            <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab">Assets</a></li>
+            <!--<li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab">Assets</a></li>-->
             <li class="<?=$safetyClass?>"><a href="#safety" data-toggle="tab">Safety</a></li>
             <li class="<?=$awardsClass?>"><a href="#awards" data-toggle="tab">Awards</a></li>
             <li class="<?=$testClass?>"><a href="#tests" data-toggle="tab">Testing</a></li>
