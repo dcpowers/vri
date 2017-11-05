@@ -459,9 +459,7 @@ class AccidentsController extends AppController {
 
 			if ($this->Accident->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
-				pr(env('SERVER_NAME'));
-				exit;
-				if (env('SERVER_NAME') == 'vrifm'){
+				if (env('SERVER_NAME') == 'vrifm.com'){
 					$this->send_mail($this->Accident->id);
 				}
 
