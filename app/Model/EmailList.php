@@ -49,10 +49,12 @@ class EmailList extends AppModel {
 
         ));
         foreach($data as $v){
-			$list[$v['EmailList']['email']] = $v['EmailList']['name'];
+			if(!empty($v['EmailList']['email'])){
+				$list[$v['EmailList']['email']] = $v['EmailList']['name'];
+			}
 		}
-		pr($list);
-		exit;
+		#pr($list);
+		#exit;
 		return $list;
     }
 }
