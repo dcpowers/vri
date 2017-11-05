@@ -42,7 +42,7 @@ if(!empty($this->request->data['AccidentArea'])){
             <?php
             echo $this->Form->input( 'date', array(
                 'type'=>'text',
-                'value'=>date('m/d/Y', strtotime('now')),
+                'value'=>date('m/d/Y', strtotime($this->request->data['Accident']['date'])),
                 'class'=>'datepicker form-control'
             ));
             ?>

@@ -20,7 +20,7 @@
 	        <li class="<?=$activeclass?>">
 	            <?php
 	            echo $this->Html->link(
-	                'Active',
+	                'Open',
 	                array('controller'=>'Accidents', 'action'=>'index', 1),
 	                array( 'escape'=>false)
 	            );
@@ -30,7 +30,7 @@
 	        <li class="<?=$inactiveclass?>">
 	            <?php
 	            echo $this->Html->link(
-	                'Inactive',
+	                'Closed',
 	                array('controller'=>'Accidents', 'action'=>'index', 2),
 	                array( 'escape'=>false)
 	            );
@@ -40,7 +40,7 @@
 	        <li>
 	            <?php
 	            echo $this->Html->link(
-	                'Clear Status Filter',
+	                'View All',
 	                array('controller'=>'Accidents', 'action'=>'index', 'All'),
 	                array( 'escape'=>false)
 	            );

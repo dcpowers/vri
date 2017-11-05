@@ -7,7 +7,7 @@
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">List Of Accidents</h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i>Open Accidents</h3>
+            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i><?=$title?> Accidents</h3>
         </div>
         <div class="dashhead-toolbar">
             <?php #echo $this->element( 'Accounts/search' );?>
@@ -103,21 +103,35 @@
 									if($a['Accident']['is_active'] == 1){
 										echo $this->Html->link(
 				                            '<i class="fa fa-fw fa-unlock"></i>',
-				                            array('controller'=>'Accidents', 'action'=>'open', $a['Accident']['id']),
+				                            array('controller'=>'Accidents', 'action'=>'close', $a['Accident']['id'], 2),
 				                            array('escape'=>false)
 				                        );
 									}else{
 										echo $this->Html->link(
 				                            '<i class="fa fa-fw fa-lock"></i>',
-				                            array('controller'=>'Accidents', 'action'=>'close', $a['Accident']['id']),
+				                            array('controller'=>'Accidents', 'action'=>'open', $a['Accident']['id'], 1),
 				                            array('escape'=>false)
 				                        );
 									}
-
-
-									?>
+                                    ?>
 								</li>
-                            </ul>
+								<?php
+								if(AuthComponent::user('Role.permission_level') >= 70){
+									?>
+									<li>
+										<?php
+										echo $this->Html->link(
+				                            '<i class="fa fa-fw fa-trash"></i>',
+				                            array('controller'=>'Accidents', 'action'=>'delete', $a['Accident']['id'], 1),
+				                            array('escape'=>false),
+											array('Are You Sure You Want To Delete This Accident?')
+				                        );
+										?>
+									</li>
+									<?php
+								}
+								?>
+							</ul>
 						</td>
 	                </tr>
 	                <?php

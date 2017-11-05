@@ -112,12 +112,13 @@
 								<dl>
 			                        <dt>Reported By:</dt>
 			                        <dd><?=$accident['CreatedBy']['first_name']?> <?=$accident['CreatedBy']['last_name']?></dd>
+									<dd><?php echo date('F d, Y', strtotime($accident['Accident']['created'])); ?></dd>
 			                    </dl>
 
 								<dl>
 			                        <dt>Last Update:</dt>
-			                        <dd><?php echo date('F d, Y', strtotime($accident['Accident']['modified'])); ?></dd>
-			                        <dd><?=$accident['ChangeBy']['first_name']?> <?=$accident['ChangeBy']['last_name']?></dd>
+                                    <dd><?=$accident['ChangeBy']['first_name']?> <?=$accident['ChangeBy']['last_name']?></dd>
+									<dd><?php echo date('F d, Y', strtotime($accident['Accident']['modified'])); ?></dd>
 			                    </dl>
 
 								<dl>
