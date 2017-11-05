@@ -12,6 +12,7 @@ class AccidentsController extends AppController {
     //Search Plugin
 
     var $uses = array(
+        'Application',
         'Accident',
         'AccidentCost',
         'AccidentArea',
@@ -22,7 +23,8 @@ class AccidentsController extends AppController {
         'AccountDepartment',
         'AccountUser',
         'AccidentAreaLov',
-		'BingoGame'
+		'BingoGame',
+		'EmailList'
 
     );
 
@@ -457,10 +459,10 @@ class AccidentsController extends AppController {
 
 			if ($this->Accident->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
-				#if (env('SERVER_NAME') == 'vrifm'){
+				if (env('SERVER_NAME') == 'vrifm'){
 					$this->send_mail($this->Accident->id);
-				#}
-				exit;
+				}
+
 
 				$now = date('Y-m-d', strtotime('now'));
                 $this->BingoGame->updateAll(
@@ -857,9 +859,9 @@ class AccidentsController extends AppController {
 		$account = $accident['Account']['name'] .' ( '. $accident['Account']['abr'] .' )';
 		$reported = $accident['CreatedBy']['first_name'].' '.$accident['CreatedBy']['last_name'];
 
-		#pr($accident);
-		#pr(AuthComponent::user());
-		#exit;
+		$app_id = $this->Application->get_app_id($this->request->params['controller']);
+		//Get Email List
+		$email_list = $this->EmailList->pickList($app_id);
 
 		//Email Link To user
         $email = new CakeEmail();
@@ -868,7 +870,7 @@ class AccidentsController extends AppController {
 
 		$email->from(array(AuthComponent::user('email') => $from_name));
         $email->template('accident');
-        $email->to(array('nick@ewdd.com' => 'Nick'));
+        $email->to($email_list);
 
         $email->subject('An Accident Has Been Reported By: '. $reported );
         $email->emailFormat('html');
@@ -877,11 +879,13 @@ class AccidentsController extends AppController {
         $this->set('name', $name);
         $this->set('account', $account);
         $this->set('reported', $reported);
+        $this->set('id', $id);
 
 		#$email->viewVars(array('user_email' => $user_email));
         $email->viewVars(array('name' => $name));
         $email->viewVars(array('reported' => $reported));
         $email->viewVars(array('account' => $account));
+        $email->viewVars(array('id' => $id));
 
         $email->send();
 	}
