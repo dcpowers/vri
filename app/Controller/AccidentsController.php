@@ -56,11 +56,15 @@ class AccidentsController extends AppController {
     public function index($status=null) {
         $user_ids = $this->Accident->getUserIds();
 
+		$title = (is_null($status) || $status == 1) ? 'Open' : null ;
+		$title = ($status == 2) ? 'Closed' : $title ;
+		$title = ($status == 'All') ? 'All' : $title ;
+
 		$status = (is_null($status)) ? 1 : $status ;
 		$status = ($status == 'All') ? array(1,2) : $status ;
-		#$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
 
-		$this->Paginator->settings = array(
+        #$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
+        $this->Paginator->settings = array(
             'conditions' => array(
                 'Accident.user_id' => $user_ids,
                 'Accident.is_active' => $status,
@@ -118,6 +122,7 @@ class AccidentsController extends AppController {
 		#exit;
 		$this->set('status', $status);
 		$this->set('accidents', $result);
+		$this->set('title', $title);
 
     }
 
@@ -337,6 +342,7 @@ class AccidentsController extends AppController {
 
     public function edit($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
+
             $this->request->data['Accident']['date'] = (!empty($this->request->data['Accident']['date'])) ? date('Y-m-d', strtotime($this->request->data['Accident']['date'])) : date('Y-m-d', strtotime('now')) ;
 			$this->AccidentArea->deleteAll(array('AccidentArea.accident_id' => $this->request->data['Accident']['id']), false);
             $c = 0;
@@ -360,6 +366,8 @@ class AccidentsController extends AppController {
 				$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $this->request->data['Accident']['id']));
 			}
 
+			$this->request->data['Accident']['change_by'] = AuthComponent::user('id');
+			#$this->request->data['Accident']['modified'] = false;
 			#pr($this->request->data);
 			#exit;
 
@@ -444,18 +452,27 @@ class AccidentsController extends AppController {
 	                array( 'params' => array( 'class'=>'alert-danger' ))
 	            );
 
-				$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+				$this->redirect(array('controller'=>'Accidents', 'action'=>'index'));
 			}
 
 			if ($this->Accident->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
+				#if (env('SERVER_NAME') == 'vrifm'){
+					$this->send_mail($this->Accident->id);
+				#}
+				exit;
 
 				$now = date('Y-m-d', strtotime('now'));
                 $this->BingoGame->updateAll(
 				    array( 'BingoGame.end_date' => "' $now '", 'BingoGame.amount' => 0 ),   //fields to update
 				    array('BingoGame.end_date' => null, 'BingoGame.account_id' =>  AuthComponent::user('AccountUser.0.account_id'))  //condition
 				);
-                $this->Flash->alertBox(
+
+				$this->request->data['BingoGame']['start_date'] = date('Y-m-d', strtotime('now'));
+				$this->request->data['BingoGame']['account_id'] = AuthComponent::user('AccountUser.0.account_id');
+				$this->BingoGame->saveAll($this->request->data);
+
+				$this->Flash->alertBox(
 	            	'A New Accident Has Been Reported',
 	                array( 'params' => array( 'class'=>'alert-success' ))
 	            );
@@ -466,7 +483,7 @@ class AccidentsController extends AppController {
 	            );
             }
 
-			$this->redirect(array('controller'=>'dashboard', 'action'=>'index'));
+			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $this->Accident->id));
         }
 
         $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
@@ -624,56 +641,22 @@ class AccidentsController extends AppController {
 
 
 
-    public function delete($id = null, $empDelete = null) {
-        $this->Group->id = $id;
-        $empDelete = (is_null($empDelete)) ? 'No' : $empDelete;
+    public function delete($id = null) {
+        $this->Accident->id = $id;
 
-        $parent = $this->Group->getPath($this->Group->id);
-
-        //Check for top level. If is main account/iworkzone only can delete
-        $parent_count = count($parent);
-        if($parent_count >= 3){
-            //Grap all children ids/group id
-            $allChildren = $this->Group->children($id);
-            $all_ids = set::extract($allChildren, '{n}.Group.id');
-            $all_ids[] = $id;
-
-            $parent_id = $parent[1]['Group']['id'];
-
-            if($empDelete == 'No'){
-                //Grab all users in group and children, update to parent id;
-                $this->GroupMembership->updateAll(
-                    array('GroupMembership.group_id' => $parent_id),
-                    array('GroupMembership.group_id' => $all_ids)
-                );
-            }else{
-                //Grap all children ids/group id and delete
-
-            }
-
-            if($this->Group->delete()){
-                $this->Session->setFlash(
-                    __('Deletetion Successful'),
-                    'alert-box',
-                    array('class'=>'alert-success')
-                );
-            } else {
-                $this->Session->setFlash(
-                    __('There Was An Error! Please Try Again'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
-                );
-            }
+		if($this->Accident->delete()){
+			$this->Flash->alertBox(
+            	'Accident Has Been Deleted',
+	            array('params' => array('class'=>'alert-success'))
+			);
         }else{
-            $this->Session->setFlash(
-                __('You cannot delete this level of account'),
-                'alert-box',
-                array('class'=>'alert-danger')
-            );
-
+			$this->Flash->alertBox(
+            	'There Was An Error! Please Try Again',
+	            array('params' => array('class'=>'alert-danger'))
+			);
         }
 
-        return $this->redirect(array('controller'=>'groups','action' => 'orgLayout', 'member'=>true));
+        return $this->redirect(array('controller'=>'Accidents','action' => 'index'));
     }
 
 	public function deleteAccidentFile($id = null, $accident_id = null) {
@@ -772,6 +755,44 @@ class AccidentsController extends AppController {
     	$this->set('accident_id', $id);
 	}
 
+	public function open($id = null, $s = null){
+		$this->request->data['Accident']['id'] = $id;
+		$this->request->data['Accident']['is_active'] = 1;
+
+		if ($this->Accident->saveAll($this->request->data)) {
+			$this->Flash->alertBox(
+	        	'Accident Has Been Opened',
+	            array( 'params' => array( 'class'=>'alert-success' ))
+	        );
+        }else{
+        	$this->Flash->alertBox(
+	        	'There Were Problems, Please Try Again',
+	            array( 'params' => array( 'class'=>'alert-danger' ))
+	        );
+        }
+
+		$this->redirect(array('controller'=>'Accidents', 'action'=>'index', $s));
+	}
+
+	public function close($id = null, $s = null){
+		$this->request->data['Accident']['id'] = $id;
+		$this->request->data['Accident']['is_active'] = 2;
+
+		if ($this->Accident->saveAll($this->request->data)) {
+			$this->Flash->alertBox(
+	        	'Accident Has Been Closed',
+	            array( 'params' => array( 'class'=>'alert-success' ))
+	        );
+        }else{
+        	$this->Flash->alertBox(
+	        	'There Were Problems, Please Try Again',
+	            array( 'params' => array( 'class'=>'alert-danger' ))
+	        );
+        }
+
+		$this->redirect(array('controller'=>'Accidents', 'action'=>'index', $s));
+	}
+
 	public function download($id = null) {
 
         $v = $this->AccidentFile->find('first', array(
@@ -804,4 +825,64 @@ class AccidentsController extends AppController {
         $this->redirect(array('controller'=>'accidents', 'action' => 'index'));
 
     }
+
+	public function send_mail($id = null){
+
+        //get accident info
+		$accident = $this->Accident->find('first', array(
+            'conditions' => array(
+                'Accident.id' => $id
+            ),
+            'contain' => array(
+                'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name', 'Account.abr')
+                ),
+                'Dept'=>array(
+                    'fields'=>array('Dept.id', 'Dept.name')
+                ),
+                'User'=>array(
+                    'fields'=>array('User.id', 'User.first_name', 'User.last_name', 'User.doh')
+                ),
+                'CreatedBy'=>array(),
+                'ChangeBy'=>array(),
+                'AccidentArea'=>array(
+					'AccidentAreaLov'
+				),
+            ),
+
+        ));
+
+		$from_name = AuthComponent::user('first_name').' '. AuthComponent::user('last_name');
+		$name = $accident['User']['first_name'].' '.$accident['User']['last_name'];
+		$account = $accident['Account']['name'] .' ( '. $accident['Account']['abr'] .' )';
+		$reported = $accident['CreatedBy']['first_name'].' '.$accident['CreatedBy']['last_name'];
+
+		#pr($accident);
+		#pr(AuthComponent::user());
+		#exit;
+
+		//Email Link To user
+        $email = new CakeEmail();
+        $email->config('smtp');
+        $email->sender('support@vrifm.com', 'VRI Support');
+
+		$email->from(array(AuthComponent::user('email') => $from_name));
+        $email->template('accident');
+        $email->to(array('nick@ewdd.com' => 'Nick'));
+
+        $email->subject('An Accident Has Been Reported By: '. $reported );
+        $email->emailFormat('html');
+
+        #$this->set('user_email', $user_email);
+        $this->set('name', $name);
+        $this->set('account', $account);
+        $this->set('reported', $reported);
+
+		#$email->viewVars(array('user_email' => $user_email));
+        $email->viewVars(array('name' => $name));
+        $email->viewVars(array('reported' => $reported));
+        $email->viewVars(array('account' => $account));
+
+        $email->send();
+	}
 }
