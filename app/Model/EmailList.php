@@ -22,13 +22,6 @@ class EmailList extends AppModel {
     public $actsAs = array('Containable', 'Multivalidatable');
     //The Associations below have been created with all possible keys, those that are not needed can be removed
     public $belongsTo = array(
-        'User' => array(
-            'className' => 'User',
-            'foreignKey' => 'User_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
         'Application' => array(
             'className' => 'Application',
             'foreignKey' => 'application_id',

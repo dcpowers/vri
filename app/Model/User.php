@@ -52,7 +52,6 @@ class User extends AppModel {
 		'Accident',
 		'AssignedTest',
 		'Award',
-		'EmailList'
     );
     /*
     public $validate = array(
