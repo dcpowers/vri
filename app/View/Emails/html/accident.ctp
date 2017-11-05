@@ -5,7 +5,7 @@
 	<?php
 	echo $this->Html->link(
 		'View Accident Report',
-		array('controller'=>'Accidents', 'action'=>'view', $id),
+		array('fullBase' => true, 'controller'=>'Accidents', 'action'=>'view', $id),
 		array('escape'=>false)
 	);
 	?>
