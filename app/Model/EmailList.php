@@ -45,22 +45,14 @@ class EmailList extends AppModel {
             'conditions'=>array(
                 'EmailList.application_id' => $app_id
             ),
-            'contain'=>array(
-				'User'=>array(
-					'fields'=>array(
-						'User.email',
-						'User.first_name',
-						'User.last_name',
-					)
-				)
-			),
-        ));
+			'contain'=>array()
 
-		foreach($data as $v){
-			$list[$v['User']['email']] = $v['User']['first_name'].' '.$v['User']['last_name'];
+        ));
+        foreach($data as $v){
+			$list[$v['EmailList']['email']] = $v['EmailList']['name'];
 		}
-		#pr($list);
-		#exit;
+		pr($list);
+		exit;
 		return $list;
     }
 }
