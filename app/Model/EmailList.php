@@ -41,6 +41,8 @@ class EmailList extends AppModel {
 			'contain'=>array()
 
         ));
+		$list = array();
+
         foreach($data as $v){
 			if(!empty($v['EmailList']['email'])){
 				$list[$v['EmailList']['email']] = $v['EmailList']['name'];
