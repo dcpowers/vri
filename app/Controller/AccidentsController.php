@@ -463,7 +463,6 @@ class AccidentsController extends AppController {
 					$this->send_mail($this->Accident->id);
 				}
 
-
 				$now = date('Y-m-d', strtotime('now'));
                 $this->BingoGame->updateAll(
 				    array( 'BingoGame.end_date' => "' $now '", 'BingoGame.amount' => 0 ),   //fields to update
@@ -869,7 +868,7 @@ class AccidentsController extends AppController {
         $email->sender('support@vrifm.com', 'VRI Support');
 
 		$email->from(array(AuthComponent::user('email') => $from_name));
-        $email->template('accident');
+        $email->template('accident', null);
         $email->to($email_list);
 
         $email->subject('An Accident Has Been Reported By: '. $reported );
