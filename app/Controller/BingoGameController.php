@@ -42,7 +42,9 @@ class BingoGameController extends AppController {
 		'BingoBall',
 		'BingoGameBall',
 		'AccountUser',
-		'Award'
+		'Award',
+		'Application',
+		'EmailList'
     );
 
     #public $helpers = array('Session');
@@ -202,7 +204,9 @@ class BingoGameController extends AppController {
 			$this->request->data['BingoGame']['end_date'] = date('Y-m-d', strtotime('now'));
 
 			if ($this->BingoGame->save($this->request->data['BingoGame'])) {
-
+                if (env('SERVER_NAME') == 'vrifm.com'){
+					$this->send_mail($this->request->data['BingoGame']['id']);
+				}
 				$this->Award->create();
 				$this->Award->save($this->request->data['Award']);
             	$this->Flash->alertBox(
@@ -479,4 +483,56 @@ class BingoGameController extends AppController {
 		return $amount;
 	}
 
+	public function send_mail($id = null){
+
+        //get accident info
+		$bingo = $this->BingoGame->find('first', array(
+            'conditions' => array(
+                'BingoGame.id' => $id
+            ),
+            'contain' => array(
+                'Account'=>array(
+                    'fields'=>array('Account.id', 'Account.name', 'Account.abr')
+                ),
+                'Winner'=>array(
+                    'fields'=>array('Winner.id', 'Winner.first_name', 'Winner.last_name')
+                ),
+            ),
+        ));
+
+		$from_name = AuthComponent::user('first_name').' '. AuthComponent::user('last_name');
+		$winner = $bingo['Winner']['first_name'].' '.$bingo['Winner']['last_name'];
+		$account = $bingo['Account']['name'] .' ( '. $bingo['Account']['abr'] .' )';
+		$amount = $bingo['BingoGame']['amount'];
+
+		$app_id = $this->Application->get_app_id($this->request->params['controller']);
+		//Get Email List
+		$email_list = $this->EmailList->pickList($app_id);
+
+		//Email Link To user
+        $email = new CakeEmail();
+        $email->config('smtp');
+        $email->sender('support@vrifm.com', 'VRI Support');
+
+		$email->from(array(AuthComponent::user('email') => $from_name));
+        $email->template('bingo', null);
+        $email->to($email_list);
+
+        $email->subject('A Bingo Has Been Called:');
+        $email->emailFormat('html');
+
+        #$this->set('user_email', $user_email);
+        $this->set('winner', $winner);
+        $this->set('account', $account);
+        $this->set('id', $id);
+        $this->set('amount', $amount);
+
+		#$email->viewVars(array('user_email' => $user_email));
+        $email->viewVars(array('winner' => $winner));
+        $email->viewVars(array('account' => $account));
+        $email->viewVars(array('id' => $id));
+        $email->viewVars(array('amount' => $amount));
+
+        $email->send();
+	}
 }
