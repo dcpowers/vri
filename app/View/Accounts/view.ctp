@@ -231,7 +231,7 @@
 		                    </div>
 
 		                    <div class="form-group">
-		                        <label for="AllPayID" class="control-label">All Pay Id:</label>
+		                        <label for="AllPayID" class="control-label">Paylocity Id:</label>
 		                        <?php
 		                        echo $this->Form->input('AllPayID', array('type'=>'text'));
 		                        ?>
