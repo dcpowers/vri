@@ -35,7 +35,7 @@ class DepartmentUser extends AppModel {
 
         $items = $this->find('all', array(
             'conditions' => array(
-                $this->alias.'.department_id'=>$id
+                $this->alias.'.department_id'=>$id,
             ),
             'contain'=>array(
                 'User'=>array(
@@ -43,6 +43,7 @@ class DepartmentUser extends AppModel {
                         'User.id',
                         'User.first_name',
                         'User.last_name',
+                        'User.is_active',
                     ),
                     'order'=>array(
                         'User.first_name' => 'ASC',
@@ -60,7 +61,7 @@ class DepartmentUser extends AppModel {
         ));
 
         foreach ( $items as $key=>$rec ) {
-            if(!empty($rec['User']['AccountUser'])){
+            if(!empty($rec['User']['AccountUser']) && $rec['User']['is_active'] == 1){
                 $dataArr[$rec['User']['id']] = ucwords( strtolower($rec['User']['first_name'])) . ' ' . ucwords( strtolower($rec['User']['last_name'] ));
             }
         }

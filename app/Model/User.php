@@ -349,6 +349,35 @@ class User extends AppModel {
 
         return $dataArr;
     }
+    
+    public function pickListById( $id = null ) {
+        $dataArr = array();
+
+        $this->virtualFields['fullName'] = 'CONCAT(first_name, " ", last_name)';
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$id
+            ),
+            'order'=>array(
+                ''.$this->alias.'.first_name' => 'asc'
+            ),
+            'fields'=>array(
+                ''.$this->alias.'.id',
+                ''.$this->alias.'.fullName'
+            ),
+
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('list', $find_options );
+
+        foreach ( $recs as $key=>$rec ) {
+            $dataArr[$key] = ucwords( strtolower($rec));
+        }
+
+        return $dataArr;
+    }
 
 	public function pickListByRole( $role_ids = null ) {
         $dataArr = array();

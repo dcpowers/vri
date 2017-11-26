@@ -94,4 +94,17 @@ class Training extends AppModel {
         ));
         return $data; 
     }
+    
+    public function pickListById( $id = null){
+        $data = $this->find('first', array(
+            'conditions' => array(
+                'Training.id' => $id
+            ),
+            'contain'=>array(),
+            'fields'=>array('Training.id', 'Training.name'),
+            'order'=>array('Training.name')
+        ));
+        
+        return $data['Training']['name']; 
+    }
 }
