@@ -1,11 +1,11 @@
 <?php
-    #pr($trainings);
+    #pr($trn);
     #exit;
 ?>
-<div class="training index">
+<div class="training index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">Account Training:</h6>
+            <h6 class="dashhead-subtitle">Training Details: <?=$trn['Training']['name']?></h6>
             <h3 class="dashhead-title"><i class="fa fa-book fa-fw"></i> Training</h3>
         </div>
         <div class="dashhead-toolbar">
@@ -30,9 +30,13 @@
     <div class="row">
     	<div class="col-sm-2" style="margin-top: 20px;">
         	<?php
-            $name = '/files/'.$trn['Training']['id'].'/'.$trn['Training']['image'];
-            $image = (!empty($trn['Training']['image'])) ? $name : 'noTraining.jpg' ;
-
+        	$cover = Hash::extract($trn['Training']['TrainingFile'], '{n}[is_cover = 1].file');
+        	#pr($image);
+        	
+            $name = '/files/training/'.$trn['Training']['id'].'/'.$cover[0];
+            $image = (!empty($cover[0])) ? $name : 'noTraining.jpg' ;
+			#pr($image);
+			#pr($trn);
             echo $this->Html->image($image, array('class'=>'img-thumbnail '));
             ?>
         </div><!--End col 1 -->
@@ -70,6 +74,15 @@
                     	'<i class="fa fa-files-o fa-fw"></i> Records',
                         '#'.$trn['Training']['id'].'records',
                         array('escape'=>false, 'aria-controls'=>'records', 'role'=>'tab', 'data-toggle'=>'tab')
+                    );
+                	?>
+                </li>
+                <li>
+                	<?php
+                    echo $this->Html->link(
+                    	'<i class="fa fa-print fa-fw"></i> Print Training Roster',
+                        array('controller'=>'Trainings', 'action'=>'roster', $trn['Training']['id'], 'ext'=>'pdf'),
+                        array('escape'=>false)
                     );
                 	?>
                 </li>
@@ -120,7 +133,7 @@
                                         <tbody>
                                         	<?php
                                             foreach($trn['Training']['TrainingFile'] as $file){
-                                            	$filePath = filesize(WWW_ROOT .'/files/'.$file['training_id'].'/'.$file['file']);
+                                            	$filePath = filesize(WWW_ROOT .'/files/training/'.$file['training_id'].'/'.$file['file']);
                                                 $fileSize = human_filesize($filePath);
                                                 ?>
                                                 <tr>
@@ -219,7 +232,7 @@
 										echo $this->Html->link(
                                         	$count,
                                         	array('controller'=>'Trainings', 'action'=>'classroomDetails', $class['TrainingClassroom']['id']),
-                                            array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
+                                            array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                                         );
 										?>
 									</td>

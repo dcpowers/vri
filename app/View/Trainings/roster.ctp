@@ -1,6 +1,6 @@
 <?php
     echo $this->Form->create('Training', array(
-        'url' => array('controller'=>'Trainings', 'action'=>'roster', $training_id), 
+        'url' => array('controller'=>'Trainings', 'action'=>'roster', $training_id, 'ext'=>'pdf'), 
         'role'=>'form',
         'class'=>'form-horizontal',
         'inputDefaults' => array(
@@ -60,7 +60,6 @@
                 'type'=>'select',
                 'empty'=>true,
                 'multiple'=>true,
-                'value'=>3424,
                 'class'=>'form-select chzn-select',
                 'data-placeholder'=>'Select User(s)'
             ));

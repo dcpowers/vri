@@ -62,6 +62,7 @@
                 'options'=>$users,
                 'type'=>'select',
                 'empty'=>true,
+                'selected'=>$user_ids,
                 'multiple'=>true,
                 'class'=>'form-select chzn-select',
                 'data-placeholder'=>'Select User(s)'

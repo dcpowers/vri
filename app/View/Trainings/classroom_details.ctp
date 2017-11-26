@@ -1,32 +1,21 @@
 <div class="modal-header modal-header-warning">
     <a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
-    <h2><?php echo __('Classroom Details: <small>'. $data['Classroom']['name'].'</small>'); ?></h2>
+    <h2><?php echo __('Classroom Details: '); ?></h2>
 </div>
 
 <div class="modal-body">
+	<h1><?=$data['Classroom']['name']?></h1>
 	<h3>Instructor: <small><?=$data['Trainer']?></small></h3>
 	<h4>Date: <small><?php echo date('F d, Y', strtotime($data['Classroom']['date'])); ?></small></h4>
-	<table class="table table-striped table-condensed" id="trainingTable">
-    	<thead>
-        	<tr>
-            	<th class="col-sm-6">User</th>
-                <th class="col-sm-6 text-center">Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        	<?php
-            foreach($data['User'] as $v){
-				?>
-                <tr>
-                	<td><?=$v['first_name']?> <?=$v['last_name']?></td>
-                    <td></td>
-                </tr>
-                <?php
-            }
-            ?>
-        </tbody>
-    </table>
+	<ul>
+		<?php
+        foreach($data['User'] as $v){
+			?>
+            <li><?=$v['first_name']?> <?=$v['last_name']?></li>
+            <?php
+        }
+        ?>
+	</ul>
 </div>
 
 <div class="modal-footer">

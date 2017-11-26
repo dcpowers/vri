@@ -2,7 +2,7 @@
     #pr($trainings);
     #exit;
 ?>
-<div class="training index">
+<div class="training index bg-white">
     <div class="dashhead">
         <div class="dashhead-titles">
             <h6 class="dashhead-subtitle">Training Library:</h6>

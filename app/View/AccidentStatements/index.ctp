@@ -12,7 +12,7 @@
         )
     ));
 
-	echo $this->Form->hidden('accident_id', array('value'=>$accident_id));
+	echo $this->Form->hidden('AccidentFile.id', array('value'=>$this->request->data['AccidentFile']['id']));
 
 ?>
 <style type="text/css">

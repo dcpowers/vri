@@ -259,18 +259,26 @@
                         <tbody>
                             <?php
                             foreach($accident['AccidentFile'] as $f){
-                                ?>
+                            	?>
                                 <tr>
                                     <td>
 										<?php
-										if($f['is_active'] == 2){
+										if(empty($f['statement_id'])){
 											echo $this->Html->link(
 												$f['name'],
-                                    			array('controller'=>'accidents', 'action'=>'download', $f['id']),
+                                    			'/files/accidents/'.$accident['Accident']['id'].'/'.$f['name'],
                                     			array('escape'=>false)
                                 			);
 										}else{
-											echo $f['name'];
+											if($f['is_active'] == 2){
+												echo $this->Html->link(
+													$f['name'],
+	                                    			array('controller'=>'accidents', 'action'=>'viewStatement', $f['id']),
+	                                    			array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal',)
+	                                			);
+											}else{
+												echo $f['name'];
+											}
 										}
 										?>
 									</td>

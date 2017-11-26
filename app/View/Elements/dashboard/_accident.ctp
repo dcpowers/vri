@@ -16,7 +16,7 @@
 							<?php
 							echo $this->Html->link(
 	            				$v['AccidentFile']['name'] .': '. $v['Accident']['first_name'] .' '. $v['Accident']['last_name'],
-	                			array('controller'=>'AccidentStatements', 'action'=>'index', $v['AccidentFile']['statement_id'], $v['AccidentFile']['accident_id']),
+	                			array('controller'=>'AccidentStatements', 'action'=>'index', $v['AccidentFile']['id']),
 	                			array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
 							);
 							?>

@@ -28,11 +28,12 @@
     <table class="table table-striped table-condensed table-hover" id="trainingTable">
         <thead>
             <tr>
-                <th class="col-sm-4">Name</th>
+                <th class="col-sm-3">Name</th>
                 <th class="col-sm-4">Description</th>
                 <th class="col-sm-1 text-center">Required</th>
                 <th class="col-sm-1 text-center">Mandatory</th>
                 <th class="col-sm-2 text-center">Mandatory For</th>
+                <th class="col-sm-1 text-center">Print Roster</th>
             </tr>
         </thead>
 
@@ -99,6 +100,15 @@
 							<?php
 						}
 						?>
+					</td>
+					<td>
+						<?php
+	                    echo $this->Html->link(
+	                    	'<i class="fa fa-print fa-fw"></i>',
+	                        array('controller'=>'Trainings', 'action'=>'roster', $trn['Training']['id'], 'ext'=>'pdf'),
+	                        array('escape'=>false)
+	                    );
+	                	?>	
 					</td>
                 </tr>
                 <?php
