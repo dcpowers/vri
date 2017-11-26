@@ -19,6 +19,7 @@ class AccidentsController extends AppController {
 		'AccidentFile',
 		'AccidentCostLov',
 		'AccidentCost',
+		'AccidentStatement',
 		'User',
         'AccountDepartment',
         'AccountUser',
@@ -102,7 +103,7 @@ class AccidentsController extends AppController {
 
         #pr($this->Paginator->settings);
         #exit;
-
+		
 		$result = array();
 
         $accounts = $this->Paginator->paginate('Accident');
@@ -800,32 +801,86 @@ class AccidentsController extends AppController {
             'conditions' => array(
                 'AccidentFile.id' => $id,
             ),
-            'fields' => array(
-				'AccidentFile.accident_id',
-				'AccidentFile.name',
-			)
+            'contain'=>array()
         ));
-
+		
 		$id = $v['AccidentFile']['accident_id'];
         $name = $v['AccidentFile']['name'];
         #$type = $v['TrainingFile']['file_type'];
         #pr($v);
 		#exit;
-        if(!is_null($id) && !empty($name)){
-			#$this->response->type('application/vnd.ms-powerpointtd>');
+		if(!empty($v['AccidentFile']['statement_id'])){
+			$answers = unserialize($v['AccidentFile']['statement']);
+			
+			foreach($answers as $key=>$item){
+				$s = $this->AccidentStatement->find('first', array(
+		            'conditions' => array(
+		                'AccidentStatement.id' => $key,
+		            ),
+		            'contain'=>array()
+		        ));	
+		        pr($s);
+		        pr($item);
+		        exit;
+			}
+			pr($answers);
+			pr($v);
+			exit;
+			
+			
+		}else{
+			if(!is_null($id) && !empty($name)){
+				#$this->response->type('application/vnd.ms-powerpointtd>');
 
-            $this->response->file( 'webroot/files/accidents/'. $id .'/'. $name, array(
-                'download' => true,
-                'name' => $name,
-            ));
+            	$this->response->file( 'webroot/files/accidents/'. $id .'/'. $name, array(
+                	'download' => true,
+                	'name' => $name,
+            	));
 
-            return $this->response;
+            	return $this->response;
+			}
         }
 
         $this->Session->setFlash(__('Please select a file to download'), 'alert-box', array('class'=>'alert-danger'));
         $this->redirect(array('controller'=>'accidents', 'action' => 'index'));
 
     }
+    
+    public function viewStatement($id = null) {
+
+        $v = $this->AccidentFile->find('first', array(
+            'conditions' => array(
+                'AccidentFile.id' => $id,
+            ),
+            'contain'=>array(
+            	'CreatedBy'=>array()
+            )
+        ));
+		$info['name'] = $v['AccidentFile']['name'];
+		$info['user'] = $v['CreatedBy']['first_name'].' '.$v['CreatedBy']['last_name'];
+		$options = $this->AccidentStatement->yesNo();
+		
+		$answers = unserialize($v['AccidentFile']['statement']);
+		$c = 0;
+		foreach($answers as $key=>$item){
+			$s = $this->AccidentStatement->find('first', array(
+		        'conditions' => array(
+		            'AccidentStatement.id' => $key,
+		        ),
+		        'contain'=>array()
+		    ));
+		    #pr($s);
+		    #exit;
+		    $data[$c]['statement'] = $s['AccidentStatement']['name'];
+		    $data[$c]['answer'] = ( $s['AccidentStatement']['type'] == 'select' && !empty($item)) ? $options[$item] : $item;
+		    
+		    $c++;
+		}
+		
+		$this->set('info', $info);
+		$this->set('id', $id);
+		$this->set('data', $data);
+	}
 
 	public function send_mail($id = null){
 

@@ -13,6 +13,7 @@ class AccidentStatementsController extends AppController {
 
     var $uses = array(
         'AccidentStatement',
+        'AccidentFile'
     );
 
     public $components = array( 'RequestHandler', 'Paginator', 'Session');
@@ -42,10 +43,21 @@ class AccidentStatementsController extends AppController {
         $this->set('title_for_layout', 'Accidents');
     }
 
-    public function index($id=null, $acc_id=null) {
-		$parent = $this->AccidentStatement->find('first', array(
+    public function index($id=null) {
+    	$accident_info = $this->AccidentFile->find('first', array(
             'conditions' => array(
-                'AccidentStatement.id' => $id
+                'AccidentFile.created_by' => AuthComponent::user('id'),
+                'AccidentFile.id' => $id,
+            ),
+            'contain'=>array(
+            ),
+        ));
+        
+        $this->request->data['AccidentFile']['id'] = $id;
+    	
+    	$parent = $this->AccidentStatement->find('first', array(
+            'conditions' => array(
+                'AccidentStatement.id' => $accident_info['AccidentFile']['statement_id']
             ),
             'contain'=>array(
             ),
@@ -65,35 +77,26 @@ class AccidentStatementsController extends AppController {
 		#pr($result);
 		#exit;
 		$this->set('accidents', $result);
-		$this->set('accident_id', $acc_id);
-        $this->set('options', $this->AccidentStatement->yesNo());
+		$this->set('options', $this->AccidentStatement->yesNo());
 
     }
 
 	public function statements($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
-            pr($this->request->data);
-            exit;
+            #pr($this->request->data);
+            #exit;
 			$c=0;
-			$id = $this->request->data['Accident']['accident_id'];
-			foreach($this->request->data['AccidentFile'] as $v){
-				if($v['files']['error'] == 0){
-					$this->request->data[$c]['AccidentFile']['name'] = $this->upload($v['files']);
-					$this->request->data[$c]['AccidentFile']['created_by'] = AuthComponent::user('id');
-					$this->request->data[$c]['AccidentFile']['accident_id'] = $this->request->data['Accident']['accident_id'];
-					$this->request->data[$c]['AccidentFile']['description'] = $v['description'];
-					$this->request->data[$c]['AccidentFile']['date'] = date('Y-m-d', strtotime('now'));
-
-					$c++;
-				}
-
-			}
+			
+			$this->request->data['AccidentFile']['id'] = $this->request->data['AccidentFile']['id'];
+			$this->request->data['AccidentFile']['statement'] = serialize($this->request->data['Accidents']);
+			$this->request->data['AccidentFile']['is_active'] = 2;
+			
 			unset(
-				$this->request->data['Accident'],
-				$this->request->data['AccidentFile']
+				$this->request->data['Accidents']
 			);
 			#pr($this->request->data);
 			#exit;
+			
 			if ($this->AccidentFile->saveAll($this->request->data)) {
             	#Audit::log('Group record added', $this->request->data );
                 $this->Flash->alertBox(
@@ -107,7 +110,7 @@ class AccidentStatementsController extends AppController {
 	            );
             }
 
-			$this->redirect(array('controller'=>'Accidents', 'action'=>'view', $id));
+			$this->redirect(array('controller'=>'Dashboard', 'action'=>'index'));
         }
 
         $this->set('costLov', $this->AccidentCostLov->pickList());

@@ -743,26 +743,11 @@ class TrainingsController extends AppController {
     }
 
     public function roster($trn_id = null){
-        if ($this->request->is('post') || $this->request->is('put')) {
-        }
-
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
-        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
-        $user_ids = $this->AccountUser->getAccountIds($account_ids);
-
-        $depts = $this->Department->pickListById($department_ids);
-        $accts = $this->Account->pickListById($account_ids);
-        $users = $this->AccountUser->pickList($account_ids);
-
-        $this->set('account_ids', $account_ids);
-        $this->set('department_ids', $department_ids);
-        $this->set('user_ids', $user_ids);
-
-        $this->set('accts', $accts);
-        $this->set('depts', $depts);
-        $this->set('users', $users);
-        $this->set('training_id', $trn_id);
-
+        $users = $this->User->pickListByAccount(AuthComponent::user('AccountUser.0.account_id'));
+        
+        $trn = $this->Training->pickListById($trn_id);	
+		$this->set('users', $users);
+		$this->set('trn', $trn);
     }
 
     public function createClassroom($trn_id = null, $name=null){
@@ -822,7 +807,7 @@ class TrainingsController extends AppController {
 
             return $this->redirect(array('controller'=>'Trainings', 'action' => 'details', $trn_id ));
         }
-
+		
         $training = $this->Training->find('first', array(
             'conditions' => array(
                 'Training.id' => $trn_id,
@@ -838,7 +823,7 @@ class TrainingsController extends AppController {
 
         $depts = $this->Department->pickListById($department_ids);
         $accts = $this->Account->pickListById($account_ids);
-        $users = $this->AccountUser->pickList($account_ids);
+        $users = $this->AccountUser->pickListActive($account_ids);
 
         $this->set('account_ids', $account_ids);
         $this->set('renewal', $training['TrainingMembership'][0]['renewal']);
