@@ -142,7 +142,7 @@ Configure::write('Pdf', array(
     'pageSize'=>'A4',
     'orientation'=>'portrait',
     //Server
-    'binary'=>'/usr/local/bin/wkhtmltopdf',
+    'binary'=>'/home/duspow/vrifm.com/wkhtmltox/bin/wkhtmltopdf',
     //Windows
     //'binary'=>'c:\wkhtmltopdf\bin\wkhtmltopdf.exe'
 ));
