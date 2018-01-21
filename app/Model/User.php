@@ -455,7 +455,37 @@ class User extends AppModel {
 
 		return $recs;
     }
-
+	
+	//This was used to update is_award field
+	public function updateAward( ) {
+		$recs = $this->find('all',array(
+            'conditions'=>array(
+           	),
+            'contain'=>array(
+			),
+			'fields'=>array(
+				$this->alias.'.id',
+				$this->alias.'.pay_status'
+			)
+		));
+		$c = 0;
+		foreach($recs as $v){
+			$data['User']['id'] = $v['User']['id'];
+			
+			if($v['User']['pay_status'] == 1 || $v['User']['pay_status'] == 2 || $v['User']['pay_status'] == 5){
+				$data['User']['is_award'] = 1;
+			}else{
+				$data['User']['is_award'] = 0;
+			}
+			
+			$this->saveAll($data);
+			unset($data);	
+		}
+		
+		pr('Done');
+		exit;
+	}
+	
 	public function pickListByStartDateAndType( $ids = null, $endDate = null, $dept_ids = null ) {
 
 		$dataArr = array();
@@ -475,7 +505,8 @@ class User extends AppModel {
 				$this->alias.'.id',
 				$this->alias.'.first_name',
 				$this->alias.'.last_name',
-				$this->alias.'.pay_status'
+				$this->alias.'.pay_status',
+				$this->alias.'.is_award'
 			),
             'order'=>array(
 				$this->alias.'.first_name asc',
