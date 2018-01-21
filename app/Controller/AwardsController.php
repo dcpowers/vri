@@ -49,7 +49,6 @@ class AwardsController extends AppController {
     }
 
     public function index() {
-
 		$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
         $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
 
@@ -59,7 +58,11 @@ class AwardsController extends AppController {
 		$numDays = cal_days_in_month(CAL_GREGORIAN, $month, $year) - 1;
 		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
 		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
-
+		$currentDate = date("Y-m-d", strtotime('First day of this month'));
+		$edit = ($end<$currentDate) ? true : false ;
+		#pr($edit);
+		#pr($currentDate);
+		#exit;
 		$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
 		#$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 		#$users = $this->User->pickListByStartDate($user_ids, $end);
@@ -80,8 +83,6 @@ class AwardsController extends AppController {
 		$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 		$ids = $this->DepartmentUser->removeUserIdsByDept($user_ids, $accidents);
 		$users = $this->User->pickListByStartDateAndType($ids, $end, $accidents);
-		#pr($users);
-		#exit;
 		////
 		foreach($users as $key=>$u){
 			$awards = $this->Award->find('all', array(
@@ -137,8 +138,9 @@ class AwardsController extends AppController {
         $this->set('year', $year);
         $this->set('years', $years);
 		$this->set('results', $results);
-
-    }
+		
+		$this->set('editable', $edit);
+	}
 
 	public function monthView($y=null, $m=null){
 		$month = (!is_null($m)) ? $m : date('n', strtotime('now'));
