@@ -31,10 +31,9 @@
     	<div class="col-sm-2" style="margin-top: 20px;">
         	<?php
         	$cover = Hash::extract($trn['Training']['TrainingFile'], '{n}[is_cover = 1].file');
-        	#pr($image);
+        	#pr($cover);
         	
-            $name = '/files/training/'.$trn['Training']['id'].'/'.$cover[0];
-            $image = (!empty($cover[0])) ? $name : 'noTraining.jpg' ;
+            $image = (!empty($cover[0])) ? '/files/training/'.$trn['Training']['id'].'/'.$cover[0] : 'noTraining.jpg' ;
 			#pr($image);
 			#pr($trn);
             echo $this->Html->image($image, array('class'=>'img-thumbnail '));

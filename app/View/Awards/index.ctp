@@ -34,7 +34,7 @@
 	$current_month = date('n', strtotime('now'));
 	$current_year = date('Y', strtotime('now'));
 
-	if($month<$current_month && $year<=$current_year){
+	if($editable == true){
 	    echo $this->Form->create('Awards', array(
     		'url'=>array('controller'=>'Awards', 'action'=>'process'),
 	        #'class'=>'form-horizontal',
@@ -54,9 +54,10 @@
 		<thead>
 	    	<tr class="tr-heading">
                 <th class="col-md-1"></th>
-				<th class="col-md-4">User</th>
-				<th class="col-md-4">Verify Date</th>
-	            <th class="col-md-3">Amount</th>
+				<th class="col-md-3">User</th>
+				<th class="col-md-3">Verify Date</th>
+				<th class="col-md-3">Status</th>
+	            <th class="col-md-2">Amount</th>
 	        </tr>
 	    </thead>
 
@@ -74,22 +75,26 @@
 				foreach($results as $r){
 					#pr($r);
 					#exit;
-					$amount = ($r['User']['pay_status'] = 1) ? '5.00' : '2.50' ;
+					$amount = ($r['User']['pay_status'] == 1) ? '5.00' : '2.50' ;
+					$amount = ($r['User']['is_award'] == 0) ? 0 : $amount ;
 					$name = $r['User']['first_name'].' '.$r['User']['last_name'];
-
-					echo $this->Form->hidden($c.'.verified_by', array('value'=>AuthComponent::user('id')));
-					echo $this->Form->hidden($c.'.verified_date', array('value'=>date('Y-m-d h:i:s',strtotime('now'))));
-            		echo $this->Form->hidden($c.'.date', array('value'=>$end));
-					echo $this->Form->hidden($c.'.account_id', array('value'=>$r['User']['account_id']));
-					echo $this->Form->hidden($c.'.department_id', array('value'=>$r['User']['dept_id']));
-					echo $this->Form->hidden($c.'.award_type_id', array('value'=>1));
-					echo $this->Form->hidden($c.'.user_id', array('value'=>$r['User']['id']));
+					#pr($amount);
+					if($amount >= 1){
+						echo $this->Form->hidden($c.'.verified_by', array('value'=>AuthComponent::user('id')));
+						echo $this->Form->hidden($c.'.verified_date', array('value'=>date('Y-m-d h:i:s',strtotime('now'))));
+            			echo $this->Form->hidden($c.'.date', array('value'=>$end));
+						echo $this->Form->hidden($c.'.account_id', array('value'=>$r['User']['account_id']));
+						echo $this->Form->hidden($c.'.department_id', array('value'=>$r['User']['dept_id']));
+						echo $this->Form->hidden($c.'.award_type_id', array('value'=>1));
+						echo $this->Form->hidden($c.'.user_id', array('value'=>$r['User']['id']));
+						echo $this->Form->hidden($c.'.amount', array('value'=>$amount));
+					}
 					?>
 					<tr>
 						<td>
 							<?php
-							if($year<=$current_year && $r['User']['is_verified'] == 0){
-								if($month<$current_month){
+							if($editable == 1 && $r['User']['is_verified'] == 0){
+								if($editable == 1 && $r['User']['is_award'] == 1 ){
 	                                $edit = true;
 									?>
 									<div class="form-group" >
@@ -114,7 +119,7 @@
 						<td><?=$name?></td>
 						<td>
 							<?php
-							if($month<$current_month && $year<=$current_year && $r['User']['is_verified'] == 0){
+							if($month<$current_month && $year<=$current_year && $r['User']['is_verified'] == 0 && $r['User']['is_award'] == 1){
 								echo date('F d, Y', strtotime('now'));
 							}else if(!empty($r['User']['verified_date'])){
 								echo date('F d, Y', strtotime($r['User']['verified_date']));
@@ -127,25 +132,18 @@
 						</td>
 						<td>
 							<?php
-							if($month<$current_month && $year<=$current_year && $r['User']['is_verified'] == 0){
-								?>
-								<div class="form-group">
-                            		<?php
-	                                echo $this->Form->input($c.'.amount', array (
-                                		'type'=>'text',
-	                                    'value'=>$amount
-	                                ));
-	                                ?>
-	                            </div>
-								<?php
+							if(empty($r['User']['verified_date'])){
+								echo "Not Verified";
 							}else{
-								echo $amount;
+								echo "Verified";
 							}
-							?>
+							?>	
 						</td>
+						<td><?=$amount;?></td>
 					</tr>
 					<?php
 					$c++;
+					unset($amount);
 				}
 			}
 			?>
