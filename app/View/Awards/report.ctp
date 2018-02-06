@@ -33,47 +33,60 @@
 
 	<?php
 	foreach($results as $title=>$items){
+		$amounts = $this->Number->currency(array_sum(Hash::extract($items, '{n}.award.amount')), false, $options=array('before'=>'$', 'zero'=>'$0.00'));
+		$ctitle = preg_replace('/\s+/', '', $title);
 		?>
 		<div class="hr-divider">
         	<h3 class="hr-divider-content hr-divider-heading">
-				<?=$title?>
+        		<?php
+				echo $this->Html->link(
+                	$title,
+                    '#'.$ctitle,
+                    array('escape'=>false, 'data-toggle'=>'collapse',  'aria-expanded'=>'false', 'aria-controls'=>$ctitle )
+                );
+                ?>
+				[ <?=$amounts?> ]
             </h3>
         </div>
-		<table class="table table-striped" id="accountsTable">
-	    	<thead>
-	        	<tr class="tr-heading">
-	            	<th class="col-md-2">Employee</th>
-	                <th class="col-md-2">Date</th>
-	                <th class="col-md-2">Verified Date</th>
-	                <th class="col-md-2">Amount</th>
-	                <th class="col-md-2">Type</th>
-					<th class="col-md-2">Verified By</th>
-				</tr>
-	        </thead>
-            <tbody>
-				<?php
-				foreach($items as $v){
-					if(isset($v['award']['error'])){
-						?>
-						<tr><td colspan="6" class="danger"><?=$v['award']['error']?></td></tr>
+        <div class="collapse" id="<?=$ctitle?>">
+  			<div class="card card-body">
+				<table class="table table-striped" id="accountsTable">
+			    	<thead>
+			        	<tr class="tr-heading">
+			            	<th class="col-md-2">Employee</th>
+			                <th class="col-md-2">Date</th>
+			                <th class="col-md-2">Verified Date</th>
+			                <th class="col-md-2">Amount</th>
+			                <th class="col-md-2">Type</th>
+							<th class="col-md-2">Verified By</th>
+						</tr>
+			        </thead>
+		            <tbody>
 						<?php
-						break;
-					}
-            		?>
+						foreach($items as $v){
+							if(isset($v['award']['error'])){
+								?>
+								<tr><td colspan="6" class="danger"><?=$v['award']['error']?></td></tr>
+								<?php
+								break;
+							}
+		            		?>
 
-					<tr>
-						<td><?=$v['award']['user']?></td>
-						<td><?=$v['award']['monthYear']?></td>
-						<td><?=$v['award']['ver_date']?></td>
-						<td><?=$v['award']['amount']?></td>
-						<td><?=$v['award']['type']?></td>
-						<td><?=$v['award']['ver_by']?></td>
-					</tr>
-					<?php
-				}
-				?>
-			</tbody>
-		</table>
+							<tr>
+								<td><?=$v['award']['user']?></td>
+								<td><?=$v['award']['monthYear']?></td>
+								<td><?=$v['award']['ver_date']?></td>
+								<td><?=$v['award']['amount']?></td>
+								<td><?=$v['award']['type']?></td>
+								<td><?=$v['award']['ver_by']?></td>
+							</tr>
+							<?php
+						}
+						?>
+					</tbody>
+				</table>
+			</div>
+		</div>
 		<?php
 	}
 
