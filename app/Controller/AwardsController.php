@@ -48,9 +48,15 @@ class AwardsController extends AppController {
         $this->set('title_for_layout', 'Awards');
     }
 
-    public function index() {
-		$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
-        $year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
+    public function index($pdfMonth = null, $pdfYear = null) {
+    	if(!empty($pdfMonth) && !empty($pdfYear)){
+			$month = $pdfMonth;
+			$year = $pdfYear;
+		}else{
+			$month = (!empty($this->request->data['Awards']['month'])) ? $this->request->data['Awards']['month'] : date('n', strtotime('now'));
+        	$year = (!empty($this->request->data['Awards']['year'])) ? $this->request->data['Awards']['year'] : date('Y', strtotime('now'));
+		}
+        	
 
 		$dateObj   = DateTime::createFromFormat('!m', $month);
 		$monthName = $dateObj->format('F'); // March
