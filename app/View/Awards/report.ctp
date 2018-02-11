@@ -32,66 +32,121 @@
     </div>
 
 	<?php
-	foreach($results as $title=>$items){
-		$amounts = $this->Number->currency(array_sum(Hash::extract($items, '{n}.award.amount')), false, $options=array('before'=>'$', 'zero'=>'$0.00'));
+	echo $this->Form->create('Awards', array(
+    	'url'=>array('controller'=>'Awards', 'action'=>'process'),
+        #'class'=>'form-horizontal',
+        'role'=>'form',
+        'inputDefaults'=>array(
+        	'label' => false,
+            'div' => false,
+            #'between' => '<div class="input-group">',
+            'class'=>'form-control',
+            #'after' => '</div>',
+            'error' => array('attributes' => array('wrap' => 'span', 'class' => 'help-block'))
+        )
+    ));
+    
+    #echo $this->Form->hidden('button', array('value'=>''));
+	#pr($results);
+	#exit;
+	$c = 0;
+	foreach($results as $title=>$items) {
+		$amounts = $this->Number->currency(array_sum(Hash::extract($items, '{n}.award_amount')), false, $options=array('before'=>'$', 'zero'=>'$0.00'));
 		$ctitle = preg_replace('/\s+/', '', $title);
+		$in = null;
 		?>
-		<div class="hr-divider">
-        	<h3 class="hr-divider-content hr-divider-heading">
-        		<?php
-				echo $this->Html->link(
-                	$title,
-                    '#'.$ctitle,
-                    array('escape'=>false, 'data-toggle'=>'collapse',  'aria-expanded'=>'false', 'aria-controls'=>$ctitle )
-                );
-                ?>
-				[ <?=$amounts?> ]
-            </h3>
-        </div>
-        <div class="collapse" id="<?=$ctitle?>">
-  			<div class="card card-body">
+		<div class="panel panel-default">
+  			<div class="panel-heading" id="heading<?=$ctitle?>">
+                <h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#<?=$ctitle?>" aria-expanded="false" aria-controls="<?=$ctitle?>">
+						<div class="pull-right">
+							<span> <?=$amounts?></span>
+						</div>
+						<?=$title?> <i class="fa fa-caret-down fa-fw"></i>
+					</a>
+				</h4>
+  			</div>
+			<div id="<?=$ctitle?>" class="panel-collapse collapse <?=$in?>" role="tabpanel" aria-labelledby="heading<?=$ctitle?>">
 				<table class="table table-striped" id="accountsTable">
-			    	<thead>
-			        	<tr class="tr-heading">
-			            	<th class="col-md-2">Employee</th>
-			                <th class="col-md-2">Date</th>
-			                <th class="col-md-2">Verified Date</th>
-			                <th class="col-md-2">Amount</th>
-			                <th class="col-md-2">Type</th>
-							<th class="col-md-2">Verified By</th>
+				    <thead>
+				       	<tr class="tr-heading">
+				       		<th></th>
+				           	<th class="col-md-2">Employee</th>
+				           	<th class="col-md-1">Amount</th>
+				            <th class="col-md-1">Paid Date</th>
+				            <th class="col-md-1">Approved Date</th>
+				            <th class="col-md-1">Approved By</th>
+				            <th class="col-md-1">Verified Date</th>
+				            <th class="col-md-2">Verified By</th>
+				            <th class="col-md-2">Type</th>
+							
 						</tr>
-			        </thead>
-		            <tbody>
-						<?php
-						foreach($items as $v){
-							if(isset($v['award']['error'])){
-								?>
-								<tr><td colspan="6" class="danger"><?=$v['award']['error']?></td></tr>
-								<?php
-								break;
+				    </thead>
+				    <tbody>
+	        			<?php
+	        			
+	  					foreach($items as $dept=>$v) {
+	  						#pr($v);
+	  						#exit;
+	  						if(is_null($v['award_id'])){
+	  							echo $this->Form->hidden($c.'.verified_by', array('value'=>AuthComponent::user('id')));
+								echo $this->Form->hidden($c.'.verified_date', array('value'=>date('Y-m-d h:i:s',strtotime('now'))));
+				            	echo $this->Form->hidden($c.'.date', array('value'=>$end));
+								echo $this->Form->hidden($c.'.account_id', array('value'=>$v['acct_id']));
+								echo $this->Form->hidden($c.'.department_id', array('value'=>$v['dept_id']));
+								echo $this->Form->hidden($c.'.award_type_id', array('value'=>1));
+								echo $this->Form->hidden($c.'.user_id', array('value'=>$v['id']));
+								echo $this->Form->hidden($c.'.amount', array('value'=>$v['award_amount']));
+							} else {
+								echo $this->Form->hidden($c.'.id', array('value'=>$v['award_id']));
 							}
-		            		?>
-
-							<tr>
-								<td><?=$v['award']['user']?></td>
-								<td><?=$v['award']['monthYear']?></td>
-								<td><?=$v['award']['ver_date']?></td>
-								<td><?=$v['award']['amount']?></td>
-								<td><?=$v['award']['type']?></td>
-								<td><?=$v['award']['ver_by']?></td>
+							
+							if($v['is_approved'] == 0){
+								echo $this->Form->hidden($c.'.approved_by', array('value'=>AuthComponent::user('id')));
+								echo $this->Form->hidden($c.'.approved_date', array('value'=>date('Y-m-d h:i:s',strtotime('now'))));
+							}
+	  						?>
+	  						<tr>
+	  							<td>
+	  								<div class="form-group" >
+			                        	<label class="sr-only control-label">Approve:</label>
+			                            <div class="checkbox">
+						                	<label> <?php echo $this->Form->checkbox($c.'.verify', array('checked'=>true)); ?></label>
+										</div>
+			                        </div>
+	  							</td>
+								<td><?=$v['first_name']?> <?=$v['last_name']?></td>
+								<td><?=$v['award_amount']?></td>
+								<td><?=$v['paid_date']?></td>
+								<td><?=$v['approved_date']?></td>
+								<td><?=$v['approved_by']?></td>
+								<td><?=$v['verified_date']?></td>
+								<td><?=$v['verified_by']?></td>
+								<td><?=$v['award_type']?></td>
 							</tr>
 							<?php
+							$c++;
 						}
 						?>
 					</tbody>
-				</table>
+				</table>	
 			</div>
 		</div>
 		<?php
 	}
 
+	
+	if($editable == 1){
+	    echo $this->Form->button('Approve', array(
+	    	'type'=>'submit',
+	        'class'=>'btn btn-primary pull-left trigger',
+	        'id'=>'approve'
+	    ));
+	    
+	    echo $this->Form->end(); 
+	}
 	?>
-
+	<div class="clearfix"></div>
 </div>
 
 
@@ -100,5 +155,7 @@
         $(".chzn-select").chosen({
             allow_single_deselect: true
         });
+        
+       
     });
 </script>
