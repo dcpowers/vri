@@ -100,33 +100,62 @@ class AwardsController extends AppController {
 	            'contain' => array(
                 	'Type'=>array(),
                 	'CreatedBy'=>array(),
+                	'ApprovedBy'=>array(),
 	            ),
 
 	        ));
             $results[$key]['User'] = $u['User'];
-            #pr($awards);
-			#exit;
-			if(!empty($awards)){
-
-				$results[$key]['User']['is_paid'] = 1;
-				$results[$key]['User']['is_verified'] = 1;
+            if(!empty($awards)){
+				
 				foreach($awards as $akey=>$item){
-					if(empty($item['Award']['paid_date'])){
+					
+					$results[$key]['User']['award_id'] = $item['Award']['id'];
+						
+					if(empty($item['Award']['paid_date'])) {
 						$results[$key]['User']['is_paid'] = 0;
+						$results[$key]['User']['paid_date'] = null;
+					} else {
+						$results[$key]['User']['is_paid'] = 1;
+						$results[$key]['User']['paid_date'] = date('F d, Y', strtotime($item['Award']['paid_date']));
 					}
 
-					if(empty($item['Award']['verified_date'])){
+					if(empty($item['Award']['verified_date'])) {
 						$results[$key]['User']['is_verified'] = 0;
-					}else{
-						$results[$key]['User']['verified_date'] = $item['Award']['verified_date'];
+						$results[$key]['User']['verified_date'] = null;
+						$results[$key]['User']['verified_by'] = null;
+					} else {
+						$results[$key]['User']['is_verified'] = 1;
+						$results[$key]['User']['verified_date'] = date('F d, Y', strtotime($item['Award']['verified_date']));
+						$results[$key]['User']['verified_by'] = $item['CreatedBy']['first_name'] .' '.$item['CreatedBy']['last_name'];
 					}
-
-					$results[$key]['Awards'][] = $item;
+					
+					if(empty($item['Award']['approved_date'])) {
+						$results[$key]['User']['is_approved'] = 0;
+						$results[$key]['User']['approved_date'] = null;
+						$results[$key]['User']['approved_by'] = null;
+					} else {
+						$results[$key]['User']['is_approved'] = 1;
+						$results[$key]['User']['approved_date'] = date('F d, Y', strtotime($item['Award']['approved_date']));
+						$results[$key]['User']['approved_by'] = $item['ApprovedBy']['first_name'] .' '.$item['ApprovedBy']['last_name'];
+					}
+					
+					$results[$key]['User']['award_amount'] = $item['Award']['amount'];
+					$results[$key]['User']['award_type'] = $item['Type']['award'];
 				}
 
 			}else{
 				$results[$key]['User']['is_paid'] = 0;
 				$results[$key]['User']['is_verified'] = 0;
+				$results[$key]['User']['is_approved'] = 0;
+				
+				$results[$key]['User']['award_amount'] = ($u['User']['pay_status'] == 2) ? '2.50' : '5.00';
+				$results[$key]['User']['award_type'] = 'No Department Accidents';
+				$results[$key]['User']['verified_date'] = null;
+				$results[$key]['User']['verified_by'] = null;
+				$results[$key]['User']['paid_date'] = null;
+				$results[$key]['User']['award_id'] = null;
+				$results[$key]['User']['approved_date'] = null;
+				$results[$key]['User']['approved_by'] = null;
 			}
 		}
 
@@ -139,8 +168,12 @@ class AwardsController extends AppController {
 		for($y=2013; $y<=$current_year; $y++){
 			$years[$y] = $y;
 		}
+		
+		#pr($results);
+		#exit;
         $this->set('month', $month);
         $this->set('months', $months);
+        $this->set('end', $end);
         $this->set('year', $year);
         $this->set('years', $years);
 		$this->set('results', $results);
@@ -231,7 +264,10 @@ class AwardsController extends AppController {
 		$numDays = cal_days_in_month(CAL_GREGORIAN, $month, $year) - 1;
 		$start = date("Y-m-d", strtotime('First day of '.$monthName.' '. $year));
 		$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
-
+		
+		$currentDate = date("Y-m-d", strtotime('First day of this month'));
+		$edit = ($end<$currentDate) ? true : false ;
+		
 		for($i=1; $i<=12; $i++){
 			$months[$i] = date( 'F', mktime( 0, 0, 0, $i + 1, 0, 0, 0 ) );
 		}
@@ -244,76 +280,46 @@ class AwardsController extends AppController {
 
         $this->set('month', $month);
         $this->set('months', $months);
+        $this->set('end', $end);
         $this->set('year', $year);
         $this->set('years', $years);
-        $acct_ids = $this->Account->fullListActive();
-
-		foreach($acct_ids as $id=>$name){
-			$awards[$name] = $this->Award->find('all', array(
-	    		'conditions' => array(
-		            'Award.account_id >=' => $id,
-		            'Award.date >=' => $start,
-		            'Award.date <=' => $end,
-		        ),
-		        'contain' => array(
-            		'Type'=>array(),
-	                'CreatedBy'=>array(),
-					'User'=>array(
-						'fields'=>array(
-							'User.first_name',
-							'User.last_name',
-						)
-					),
-					'Account'=>array()
-		        ),
-	        ));
-		}
-        $c=0;
-		if(!empty($awards)){
-			foreach($awards as $comp_name=>$item){
-				$key = $comp_name;
-
-				if(!empty($item)){
-					foreach($item as $v){
-						$results[$key][$c]['award']['monthYear'] = date('F Y', strtotime($v['Award']['date']));
-						$results[$key][$c]['award']['ver_by'] = $v['CreatedBy']['first_name'] .' '.$v['CreatedBy']['last_name'];
-						$results[$key][$c]['award']['ver_date'] = date('F d, Y', strtotime($v['Award']['verified_date']));
-						$results[$key][$c]['award']['user'] = $v['User']['first_name'] .' '.$v['User']['last_name'];
-						$results[$key][$c]['award']['type'] = $v['Type']['award'];
-						$results[$key][$c]['award']['amount'] = $v['Award']['amount'];
-
-						$c++;
-					}
-				}else{
-					$results[$key][]['award']['error'] = 'No Records Found';
-				}
-				#$results[$key][]['info'][''] = $item;
-				#$results[$key][]['info'][''] = $item;
-				#$results[$key][]['info'][''] = $item;
-            }
-        }
-		$this->set('results', $results);
+        
+        $accidents = $this->Accident->find('list', array(
+		    'conditions' => array(
+		        'Accident.date >=' => $start,
+		        'Accident.date <=' => $end,
+			),
+		    'contain'=>array(),
+	        'fields'=>array('Accident.department_id', 'Accident.account_id')
+		));
+		
+        $this->set('results', $this->User->pickListByPayType($start, $end, $accidents));
+        $this->set('editable', $edit);
     }
 
     public function process($id=null){
         if ($this->request->is('post') || $this->request->is('put')) {
-
-			if(!empty($this->request->data)){
+        	
+        	if(!empty($this->request->data)){
 				foreach($this->request->data['Awards'] as $v){
-					if($v['verify'] == 1 AND $v['amount'] >= 1){
+					if(isset($v['verify']) && $v['verify'] == 1 ){
 						unset($v['verify']);
 						$data['Award'] = $v;
-						$this->Award->create();
-						$this->Award->save($v);
+						
+						if(!isset($v['id'])){
+							$this->Award->create();
+						}
+						
+						$this->Award->save($data);
 					}
 				}
-
+				
 				$this->Flash->alertBox(
-            		'Awards Have Been Verified',
+            		'Awards Have Been Approved',
 	                array('params' => array('class'=>'alert-success'))
 				);
 			}
-
+			
 			$this->redirect(array('controller'=>'Awards', 'action'=>'index'));
         }
     }
