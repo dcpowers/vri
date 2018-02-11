@@ -521,7 +521,7 @@ class User extends AppModel {
 
 			unset($recs[$key]['DepartmentUser'], $recs[$key]['AccountUser']);
 		}
-
+		
 		return $recs;
     }
 
@@ -637,6 +637,133 @@ class User extends AppModel {
 
         return $img;
     }
+    
+    
+    public function pickListByPayType($startDate = null, $endDate = null, $accidents = null) {
+    	$dataArr = array();
+		
+		$recs = $this->find('all',array(
+            'conditions'=>array(
+            	$this->alias.'.is_active' => 1,
+                $this->alias.'.doh <=' => $endDate,
+				$this->alias.'.pay_status' => array(1,2,5),
+			),
+            'contain'=>array(
+				'DepartmentUser'=>array(
+					'Department'=>array(
+						'fields'=>array(
+							'Department.name',
+						)
+					)
+				),
+				'AccountUser'=>array(
+					'Account'=>array(
+						'fields'=>array(
+							'Account.name',
+							
+						)
+					)
+				),
+				'Award'=>array(
+					'conditions'=>array(
+						'Award.date >=' => $startDate,
+				        'Award.date <=' => $endDate,
+					),
+					'Type'=>array(),
+			        'CreatedBy'=>array(),
+			        'ApprovedBy'=>array(),
+				)
+			),
+			'fields'=>array(
+				$this->alias.'.id',
+				$this->alias.'.first_name',
+				$this->alias.'.last_name',
+				$this->alias.'.pay_status',
+				$this->alias.'.is_award'
+			),
+            'order'=>array(
+				$this->alias.'.first_name asc',
+				$this->alias.'.last_name asc'
+			)
+        ));
+		
+		#pr($recs);
+		#exit;
+		
+		
+		$c = 0;
+		foreach($recs as $key=>$v){
+			#pr($accidents);
+			if (array_key_exists($v['DepartmentUser'][0]['department_id'], $accidents) && $accidents[$v['DepartmentUser'][0]['department_id']] == $v['AccountUser'][0]['account_id'] ) {
+			
+			}else{
+				$a_name = $v['AccountUser'][0]['Account']['name'];
+				$d_name = $v['DepartmentUser'][0]['Department']['name'];
+				
+				$keysort[$a_name] = $a_name;
+				
+				$data[$a_name][$c] = $v['User'];
+				$data[$a_name][$c]['acct'] = $a_name;
+				$data[$a_name][$c]['dept'] = $d_name;
+				$data[$a_name][$c]['acct_id'] = $v['AccountUser'][0]['account_id'];
+				$data[$a_name][$c]['dept_id'] = $v['DepartmentUser'][0]['department_id'];
+				
+				if(!empty($v['Award'])){
+					foreach($v['Award'] as $akey=>$item){
+						#pr($item);
+						#exit;
+						$data[$a_name][$c]['award_id'] = $item['id'];
+						if(empty($item['paid_date'])){
+							$data[$a_name][$c]['is_paid'] = 0;
+							$data[$a_name][$c]['paid_date'] = null;
+						}else{
+							$data[$a_name][$c]['is_paid'] = 1;
+							$data[$a_name][$c]['paid_date'] = date('F d, Y', strtotime($item['paid_date']));
+						}
 
-
+						if(empty($item['verified_date'])){
+							$data[$a_name][$c]['is_verified'] = 0;
+							$data[$a_name][$c]['verified_date'] = null;
+							$data[$a_name][$c]['verified_by'] = null;
+						}else{
+							$data[$a_name][$c]['is_verified'] = 1;
+							$data[$a_name][$c]['verified_date'] = date('F d, Y', strtotime($item['verified_date']));
+							$data[$a_name][$c]['verified_by'] = $item['CreatedBy']['first_name'] .' '.$item['CreatedBy']['last_name'];
+						}
+						
+						if(empty($item['approved_date'])){
+							$data[$a_name][$c]['is_approved'] = 0;
+							$data[$a_name][$c]['approved_date'] = null;
+							$data[$a_name][$c]['approved_by'] = null;
+						}else{
+							$data[$a_name][$c]['is_approved'] = 1;
+							$data[$a_name][$c]['approved_date'] = date('F d, Y', strtotime($item['approved_date']));
+							$data[$a_name][$c]['approved_by'] = $item['ApprovedBy']['first_name'] .' '.$item['ApprovedBy']['last_name'];
+						}
+						
+						$data[$a_name][$c]['award_amount'] = $item['amount'];
+						$data[$a_name][$c]['award_type'] = $item['Type']['award'];
+					}
+				}else{
+					$data[$a_name][$c]['is_paid'] = 0;
+					$data[$a_name][$c]['is_verified'] = 0;
+					$data[$a_name][$c]['is_approved'] = 0;
+					$data[$a_name][$c]['verified_date'] = null;
+					$data[$a_name][$c]['verified_by'] = null;
+					$data[$a_name][$c]['approved_date'] = null;
+					$data[$a_name][$c]['approved_by'] = null;
+					$data[$a_name][$c]['award_amount'] = null;
+					$data[$a_name][$c]['award_type'] = null;
+					$data[$a_name][$c]['paid_date'] = null;
+					$data[$a_name][$c]['award_id'] = null;
+					$data[$a_name][$c]['award_amount'] = ($v['User']['pay_status'] == 2) ? '2.50' : '5.00';
+				}
+				$c++;
+			}
+		}
+		array_multisort($keysort, SORT_ASC, $data);
+		#pr($data);
+		#exit;
+		return $data;
+	}
 }

@@ -57,6 +57,13 @@ class Award extends AppModel {
             'fields' => array('CreatedBy.id', 'CreatedBy.first_name', 'CreatedBy.last_name',),
             'order' => ''
         ),
+        'ApprovedBy' => array(
+            'className' => 'User',
+            'foreignKey' => 'approved_by',
+            'conditions' => '',
+            'fields' => array('ApprovedBy.id', 'ApprovedBy.first_name', 'ApprovedBy.last_name',),
+            'order' => ''
+        ),
 		'Type' => array(
             'className' => 'AwardType',
             'foreignKey' => 'award_type_id',
