@@ -100,10 +100,10 @@ class TrainingMembership extends AppModel {
         return $training_ids;
     }
 
-	public function getRequiredTraining($account_ids = null, $department_ids = null, $userId = null ){
+	public function getRequiredTrainingIds($account_ids = null, $department_ids = null, $userId = null ){
 
 
-        $training_ids = $this->find('all', array(
+        $trnIds = $this->find('all', array(
             'conditions'=>array(
                 'OR' => array(
                     array(
@@ -115,6 +115,7 @@ class TrainingMembership extends AppModel {
 							)
                         )
                     ),
+                   
                     array(
                         'AND'=>array(
                             'TrainingMembership.department_id' => $department_ids,
@@ -133,6 +134,7 @@ class TrainingMembership extends AppModel {
 							)
                         )
                     ),
+                    
                     array(
                         'AND'=>array(
                             'TrainingMembership.account_id' => null,
@@ -141,30 +143,19 @@ class TrainingMembership extends AppModel {
                             'TrainingMembership.is_manditory' => 1
                         )
                     ),
+                    
                 )
             ),
 			'contain'=>array(
-				'Training'=>array(
-					'TrainingFile'=>array(
-						'conditions'=>array(
-							'TrainingFile.file_type'=>'mp4'
-						)
-					),
-					'TrainingRecord'=>array(
-						'conditions'=>array(
-							'TrainingRecord.user_id' => $userId
-						),
-						'order'=>array('TrainingRecord.created' => 'DESC'),
-						'limit'=>1
-					)
-				)
-			)
+				
+			),
+			
 
 		));
-
-        #pr($training_ids);
+		
+		#pr($trnIds);
         #exit;
-        return $training_ids;
+        return $trnIds;
     }
 
 }

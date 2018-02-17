@@ -53,14 +53,14 @@ class TrainingRecord extends AppModel {
         $excludeIds = array();
         #pr($requiredTraining);
         #exit;
-        foreach($requiredTraining as $training){
-            $trnId = $training['Training']['id'];
+        foreach($requiredTraining as $trnId){
+            #$trnId = $training['Training']['id'];
 
             #pr($training);
             #exit;
             $records = $this->find('first', array(
                 'conditions'=> array(
-                    $this->alias.'.training_id'=>$training['TrainingMembership']['training_id'],
+                    $this->alias.'.training_id'=>$trnId,
                     $this->alias.'.user_id'=>$user_id
                 ),
                 'contain'=>array(
@@ -133,8 +133,8 @@ class TrainingRecord extends AppModel {
             }
             #'expires_on <' =>  date(DATE_MYSQL_DATETIME, strtotime( '+' . $days . ' days', time() ) )
         }
-        #pr($data);
-        #exit;
+        pr($data);
+        exit;
         return $data;
     }
 }

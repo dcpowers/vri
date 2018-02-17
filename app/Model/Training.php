@@ -107,4 +107,41 @@ class Training extends AppModel {
         
         return $data['Training']['name']; 
     }
+    
+    public function getTraining($trnIds = null, $userId = null){
+    	$acctIds = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
+    	$deptIds = Hash::extract(AuthComponent::user(), 'DepartmentUser.{n}.department_id');
+    	
+    	#pr($trnIds);
+    	#exit;
+		$c = 0;
+		foreach($trnIds as $trn){
+			$data[$c] = $this->find('first', array(
+	            'conditions' => array(
+	                'Training.id' => $trn['TrainingMembership']['training_id']
+	            ),
+	            'contain'=>array(
+	            	'TrainingRecord'=>array(
+	            		'conditions'=>array(
+	            			'TrainingRecord.user_id' => $userId
+	            		),
+	            		'order'=>array('TrainingRecord.created' => 'DESC'),
+	            		'limit'=>1
+	            	),
+	            	'TrainingFile'=>array()
+	            	
+	            ),
+	            #'fields'=>array('Training.id', 'Training.name'),
+	            'order'=>array('Training.name')
+	        ));
+	        
+	        $data[$c]['TrainingMembership']	= $trn['TrainingMembership'];
+	        
+	        $c++;
+		}
+        
+        #pr($data);
+        #exit;
+        return $data;
+	}
 }
