@@ -40,28 +40,28 @@
                 $label = 'label label-success';
 				$expires = null;
 				
-				if(empty($trn['Training']['TrainingRecord'])){
+				if(empty($trn['TrainingRecord'])){
                 	$status = 'No Record Found';
                     $label = 'label label-danger';
                     
                 }else{
                 	#pr($trn);
                 	#exit;
-                	if(!is_null($trn['Training']['TrainingRecord'][0]['expires_on'])){
-						$expires = date('F d,Y', strtotime($trn['Training']['TrainingRecord'][0]['expires_on']));
+                	if(!is_null($trn['TrainingRecord'][0]['expires_on'])){
+						$expires = date('F d,Y', strtotime($trn['TrainingRecord'][0]['expires_on']));
 					}
                 	
-                	if(!is_null($trn['Training']['TrainingRecord'][0]['started_on']) && is_null($trn['Training']['TrainingRecord'][0]['completed_on'])){
+                	if(!is_null($trn['TrainingRecord'][0]['started_on']) && is_null($trn['TrainingRecord'][0]['completed_on'])){
 						$status = 'In Progress';
 	                    $label = 'label label-primary';
 	                }
 	                
-	                if(strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) < strtotime('now')){
+	                if(strtotime($trn['TrainingRecord'][0]['expires_on']) < strtotime('now')){
                         $status = 'Expired';
                     	$label = 'label label-danger';
                     }
 
-                    if(strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) >= strtotime('now') && strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) <= strtotime('+30 days') ){
+                    if(strtotime($trn['TrainingRecord'][0]['expires_on']) >= strtotime('now') && strtotime($trn['TrainingRecord'][0]['expires_on']) <= strtotime('+30 days') ){
                         $status = 'Expiring';
                     	$label = 'label label-warning';
                     }
@@ -72,7 +72,7 @@
                 <tr>
                 	<td>
                     	<?php
-						if(!empty($trn['Training']['TrainingFile'])){
+						if(!empty($trn['TrainingFile'])){
                         	echo $this->Html->link(
                         		$trn['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
                             	array('controller'=>'Trainings', 'action'=>'play', $trn['Training']['id']),
