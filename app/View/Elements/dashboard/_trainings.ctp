@@ -1,6 +1,7 @@
 <?php
-    $data = $this->requestAction('/Users/view/'.AuthComponent::user('id'));
+	$data = $this->requestAction('/Trainings/userRequiredTraining/');
     #pr($data);
+    #exit;
 ?>
 
 <div class="box box-warning">
@@ -30,54 +31,55 @@
         <tbody>
         	<?php
             #pr($requiredTraining );
-            foreach($data[0] as $training){
+            foreach($data as $trn){
+            	#pr($trn);
+            	#exit;
                 $status = null;
                 #pr($records[$training['Training']['id']]);
                 $status = 'Current';
                 $label = 'label label-success';
-				$keep = 0;
-
-                if($data[1][$training['Training']['id']]['TrainingRecord']['in_progress'] == 1){
-                	$status = 'In Progress';
-                    $label = 'label label-primary';
-					$keep = 1;
-                }
-
-                if($data[1][$training['Training']['id']]['TrainingRecord']['expired'] == 1){
-                	$status = 'Expired';
-                    $label = 'label label-danger';
-					$keep = 1;
-                }
-
-                if($data[1][$training['Training']['id']]['TrainingRecord']['expiring'] == 1){
-                	$status = 'Expiring';
-                    $label = 'label label-warning';
-					$keep = 1;
-                }
-
-                if($data[1][$training['Training']['id']]['TrainingRecord']['no_record'] == 1){
+				$expires = null;
+				
+				if(empty($trn['Training']['TrainingRecord'])){
                 	$status = 'No Record Found';
                     $label = 'label label-danger';
-					$keep = 1;
+                    
+                }else{
+                	#pr($trn);
+                	#exit;
+                	if(!is_null($trn['Training']['TrainingRecord'][0]['expires_on'])){
+						$expires = date('F d,Y', strtotime($trn['Training']['TrainingRecord'][0]['expires_on']));
+					}
+                	
+                	if(!is_null($trn['Training']['TrainingRecord'][0]['started_on']) && is_null($trn['Training']['TrainingRecord'][0]['completed_on'])){
+						$status = 'In Progress';
+	                    $label = 'label label-primary';
+	                }
+	                
+	                if(strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) < strtotime('now')){
+                        $status = 'Expired';
+                    	$label = 'label label-danger';
+                    }
+
+                    if(strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) >= strtotime('now') && strtotime($trn['Training']['TrainingRecord'][0]['expires_on']) <= strtotime('+30 days') ){
+                        $status = 'Expiring';
+                    	$label = 'label label-warning';
+                    }
                 }
-
-                $expires = (!empty($data[1][$training['Training']['id']]['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($data[1][$training['Training']['id']]['TrainingRecord']['expires_on'])) : '--' ;
-
-				if($keep == 0){
-					continue;
-				}
+				///////////////////////////
+                
                 ?>
                 <tr>
                 	<td>
                     	<?php
-						if(!empty($training['Training']['TrainingFile'])){
+						if(!empty($trn['Training']['TrainingFile'])){
                         	echo $this->Html->link(
-                        		$training['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
-                            	array('controller'=>'Trainings', 'action'=>'play', $training['Training']['id']),
+                        		$trn['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
+                            	array('controller'=>'Trainings', 'action'=>'play', $trn['Training']['id']),
                             	array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                         	);
 						}else{
-							echo $training['Training']['name'];
+							echo $trn['Training']['name'];
 						}
                         ?>
                     </td>
@@ -93,16 +95,16 @@
                 <?php
             }
 
-            if(empty($data[0])){
+            if(empty($data)){
             	?>
                 <tr>
                 	<td colspan="4" class="text-center">No Records Found</td>
                 </tr>
             	<?php
             }
-                                    ?>
-                                </tbody>
-        </table>
+            ?>
+        </tbody>
+    </table>
 
     <div class="box-footer" style="border-bottom: 1px solid #C0C0C0;"></div>
 </div>
