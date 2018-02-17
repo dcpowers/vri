@@ -749,8 +749,8 @@ class UsersController extends AppController {
             ),
 
         ));
-
-        $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
+		
+		$account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
         $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
 
         $requiredTraining = $this->TrainingMembership->getRequiredTraining($account_ids,$department_ids,$id);

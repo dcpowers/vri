@@ -1451,4 +1451,21 @@ class TrainingsController extends AppController {
         $this->redirect(array('controller'=>'Trainings', 'action' => 'index'));
 
     }
+    
+    public function userRequiredTraining(){
+    	$acctIds = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
+    	$deptIds = Hash::extract(AuthComponent::user(), 'DepartmentUser.{n}.department_id');
+    	
+    	$requiredTraining = $this->TrainingMembership->getRequiredTraining($acctIds,$deptIds,AuthComponent::user('id'));
+        #$allTraining = $this->TrainingMembership->getAllTraining($acctIds,$deptIds,AuthComponent::user('id'));
+		#pr($requiredTraining);
+		#exit;
+		#$records = $this->TrainingRecord->findRecords($requiredTraining, AuthComponent::user('id'));
+        #$allRecords = $this->TrainingRecord->findRecords($allTraining, AuthComponent::user('id'));
+		
+		#exit;
+        #return array($requiredTraining, $records);
+        return $requiredTraining;
+        
+	}
 }
