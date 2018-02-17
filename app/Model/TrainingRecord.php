@@ -51,6 +51,8 @@ class TrainingRecord extends AppModel {
     public function findRecords($requiredTraining = null, $user_id = null){
         $data = array();
         $excludeIds = array();
+        #pr($requiredTraining);
+        #exit;
         foreach($requiredTraining as $training){
             $trnId = $training['Training']['id'];
 
@@ -131,65 +133,6 @@ class TrainingRecord extends AppModel {
             }
             #'expires_on <' =>  date(DATE_MYSQL_DATETIME, strtotime( '+' . $days . ' days', time() ) )
         }
-        /*
-        $allrecords = $this->find('all', array(
-            'conditions'=> array(
-                $this->alias.'.training_id !='=>$excludeIds,
-                $this->alias.'.user_id'=>$user_id
-            ),
-            'contain'=>array(
-                'Training'=>array(
-                    'fields'=>array(
-                        'Training.id',
-                        'Training.name',
-                        'Training.description',
-                    )
-                ),
-            ),
-            'order'=>array(
-                $this->alias.'.completed_on' => 'DESC',
-                $this->alias.'.expires_on' => 'DESC',
-            )
-        ));
-
-        foreach($allrecords as $t){
-            $trnId = $t['TrainingRecord']['training_id'];
-
-            $t['TrainingRecord']['name'] = $t['Training']['name'];
-            $t['TrainingRecord']['description'] = $t['Training']['description'];
-            unset($t['Training']);
-
-            $data[$trnId] = $t;
-            $data[$trnId]['TrainingRecord']['no_record'] = 0;
-            $data[$trnId]['TrainingRecord']['is_required'] = 0;
-
-            if(empty($t['TrainingRecord']['started_on'])){
-                $data[$trnId]['TrainingRecord']['in_progress'] = 0;
-            }else if(!is_null($t['TrainingRecord']['started_on']) && is_null($t['TrainingRecord']['completed_on'])){
-                $data[$trnId]['TrainingRecord']['in_progress'] = 1;
-            }else{
-                $data[$trnId]['TrainingRecord']['in_progress'] = 0;
-            }
-
-            if(empty($t['TrainingRecord']['expires_on'])){
-                $data[$trnId]['TrainingRecord']['expiring'] = 0;
-                $data[$trnId]['TrainingRecord']['expired'] = 0;
-            }else{
-                if(strtotime($t['TrainingRecord']['expires_on']) < strtotime('now')){
-                    $data[$trnId]['TrainingRecord']['expired'] = 1;
-                }else{
-                    $data[$trnId]['TrainingRecord']['expired'] = 0;
-                }
-
-                if(strtotime($t['TrainingRecord']['expires_on']) >= strtotime('now') && strtotime($t['TrainingRecord']['expires_on']) <= strtotime('+30 days') ){
-                    $data[$trnId]['TrainingRecord']['expiring'] = 1;
-                }else{
-                    $data[$trnId]['TrainingRecord']['expiring'] = 0;
-                }
-            }
-        }
-        */
-        #pr($allrecords);
         #pr($data);
         #exit;
         return $data;

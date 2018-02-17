@@ -149,6 +149,13 @@ class TrainingMembership extends AppModel {
 						'conditions'=>array(
 							'TrainingFile.file_type'=>'mp4'
 						)
+					),
+					'TrainingRecord'=>array(
+						'conditions'=>array(
+							'TrainingRecord.user_id' => $userId
+						),
+						'order'=>array('TrainingRecord.created' => 'DESC'),
+						'limit'=>1
 					)
 				)
 			)
