@@ -1,6 +1,7 @@
 <?php
     $this->request->data = $this->requestAction('/Users/profile/');
     #pr($this->request->data);
+    #exit;
 
 ?>
 

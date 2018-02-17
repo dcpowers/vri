@@ -1,6 +1,7 @@
 <?php
     $data = $this->requestAction('/Accidents/getDashboard/');
     #pr($data);
+    #exit;
     if(!empty($data)){
 		?>
 		<div class="box box-success">

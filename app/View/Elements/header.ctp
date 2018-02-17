@@ -12,12 +12,14 @@
                 ?>
 
                 <?php
-                echo $this->Form->button('<i class="fa fa-bars"></i>', array(
+                /*
+                echo $this->Form->button('<i class="fa fa-bars">hh</i>', array(
                     'type' => 'button',
                     'class'=>'navbar-toggle collapsed',
                     'data-toggle'=>'collapse',
                     'data-target'=>'#navbar-collapse'
                 ));
+                */
                 ?>
             </div>
 
@@ -25,7 +27,7 @@
                 <ul class="nav navbar-nav"  style="margin-right: 30px;">
                     <!-- Control Sidebar Toggle Button -->
                     <?php
-                    if(AuthComponent::user('Role.permission_level') >= 50){
+                    if(AuthComponent::user('Role.permission_level') >= 70){
                         ?>
                         <li>
                             <!--<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>-->
