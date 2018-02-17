@@ -74,7 +74,8 @@ class LinksController extends AppController {
             ),
             'order'=>array('Link.name'=> 'asc'),
         ));
-
+		#pr($links);
+		#exit;
 		if ($this->request->is('requested')) {
             return $links;
         }

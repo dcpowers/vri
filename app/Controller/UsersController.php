@@ -899,7 +899,17 @@ class UsersController extends AppController {
             ),
 
         ));
-
+		
+		if ($this->request->is('requested')) {
+        	unset(
+        		$this->request->data['Award'],
+        		$this->request->data['Asset'],
+        		$this->request->data['AssignedTest']
+        	);
+        	
+            return $this->request->data;
+        }
+        
         #pr($user);
 		#exit;
         $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
@@ -911,9 +921,7 @@ class UsersController extends AppController {
 		$records = $this->TrainingRecord->findRecords($requiredTraining, AuthComponent::user('id'));
 		$allRecords = $this->TrainingRecord->findRecords($allTraining, AuthComponent::user('id'));
 
-        if ($this->request->is('requested')) {
-            return $this->request->data;
-        }
+        
 		#pr($allTraining);
 		#exit;
         $this->set('user', $user);
