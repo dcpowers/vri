@@ -57,8 +57,9 @@ class AccidentsController extends AppController {
     }
 
     public function index($status=null) {
-        $user_ids = $this->Accident->getUserIds();
-
+    	$acctIds = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
+    	$user_ids = $this->AccountUser->getAccountIds($acctIds, 1);
+		
 		$title = (is_null($status) || $status == 1) ? 'Open' : null ;
 		$title = ($status == 2) ? 'Closed' : $title ;
 		$title = ($status == 'All') ? 'All' : $title ;
