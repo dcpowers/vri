@@ -109,14 +109,11 @@ class Training extends AppModel {
     }
     
     public function getTraining($trnIds = null, $userId = null){
-    	$acctIds = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
-    	$deptIds = Hash::extract(AuthComponent::user(), 'DepartmentUser.{n}.department_id');
-    	
     	#pr($trnIds);
     	#exit;
 		$c = 0;
 		foreach($trnIds as $trn){
-			$data[$c] = $this->find('first', array(
+			$record = $this->find('first', array(
 	            'conditions' => array(
 	                'Training.id' => $trn['TrainingMembership']['training_id']
 	            ),
@@ -128,14 +125,61 @@ class Training extends AppModel {
 	            		'order'=>array('TrainingRecord.created' => 'DESC'),
 	            		'limit'=>1
 	            	),
-	            	'TrainingFile'=>array()
+	            	'TrainingFile'=>array(),
+	            	'TrainingMembership'=>array()
 	            	
 	            ),
 	            #'fields'=>array('Training.id', 'Training.name'),
 	            'order'=>array('Training.name')
 	        ));
 	        
-	        $data[$c]['TrainingMembership']	= $trn['TrainingMembership'];
+	        $data[$c]['TrainingRecord'] = $record['Training'];
+	        $data[$c]['TrainingRecord']['no_record'] = 0;
+	        $data[$c]['TrainingRecord']['expired'] = 0;
+	        $data[$c]['TrainingRecord']['expiring'] = 0;
+	        $data[$c]['TrainingRecord']['in_progress'] = 0;
+	        
+	        if(empty($record['TrainingRecord'])){
+	        	$data[$c]['TrainingRecord']['no_record'] = 1;
+            	if($record['TrainingMembership'][0]['is_required'] == 1 || $record['TrainingMembership'][0]['is_manditory'] == 1){
+					$data[$c]['TrainingRecord']['is_required'] = 1;
+				}else{
+					$data[$c]['TrainingRecord']['is_required'] = 0;
+				}
+            } else {
+            	$data[$c]['TrainingRecord'] += $record['TrainingRecord'][0];
+				$data[$c]['TrainingRecord']['no_record'] = 0;
+                
+                if($record['TrainingMembership'][0]['is_required'] == 1 || $record['TrainingMembership'][0]['is_manditory'] == 1){
+					$data[$c]['TrainingRecord']['is_required'] = 1;
+				}else{
+					$data[$c]['TrainingRecord']['is_required'] = 0;
+				}
+                
+                if(empty($record['TrainingRecord'][0]['started_on'])){
+                    $data[$c]['TrainingRecord']['in_progress'] = 0;
+                }else if(!is_null($record['TrainingRecord'][0]['started_on']) && is_null($record['TrainingRecord'][0]['completed_on'])){
+                    $data[$c]['TrainingRecord']['in_progress'] = 1;
+                }else{
+                    $data[$c]['TrainingRecord']['in_progress'] = 0;
+                }
+
+                if(strtotime($record['TrainingRecord'][0]['expires_on']) < strtotime('now')){
+                    $data[$c]['TrainingRecord']['expired'] = 1;
+                }else{
+                    $data[$c]['TrainingRecord']['expired'] = 0;
+                }
+
+                if(strtotime($record['TrainingRecord'][0]['expires_on']) >= strtotime('now') && strtotime($record['TrainingRecord'][0]['expires_on']) <= strtotime('+30 days') ){
+                    $data[$c]['TrainingRecord']['expiring'] = 1;
+                }else{
+                    $data[$c]['TrainingRecord']['expiring'] = 0;
+                }
+                
+                #pr($data);
+                #exit;
+			}
+            #$data[$c]['TrainingMembership']	= $trn['TrainingMembership'];
 	        
 	        $c++;
 		}

@@ -101,9 +101,7 @@ class TrainingMembership extends AppModel {
     }
 
 	public function getRequiredTrainingIds($account_ids = null, $department_ids = null, $userId = null ){
-
-
-        $trnIds = $this->find('all', array(
+		$trnIds = $this->find('all', array(
             'conditions'=>array(
                 'OR' => array(
                     array(
@@ -133,6 +131,44 @@ class TrainingMembership extends AppModel {
 								array('TrainingMembership.is_required' => 1)
 							)
                         )
+                    ),
+                    
+                    array(
+                        'AND'=>array(
+                            'TrainingMembership.account_id' => null,
+                            'TrainingMembership.department_id' => null,
+                            'TrainingMembership.user_id' => null,
+                            'TrainingMembership.is_manditory' => 1
+                        )
+                    ),
+                    
+                )
+            ),
+			'contain'=>array(
+				
+			),
+			
+
+		));
+		
+		#pr($trnIds);
+        #exit;
+        return $trnIds;
+    }
+    
+    public function getAllTrainingIds($account_ids = null, $department_ids = null, $userId = null ){
+		$trnIds = $this->find('all', array(
+            'conditions'=>array(
+                'OR' => array(
+                    array(
+                        'AND'=>array('TrainingMembership.account_id' => $account_ids)
+                    ),
+                   
+                    array(
+                        'AND'=>array('TrainingMembership.department_id' => $department_ids)
+                    ),
+                    array(
+                        'AND'=>array('TrainingMembership.user_id' => $userId)
                     ),
                     
                     array(
