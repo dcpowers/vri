@@ -977,54 +977,31 @@ class TrainingsController extends AppController {
                         )
                     )
                 ),
-                'Role'=>array(
-                    'fields'=>array('Role.name', 'Role.lft')
-                ),
-                'Asset'=>array(
-                    'Manufacturer'=>array(
-                        'fields'=>array(
-                            'Manufacturer.id',
-                            'Manufacturer.name'
-                        )
-                    ),
-                    'fields'=>array(
-                        'Asset.id',
-                        'Asset.asset',
-                        'Asset.tag_number',
-                        'Asset.model',
-                    )
-                ),
-                'Supervisor'=>array(
-                    'fields'=>array('Supervisor.first_name', 'Supervisor.last_name')
-                ),
                 'DepartmentUser'=>array(
                     'Department'=>array(
                         'fields'=>array('Department.id','Department.name', 'Department.abr')
                     )
                 ),
-                'Status'=>array(
-                    'fields'=>array('Status.name', 'Status.color', 'Status.icon')
-                ),
-                'TrainingExempt'=>array()
+                
             ),
 
         ));
-
-		$account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
-		$department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
-
-		switch($type){
+		
+		$acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
+    	$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
+    	
+    	switch($type){
 			case 'required':
-				$requiredTraining = $this->TrainingMembership->getRequiredTraining($account_ids,$department_ids,$user_id);
-		        $records = $this->TrainingRecord->findRecords($requiredTraining, $user_id);
-
-		        break;
+				$ids = $this->TrainingMembership->getRequiredTrainingIds($acctIds,$deptIds,$user['User']['id']);
+				break;
 
 			default:
-				$allTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids,$user_id);
-		        $records = $this->TrainingRecord->findRecords($allTraining, $user_id);
+				$ids = $this->TrainingMembership->getAllTrainingIds($acctIds,$deptIds,$user['User']['id']);
 				break;
 		}
+		
+		$records = $this->Training->getTraining($ids, $user['User']['id']);
+		
         $this->set(compact('records'));
         $this->set(compact('user_id'));
     }
