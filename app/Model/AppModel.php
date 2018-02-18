@@ -49,7 +49,7 @@ class AppModel extends Model {
 			case 40:
 			case 30:
 				$account_ids = $this->Account->pickListActive();
-				$user_ids = $this->AccountUser->getAccountIds($account_ids);
+				$user_ids = $this->AccountUser->getAccountIds($account_ids, 1);
 				return $user_ids;
 				break;
 
