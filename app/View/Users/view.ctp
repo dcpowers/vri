@@ -36,7 +36,11 @@
     ));
 
     echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id']));
-
+	
+	#pr($user);
+    #pr($requiredTraining);
+    #pr($allRecords);
+    #exit;    
     ?>
     <style type="text/css">
         .headerDiv{
@@ -64,7 +68,27 @@
         .fileupload-exists{ color: black; }
 
         .fileupload-exists a{ padding: 0px; }
+        
+        #LoadingDiv{
+	        margin:0px 0px 0px 0px;
+	        position: relative;
+	        min-height: 100%;
+	        height: 100vh;
+	        z-index:9999;
+	        padding-top: 200px;
+	        padding-left: 45%;
+	        width: 100%;
+	        clear:none;
+	        background-color: #fff;
+	  		opacity: 0.5;
+	        /*background:url(/img/transbg.png);
+	        background-color:#666666;
+	        border:1px solid #000000;*/
+	    }
     </style>
+    
+    
+
     <div style="margin-top: -7px">
         <div class="headerDiv">
         </div>
@@ -329,7 +353,6 @@
                                     </div>
 
                                     <div class="tab-pane fade <?=$recordsClass?> in" id="records">
-
 										<div class="tabbable" style="padding: 0px;">
 			                                <ul class="nav nav-pills">
 			                                    <li class="active"><a href="#required" data-toggle="tab" id="requiredLink"><i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i> Required Training</a></li>
@@ -337,6 +360,9 @@
 			                                </ul>
 
 			                                <div class="tab-content" style="border: 0px;">
+			                                	<div id="LoadingDiv" style="display:none;">
+						                        	<?php echo $this->Html->image('ajax-loader-red.gif'); ?>
+						                    	</div>
 			                                    <div class="tab-pane fade active in" id="required">
                                                     <table class="table table-striped table-condensed" id="assetsTable">
 			                                            <thead>
@@ -351,9 +377,8 @@
 
 			                                            <tbody>
 			                                                <?php
-
 			                                                foreach($records as $t){
-
+			                                                	
 			                                                    $status = null;
 			                                                    #pr($records[$training['Training']['id']]);
 			                                                    $status = 'Current';
@@ -415,6 +440,7 @@
 			                                                    </tr>
 			                                                    <?php
 			                                                }
+			                                                
 
 			                                                if(empty($records)){
 			                                                    ?>
@@ -440,87 +466,15 @@
 			                                            </thead>
 
 			                                            <tbody>
-			                                                <?php
-			                                                #pr($requiredTraining );
-			                                                foreach($allRecords as $t){
-
-			                                                    $status = null;
-			                                                    #pr($records[$training['Training']['id']]);
-			                                                    $status = 'Current';
-			                                                    $label = 'label label-success';
-                                                                $showRest = 1;
-
-			                                                    if($t['TrainingRecord']['in_progress'] == 1){
-			                                                        $status = 'In Progress';
-			                                                        $label = 'label label-primary';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expired'] == 1){
-			                                                        $status = 'Expired';
-			                                                        $label = 'label label-danger';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expiring'] == 1){
-			                                                        $status = 'Expiring';
-			                                                        $label = 'label label-warning';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['no_record'] == 1){
-			                                                        $status = 'No Record Found';
-			                                                        $label = 'label label-danger';
-																	$showRest = 0;
-			                                                    }
-
-			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td>
-			                                                            <?php
-			                                                            echo $this->Html->link(
-			                                                                $t['TrainingRecord']['name'],
-			                                                                '#',
-			                                                                array('escape'=>false)
-			                                                            );
-			                                                            ?>
-			                                                        </td>
-			                                                        <td>
-			                                                            <span class="<?=$label?>"><?=$status?></span>
-			                                                        </td>
-			                                                        <td><?=$expires?></td>
-			                                                        <td class="text-center"><?=$required?></td>
-																	<td class="text-center">
-																		<?php
-																		if($showRest == 1){
-																			echo $this->Html->link(
-			                                                                	'<i class="fa fa-trash text-warning fa-2x" aria-hidden="true"></i>',
-			                                                                	'#',
-			                                                                	array('class'=>'trnRecord', 'data-value'=>$t['TrainingRecord']['id'], 'escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'left', 'title'=>'Delete Current Record')
-			                                                            	);
-																		}else{
-																			echo null;
-																		}
-			                                                            ?>
-																	</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-
-			                                                if(empty($records)){
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td colspan="4" class="text-center">No Records Found</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-			                                                ?>
+			                                                
 			                                            </tbody>
 			                                        </table>
 												</div>
 											</div>
 										</div>
+										
                                     </div>
-
+									<!--
                                     <div class="tab-pane fade <?=$assetsClass?> in" id="assets">
                                         <table class="table table-striped table-condensed" id="assetsTable">
                                             <thead>
@@ -565,7 +519,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-
+									-->
                                     <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
                                         <table class="table table-striped table-condensed" id="assetsTable">
                                             <thead>
@@ -578,34 +532,33 @@
 
                                             <tbody>
                                                 <?php
-                                                foreach($user['Accident'] as $v){
-                                                    ?>
-                                                    <tr>
-                                                        <td><?php echo date('F d, Y', strtotime($v['date'])); ?></td>
-                                                        <td><?=$v['description']?></td>
-                                                        <td>
-															<ul class="list-unstyled">
-																<?php
-																foreach($v['AccidentArea'] as $l){
-																	?>
-																	<li><?=$l['AccidentAreaLov']['name']?></li>
-																	<?php
-																}
-																?>
-															</ul>
-														</td>
-                                                    </tr>
-                                                    <?php
-                                                }
-
-                                                if(empty($user['Asset'])){
+                                                if(empty($user['Accident'])){
                                                     ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">No Records Found</td>
                                                     </tr>
                                                     <?php
-                                                }
-
+                                                } else {
+	                                                foreach($user['Accident'] as $v){
+	                                                    ?>
+	                                                    <tr>
+	                                                        <td><?php echo date('F d, Y', strtotime($v['date'])); ?></td>
+	                                                        <td><?=$v['description']?></td>
+	                                                        <td>
+																<ul class="list-unstyled">
+																	<?php
+																	foreach($v['AccidentArea'] as $l){
+																		?>
+																		<li><?=$l['AccidentAreaLov']['name']?></li>
+																		<?php
+																	}
+																	?>
+																</ul>
+															</td>
+	                                                    </tr>
+	                                                    <?php
+	                                                }
+												}	
                                                 ?>
                                             </tbody>
                                         </table>
@@ -711,26 +664,25 @@
 
                                             <tbody>
                                                 <?php
-                                                foreach($user['Award'] as $award){
-													$paid_date = (!empty($award['paid_date'])) ? date('F d, Y', strtotime($award['paid_date'])) : '<span class="fa-stack fa-lg"><i class="fa fa-dollar fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>' ;
-													?>
-                                                    <tr>
-                                                        <td><?=$award['Type']['award']?></td>
-                                                        <td><?php echo $this->Number->currency($award['amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></td>
-                                                        <td><?=$paid_date?></td>
-                                                    </tr>
-                                                    <?php
-                                                }
-
                                                 if(empty($user['Award'])){
                                                     ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">No Records Found</td>
                                                     </tr>
                                                     <?php
-                                                }
-
-                                                ?>
+                                                } else {
+	                                                foreach($user['Award'] as $award){
+														$paid_date = (!empty($award['paid_date'])) ? date('F d, Y', strtotime($award['paid_date'])) : '<span class="fa-stack fa-lg"><i class="fa fa-dollar fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>' ;
+														?>
+	                                                    <tr>
+	                                                        <td><?=$award['Type']['award']?></td>
+	                                                        <td><?php echo $this->Number->currency($award['amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></td>
+	                                                        <td><?=$paid_date?></td>
+	                                                    </tr>
+	                                                    <?php
+	                                                }
+												}
+												?>
                                             </tbody>
                                         </table>
                                         <?php #pr(); ?>
@@ -780,7 +732,7 @@
                     dataType: "html",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
+						
                     },
                     success: function(response) {
                         console.log(response);
@@ -855,6 +807,8 @@
                     dataType: "html",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        $('#LoadingDiv').show();
+                    	$('#required').empty();
                     },
                     success: function(response) {
                         console.log(response);
@@ -866,7 +820,7 @@
                         console.log(errorThrown);
                     },
                     complete: function(){
-                        $('#overlay').remove();
+                        $('#LoadingDiv').hide();
                     },
                 });
 			});
@@ -878,6 +832,8 @@
                     dataType: "html",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        $('#LoadingDiv').show();
+                    	$('#all').empty();
                     },
                     success: function(response) {
                         console.log(response);
@@ -889,7 +845,7 @@
                         console.log(errorThrown);
                     },
                     complete: function(){
-                        $('#overlay').remove();
+                        $('#LoadingDiv').hide();
                     },
                 });
 			});

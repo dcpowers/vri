@@ -24,74 +24,67 @@
             	<th class="col-md-6">Training</th>
                 <th>Status</th>
                 <th>Expires Date</th>
-                <th></th>
+                <th>Required</th>
+            
             </tr>
         </thead>
 
         <tbody>
         	<?php
             #pr($requiredTraining );
-            foreach($data as $trn){
-            	#pr($trn);
-            	#exit;
-                $status = null;
-                #pr($records[$training['Training']['id']]);
-                $status = 'Current';
+            #pr($data);
+            #exit;
+            foreach($data as $t){
+            	$status = 'Current';
                 $label = 'label label-success';
-				$expires = null;
-				
-				if(empty($trn['TrainingRecord'])){
-                	$status = 'No Record Found';
-                    $label = 'label label-danger';
-                    
-                }else{
-                	#pr($trn);
-                	#exit;
-                	if(!is_null($trn['TrainingRecord'][0]['expires_on'])){
-						$expires = date('F d,Y', strtotime($trn['TrainingRecord'][0]['expires_on']));
-					}
-                	
-                	if(!is_null($trn['TrainingRecord'][0]['started_on']) && is_null($trn['TrainingRecord'][0]['completed_on'])){
-						$status = 'In Progress';
-	                    $label = 'label label-primary';
-	                }
-	                
-	                if(strtotime($trn['TrainingRecord'][0]['expires_on']) < strtotime('now')){
-                        $status = 'Expired';
-                    	$label = 'label label-danger';
-                    }
+				$showRest = 1;
 
-                    if(strtotime($trn['TrainingRecord'][0]['expires_on']) >= strtotime('now') && strtotime($trn['TrainingRecord'][0]['expires_on']) <= strtotime('+30 days') ){
-                        $status = 'Expiring';
-                    	$label = 'label label-warning';
-                    }
+                if($t['TrainingRecord']['in_progress'] == 1){
+                    $status = 'In Progress';
+                    $label = 'label label-primary';
+				}
+
+                if($t['TrainingRecord']['expired'] == 1){
+                    $status = 'Expired';
+                    $label = 'label label-danger';
+				}
+
+                if($t['TrainingRecord']['expiring'] == 1){
+                    $status = 'Expiring';
+                    $label = 'label label-warning';
+				}
+
+                if($t['TrainingRecord']['no_record'] == 1){
+                    $status = 'No Record Found';
+                    $label = 'label label-danger';
+					$showRest = 0;
                 }
-				///////////////////////////
-                
+
+                $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
+                $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
                 ?>
                 <tr>
-                	<td>
-                    	<?php
-						if(!empty($trn['TrainingFile'])){
+                    <td>
+                        <?php
+						if(!empty($t['TrainingFile'])){
                         	echo $this->Html->link(
                         		$trn['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
                             	array('controller'=>'Trainings', 'action'=>'play', $trn['Training']['id']),
                             	array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                         	);
 						}else{
-							echo $trn['Training']['name'];
+							echo $t['TrainingRecord']['name'];
 						}
                         ?>
                     </td>
-
-					<td>
-                    	<span class="<?=$label?>"><?=$status?></span>
+                    <td>
+                        <span class="<?=$label?>"><?=$status?></span>
                     </td>
-
-					<td><?=$expires?></td>
-
-					<td><?php #$asset['model']?></td>
+                    <td><?=$expires?></td>
+                    <td class="text-center"><?=$required?></td>
+                    
                 </tr>
+                
                 <?php
             }
 
