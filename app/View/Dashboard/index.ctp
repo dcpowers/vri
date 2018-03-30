@@ -20,5 +20,26 @@
         $("#myModal").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
+        $.ajax({
+            type: 'POST',
+            url: '/Trainings/userRequiredTraining/1.json',
+            dataType: "html",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                $('#LoadingDiv').show();
+            },
+            success: function(response) {
+                console.log(response);
+                $('#trainingTable').html(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+            complete: function(){
+                $('#LoadingDiv').hide();
+            },
+        });
     });
 </script>

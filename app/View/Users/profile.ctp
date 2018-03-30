@@ -35,7 +35,7 @@
     ));
 
     echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id']));
-
+	
     ?>
     <style type="text/css">
         .headerDiv{
@@ -63,6 +63,23 @@
         .fileupload-exists{ color: black; }
 
         .fileupload-exists a{ padding: 0px; }
+        
+        #LoadingDiv{
+	        margin:0px 0px 0px 0px;
+	        position: relative;
+	        min-height: 100%;
+	        height: 100vh;
+	        z-index:9999;
+	        padding-top: 200px;
+	        padding-left: 45%;
+	        width: 100%;
+	        clear:none;
+	        background-color: #fff;
+	  		opacity: 0.5;
+	        /*background:url(/img/transbg.png);
+	        background-color:#666666;
+	        border:1px solid #000000;*/
+	    }
     </style>
     <div style="margin-top: -7px">
         <div class="headerDiv">
@@ -280,166 +297,19 @@
 
 										<div class="tabbable" style="padding: 0px;">
 			                                <ul class="nav nav-pills">
-			                                    <li class="active"><a href="#mine" data-toggle="tab"><i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i> Required Training</a></li>
-			                                    <li><a href="#all" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i>All Available Training</a></li>
+			                                    <li class="active"><a href="#required" data-toggle="tab" id="requiredLink"><i class="fa fa-pencil-square-o fa-fw" aria-hidden="true"></i> Required Training</a></li>
+			                                    <li><a href="#all" data-toggle="tab" id="allLink"><i class="fa fa-book fa-fw" aria-hidden="true"></i>All Training</a></li>
 			                                </ul>
 
 			                                <div class="tab-content" style="border: 0px;">
-			                                    <div class="tab-pane fade active in" id="mine">
-                                                    <table class="table table-striped table-condensed" id="assetsTable">
-			                                            <thead>
-			                                                <tr class="tr-heading">
-			                                                    <th class="col-md-6">Training</th>
-			                                                    <th>Status</th>
-			                                                    <th>Expires Date</th>
-			                                                    <th class="text-center">Required</th>
-			                                                </tr>
-			                                            </thead>
-
-			                                            <tbody>
-			                                                <?php
-			                                                #pr($records);
-
-			                                                foreach($records as $key=>$t){
-
-			                                                    $status = null;
-			                                                    #pr($records[$training['Training']['id']]);
-			                                                    $status = 'Current';
-			                                                    $label = 'label label-success';
-
-			                                                    if($t['TrainingRecord']['in_progress'] == 1){
-			                                                        $status = 'In Progress';
-			                                                        $label = 'label label-primary';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expired'] == 1){
-			                                                        $status = 'Expired';
-			                                                        $label = 'label label-danger';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expiring'] == 1){
-			                                                        $status = 'Expiring';
-			                                                        $label = 'label label-warning';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['no_record'] == 1){
-			                                                        $status = 'No Record Found';
-			                                                        $label = 'label label-danger';
-			                                                    }
-
-			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td>
-																		<?php
-																		if(!empty($t['TrainingRecord']['TrainingFile'])){
-                        													echo $this->Html->link(
-                        														$t['TrainingRecord']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
-                            													array('controller'=>'Trainings', 'action'=>'play', $key),
-                            													array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-                        													);
-																		}else{
-																			echo $t['TrainingRecord']['name'];
-																		}
-																		?>
-			                                                        </td>
-			                                                        <td>
-			                                                            <span class="<?=$label?>"><?=$status?></span>
-			                                                        </td>
-			                                                        <td><?=$expires?></td>
-			                                                        <td class="text-center"><?=$required?></td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-
-			                                                if(empty($records)){
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td colspan="4" class="text-center">No Records Found</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-			                                                ?>
-			                                            </tbody>
-			                                        </table>
+			                                	<div id="LoadingDiv" style="display:none;">
+						                        	<?php echo $this->Html->image('ajax-loader-red.gif'); ?>
+						                    	</div>
+			                                    <div class="tab-pane fade active in" id="required">
+                                                    
 												</div>
 												<div class="tab-pane fade" id="all">
-													<table class="table table-striped table-condensed" id="assetsTable">
-			                                            <thead>
-			                                                <tr class="tr-heading">
-			                                                    <th class="col-md-6">Training</th>
-			                                                    <th>Status</th>
-			                                                    <th>Expires Date</th>
-			                                                    <th class="text-center">Required</th>
-			                                                </tr>
-			                                            </thead>
-
-			                                            <tbody>
-			                                                <?php
-			                                                #pr($requiredTraining );
-			                                                foreach($allRecords as $key=>$t){
-                                                                $status = null;
-			                                                    #pr($records[$training['Training']['id']]);
-			                                                    $status = 'Current';
-			                                                    $label = 'label label-success';
-
-			                                                    if($t['TrainingRecord']['in_progress'] == 1){
-			                                                        $status = 'In Progress';
-			                                                        $label = 'label label-primary';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expired'] == 1){
-			                                                        $status = 'Expired';
-			                                                        $label = 'label label-danger';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['expiring'] == 1){
-			                                                        $status = 'Expiring';
-			                                                        $label = 'label label-warning';
-			                                                    }
-
-			                                                    if($t['TrainingRecord']['no_record'] == 1){
-			                                                        $status = 'No Record Found';
-			                                                        $label = 'label label-danger';
-			                                                    }
-
-			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td>
-			                                                            <?php
-																		if(!empty($t['TrainingRecord']['TrainingFile'])){
-                        													echo $this->Html->link(
-                        														$t['TrainingRecord']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
-                            													array('controller'=>'Trainings', 'action'=>'play', $key),
-                            													array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
-                        													);
-																		}else{
-																			echo $t['TrainingRecord']['name'];
-																		}
-																		?>
-			                                                        </td>
-			                                                        <td>
-			                                                            <span class="<?=$label?>"><?=$status?></span>
-			                                                        </td>
-			                                                        <td><?=$expires?></td>
-			                                                        <td class="text-center"><?=$required?></td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-
-			                                                if(empty($allRecords)){
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td colspan="4" class="text-center">No Records Found</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-			                                                ?>
-			                                            </tbody>
-			                                        </table>
+													
 												</div>
 											</div>
 										</div>
@@ -628,6 +498,12 @@
         </div>
     </div>
     <?php echo $this->Form->end(); ?>
+    <?php
+        $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
+        $trnRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'deleteRecord'));
+        $getRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'getRecord'));
+    ?>
     <script type="text/javascript">
         jQuery(document).ready( function($) {
             $('.datepicker').datetimepicker({
@@ -642,5 +518,105 @@
 
                 }
             });
+            
+            $.ajax({
+                type: 'post',
+                url: '<?=$getRecord?>/required/<?=$this->request->data['User']['id']?>' + '.json',
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    $('#LoadingDiv').show();
+                	$('#required').empty();
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#required').html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                },
+                complete: function(){
+                    $('#LoadingDiv').hide();
+                },
+            });
+            
+            $('.trnRecord').on('click', function () {
+				var Id = $(this).attr("data-value");
+				var div = $(this).parents('div:eq(0)').attr('id');
+
+                $.ajax({
+                    type: 'post',
+                    url: '<?=$trnRecord?>/' + Id + '/' + div + '/<?=$this->request->data['User']['id']?>' + '.json',
+                    dataType: "html",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#' + div).html(response);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    },
+                    complete: function(){
+                        $('#overlay').remove();
+                    },
+                });
+			});
+
+			$('#requiredLink').on('click', function () {
+				$.ajax({
+                    type: 'post',
+                    url: '<?=$getRecord?>/required/<?=$this->request->data['User']['id']?>' + '.json',
+                    dataType: "html",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        $('#LoadingDiv').show();
+                    	$('#required').empty();
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#required').html(response);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    },
+                    complete: function(){
+                        $('#LoadingDiv').hide();
+                    },
+                });
+			});
+
+			$('#allLink').on('click', function () {
+				$.ajax({
+                    type: 'post',
+                    url: '<?=$getRecord?>/all/<?=$this->request->data['User']['id']?>' + '.json',
+                    dataType: "html",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        $('#LoadingDiv').show();
+                    	$('#all').empty();
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#all').html(response);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    },
+                    complete: function(){
+                        $('#LoadingDiv').hide();
+                    },
+                });
+			});
         });
     </script>

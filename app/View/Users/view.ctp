@@ -364,111 +364,10 @@
 						                        	<?php echo $this->Html->image('ajax-loader-red.gif'); ?>
 						                    	</div>
 			                                    <div class="tab-pane fade active in" id="required">
-                                                    <table class="table table-striped table-condensed" id="assetsTable">
-			                                            <thead>
-			                                                <tr class="tr-heading">
-			                                                    <th class="col-md-6">Training</th>
-			                                                    <th>Status</th>
-			                                                    <th>Expires Date</th>
-			                                                    <th class="text-center">Required</th>
-			                                                    <th class="text-center">Actions</th>
-			                                                </tr>
-			                                            </thead>
-
-			                                            <tbody>
-			                                                <?php
-			                                                foreach($records as $t){
-			                                                	
-			                                                    $status = null;
-			                                                    #pr($records[$training['Training']['id']]);
-			                                                    $status = 'Current';
-			                                                    $label = 'label label-success';
-																$showRest = 1;
-
-			                                                    if($t['TrainingRecord']['in_progress'] == 1){
-			                                                        $status = 'In Progress';
-			                                                        $label = 'label label-primary';
-																}
-
-			                                                    if($t['TrainingRecord']['expired'] == 1){
-			                                                        $status = 'Expired';
-			                                                        $label = 'label label-danger';
-																}
-
-			                                                    if($t['TrainingRecord']['expiring'] == 1){
-			                                                        $status = 'Expiring';
-			                                                        $label = 'label label-warning';
-																}
-
-			                                                    if($t['TrainingRecord']['no_record'] == 1){
-			                                                        $status = 'No Record Found';
-			                                                        $label = 'label label-danger';
-																	$showRest = 0;
-			                                                    }
-
-			                                                    $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-			                                                    $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td>
-			                                                            <?php
-			                                                            echo $this->Html->link(
-			                                                                $t['TrainingRecord']['name'],
-			                                                                '#',
-			                                                                array('escape'=>false)
-			                                                            );
-			                                                            ?>
-			                                                        </td>
-			                                                        <td>
-			                                                            <span class="<?=$label?>"><?=$status?></span>
-			                                                        </td>
-			                                                        <td><?=$expires?></td>
-			                                                        <td class="text-center"><?=$required?></td>
-			                                                        <td class="text-center">
-																		<?php
-																		if($showRest == 1){
-																			echo $this->Html->link(
-			                                                                	'<i class="fa fa-trash text-warning fa-2x" aria-hidden="true"></i>',
-			                                                                	'#',
-			                                                                	array('class'=>'trnRecord', 'data-value'=>$t['TrainingRecord']['id'], 'escape'=>false, 'data-toggle'=>'tooltip', 'data-placement'=>'left', 'title'=>'Delete Current Record')
-			                                                            	);
-																		}else{
-																			echo null;
-																		}
-			                                                            ?>
-																	</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-			                                                
-
-			                                                if(empty($records)){
-			                                                    ?>
-			                                                    <tr>
-			                                                        <td colspan="4" class="text-center">No Records Found</td>
-			                                                    </tr>
-			                                                    <?php
-			                                                }
-			                                                ?>
-			                                            </tbody>
-			                                        </table>
+                                                    
 												</div>
 												<div class="tab-pane fade" id="all">
-													<table class="table table-striped table-condensed" id="assetsTable">
-			                                            <thead>
-			                                                <tr class="tr-heading">
-			                                                    <th class="col-md-6">Training</th>
-			                                                    <th>Status</th>
-			                                                    <th>Expires Date</th>
-			                                                    <th class="text-center">Required</th>
-																<th class="text-center">Actions</th>
-			                                                </tr>
-			                                            </thead>
-
-			                                            <tbody>
-			                                                
-			                                            </tbody>
-			                                        </table>
+													
 												</div>
 											</div>
 										</div>
@@ -724,7 +623,30 @@
 
                 }
             });
-
+			
+			$.ajax({
+                type: 'post',
+                url: '<?=$getRecord?>/required/<?=$this->request->data['User']['id']?>' + '.json',
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    $('#LoadingDiv').show();
+                	$('#required').empty();
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#required').html(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                },
+                complete: function(){
+                    $('#LoadingDiv').hide();
+                },
+            });
+                
             $('#AccountUserAccountId').change(function() {
                 $.ajax({
                     type: 'post',
