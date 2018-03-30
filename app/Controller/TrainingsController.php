@@ -1443,7 +1443,9 @@ class TrainingsController extends AppController {
 		
 		#exit;
         #return array($requiredTraining, $records);
-        return $training;
+        $this->set(compact('training'));
+        #return $training;
+        #echo json_encode($training);
         
 	}
 }

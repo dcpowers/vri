@@ -756,22 +756,7 @@ class UsersController extends AppController {
 		$acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
     	$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
     	
-    	$reqTrnIds = $this->TrainingMembership->getRequiredTrainingIds($acctIds,$deptIds,$user['User']['id']);
-    	#$allTrnIds = $this->TrainingMembership->getAllTrainingIds($acctIds,$deptIds,$user['User']['id']);
-    	
-    	$reqTrn = $this->Training->getTraining($reqTrnIds, $user['User']['id']);
-    	#$allTrn = $this->Training->getTraining($allTrnIds, $user['User']['id']);
-    	
-    	#pr($reqTrn);
-    	#pr($allTrn);
-    	#exit;
-    	$allRecords = $this->TrainingRecord->findRecords($user['User']['id']);
-    	
-    	$this->set('user', $user);
-        $this->set('records', $reqTrn);
-        #$this->set('allRecords', $allRecords);
-        
-        $this->set('payStatus', $this->User->empPayStatus());
+    	$this->set('payStatus', $this->User->empPayStatus());
         $this->set('status', $this->User->statusInt());
         $this->set('yesNo', $this->User->yesNo());
         $this->set('pickListByAccount', $this->AccountUser->pickList($acctIds));
@@ -847,6 +832,7 @@ class UsersController extends AppController {
                 'Role'=>array(
                     'fields'=>array('Role.name', 'Role.lft')
                 ),
+                /*
                 'Asset'=>array(
                     'Manufacturer'=>array(
                         'fields'=>array(
@@ -860,7 +846,7 @@ class UsersController extends AppController {
                         'Asset.tag_number',
                         'Asset.model',
                     )
-                ),
+                ),*/
                 'Supervisor'=>array(
                     'fields'=>array('Supervisor.first_name', 'Supervisor.last_name')
                 ),
@@ -907,30 +893,33 @@ class UsersController extends AppController {
 		if ($this->request->is('requested')) {
         	unset(
         		$this->request->data['Award'],
-        		$this->request->data['Asset'],
+        		#$this->request->data['Asset'],
         		$this->request->data['AssignedTest']
         	);
         	
             return $this->request->data;
         }
         
-        #pr($user);
-		#exit;
-        $account_ids = Hash::extract($user, 'AccountUser.{n}.account_id');
-        $department_ids = Hash::extract($user, 'DepartmentUser.{n}.department_id');
-
-        $requiredTraining = $this->TrainingMembership->getRequiredTraining($account_ids,$department_ids,AuthComponent::user('id'));
-        $allTraining = $this->TrainingMembership->getAllTraining($account_ids,$department_ids,AuthComponent::user('id'));
-
-		$records = $this->TrainingRecord->findRecords($requiredTraining, AuthComponent::user('id'));
-		$allRecords = $this->TrainingRecord->findRecords($allTraining, AuthComponent::user('id'));
+        $acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
+    	$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
+    	
+    	#$reqTrnIds = $this->TrainingMembership->getRequiredTrainingIds($acctIds,$deptIds,$user['User']['id']);
+    	#$allTrnIds = $this->TrainingMembership->getAllTrainingIds($acctIds,$deptIds,$user['User']['id']);
+    	
+    	#$reqTrn = $this->Training->getTraining($reqTrnIds, $user['User']['id']);
+    	#$allTrn = $this->Training->getTraining($allTrnIds, $user['User']['id']);
+    	
+    	#pr($reqTrn);
+    	#pr($allTrn);
+    	#exit;
+    	#$allRecords = $this->TrainingRecord->findRecords($user['User']['id']);
 
         
 		#pr($allTraining);
 		#exit;
-        $this->set('user', $user);
-        $this->set('records', $records);
-        $this->set('allRecords', $allRecords);
+        #$this->set('user', $user);
+        #$this->set('records', $reqTrn);
+        #$this->set('allRecords', $allRecords);
         $this->set('payStatus', $this->User->empPayStatus());
     }
 
