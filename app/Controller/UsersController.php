@@ -478,7 +478,7 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if(!empty($this->request->data['User']['doh'])){
+        	if(!empty($this->request->data['User']['doh'])){
                 $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
             }
 
@@ -609,7 +609,8 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if(!empty($this->request->data['User']['doh'])){
+        	
+        	if(!empty($this->request->data['User']['doh'])){
                 $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
             }
 
@@ -632,17 +633,16 @@ class UsersController extends AppController {
             if(!empty($this->request->data['DepartmentUser']['department_id'])){
                 $this->request->data['DepartmentUser'][0]['user_id'] = $this->request->data['User']['id'];
                 $this->request->data['DepartmentUser'][0]['department_id'] = $this->request->data['DepartmentUser']['department_id'];
-
-				unset($this->request->data['DepartmentUser']['department_id']);
-            }
-
+			}
+			
 			$this->AccountUser->deleteAll(array('AccountUser.user_id' => $this->request->data['User']['id']), false);
             if(!empty($this->request->data['AccountUser']['account_id'])){
                 $this->request->data['AccountUser'][0]['user_id'] = $this->request->data['User']['id'];
                 $this->request->data['AccountUser'][0]['account_id'] = $this->request->data['AccountUser']['account_id'];
-
-				unset($this->request->data['AccountUser']['account_id']);
-            }
+			}
+			
+            unset($this->request->data['DepartmentUser']['department_id']);
+            unset($this->request->data['AccountUser']['account_id']);
             #pr($check);
             #pr($this->request->data['User']['id']);
             #pr($this->request->data);
@@ -752,9 +752,10 @@ class UsersController extends AppController {
             ),
 
         ));
-		
+		#pr($user);
+		#exit;
 		$acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
-    	$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
+    	#$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
     	
     	$this->set('payStatus', $this->User->empPayStatus());
         $this->set('status', $this->User->statusInt());

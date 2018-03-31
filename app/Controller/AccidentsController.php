@@ -57,6 +57,7 @@ class AccidentsController extends AppController {
     }
 
     public function index($status=null) {
+    	
     	$acctIds = Hash::extract(AuthComponent::user(), 'AccountUser.{n}.account_id');
     	$user_ids = $this->AccountUser->getAccountIds($acctIds, 1);
 		
@@ -70,7 +71,7 @@ class AccidentsController extends AppController {
         #$this->virtualFields['Account.cname'] = 'CONCAT(Account.name, "( ", Account.abr, " )")';
         $this->Paginator->settings = array(
             'conditions' => array(
-                'Accident.user_id' => $user_ids,
+                'Accident.account_id' => $acctIds,
                 'Accident.is_active' => $status,
             ),
             'contain'=>array(
@@ -88,7 +89,8 @@ class AccidentsController extends AppController {
 				'Accident.date'=> 'DESC'
 			),
         );
-
+		#pr($this->Paginator->settings);
+		#exit;
 		$options = array();
         if(!empty($this->request->data['Search']['q'])){
             $option = array('conditions'=>array(
@@ -108,6 +110,8 @@ class AccidentsController extends AppController {
 		$result = array();
 
         $accounts = $this->Paginator->paginate('Accident');
+		#pr($accounts);
+		#exit;
 		foreach($accounts as $key=>$t){
 			$indexName = $t['Account']['name'] .' ( '. $t['Account']['abr'] .' )';
             $keysort[$indexName] = $indexName;
