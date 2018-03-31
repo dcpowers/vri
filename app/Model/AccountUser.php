@@ -20,7 +20,13 @@ class AccountUser extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'User',
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
         'Account' => array(
             'className' => 'Account',
             'foreignKey' => 'account_id',

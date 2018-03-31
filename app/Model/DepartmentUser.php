@@ -20,7 +20,13 @@ class DepartmentUser extends AppModel {
      * @var array
      */
     public $belongsTo = array(
-        'User',
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'user_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
         'Department' => array(
             'className' => 'Department',
             'foreignKey' => 'department_id',
