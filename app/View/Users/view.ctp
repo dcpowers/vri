@@ -36,8 +36,9 @@
     ));
 
     echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id']));
+    echo $this->Form->hidden('AccountUser.account_id', array('value'=>$this->request->data['AccountUser'][0]['account_id']));
 	
-	#pr($user);
+	#pr($this->request->data);
     #pr($requiredTraining);
     #pr($allRecords);
     #exit;    
@@ -303,6 +304,7 @@
 						                                        'options'=>$departments,
 						                                        'class'=>'chzn-select form-control',
 						                                        'multiple'=>false,
+						                                        'empty'=>true,
 						                                        'between' => '<div class="input-group">',
 						                                        'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
 						                                    ));
@@ -608,7 +610,7 @@
     <script type="text/javascript">
         jQuery(document).ready( function($) {
             $(".chzn-select").chosen({
-                allow_single_deselect:false
+                allow_single_deselect:true
             });
 
             $('.datepicker').datetimepicker({
