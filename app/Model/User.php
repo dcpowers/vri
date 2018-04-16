@@ -241,7 +241,7 @@ class User extends AppModel {
         );
 
         if(!empty($username)){
-            if($this->data[$this->alias]['id'] == $username['User']['id']){
+            if(isset($this->data[$this->alias]['id']) && $this->data[$this->alias]['id'] == $username['User']['id']){
                 return true;
             }else{
                 return false;
@@ -271,7 +271,7 @@ class User extends AppModel {
         );
 
         if(!empty($email)){
-            if($this->data[$this->alias]['id'] == $email['User']['id']){
+            if(isset($this->data[$this->alias]['id']) && $this->data[$this->alias]['id'] == $email['User']['id']){
                 return true;
             }else{
                 return false;
