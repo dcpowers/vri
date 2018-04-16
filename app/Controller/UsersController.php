@@ -432,30 +432,73 @@ class UsersController extends AppController {
     public function add($account_id=null) {
         if ($this->request->is('post')) {
             $error = false;
+			#pr($this->request->data);
+			#exit;
+			if(!empty($this->request->data['User']['doh'])){
+                $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
+            }
 
-            $this->User->set($this->request->data);
+            if(!empty($this->request->data['User']['dob'])){
+                $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
+            }
+			
+			if(!empty($this->request->data['DepartmentUser']['department_id'])){
+                $this->request->data['DepartmentUser'][0]['department_id'] = $this->request->data['DepartmentUser']['department_id'];
+			}
+			
+			if(!empty($this->request->data['AccountUser']['account_id'])){
+                $this->request->data['AccountUser'][0]['account_id'] = $this->request->data['AccountUser']['account_id'];
+			}
+			
+			unset($this->request->data['DepartmentUser']['department_id']);
+            unset($this->request->data['AccountUser']['account_id']);
+            //update profile image if not empty
+            if(!empty($this->request->data['User']['file']['name'])) {
+                $check = $this->User->uploadFile($this->request->data['User']['file']);
+
+                unset($this->request->data['User']['file']);
+            }
+            
+			$this->User->set($this->request->data);
             if(!$this->User->validates()){
                 $validationErrors['User'] = $this->User->validationErrors;
                 $error = true;
             }
-
+			
             if($error == false){
                 $this->User->create();
-                /*if ($this->User->save($this->request->data)) {
-                    $this->Flash->success(__('The user has been saved'));
+                if ($this->User->saveAll($this->request->data)) {
+                	$this->Flash->alertBox(
+	                    'The user has been saved',
+	                    array(
+	                        'params' => array(
+	                            'class'=>'alert-success'
+	                        )
+	                    )
+	                );
                     return $this->redirect(array('action' => 'index'));
-                }*/
+				}
             }
-            $this->Flash->error(
-                __('The user could not be saved. Please, try again.')
+            pr($validationErrors);
+            pr($this->request->data);
+            exit;
+            $this->Flash->alertBox(
+                'The user could not be saved. Please, try again.',
+                array(
+                    'params' => array(
+                        'class'=>'alert-danger'
+                    )
+                )
             );
-
+            
             $this->set( compact( 'validationErrors' ) );
         }
-
-        $this->set('account', $this->Account->pickListById($account_id));
+		
+		$account_ids = (is_null($account_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id') : $account_id;
+		
+        $this->set('account', $this->Account->pickListById($account_ids));
         $this->set('status', $this->User->statusInt());
-        $this->set('pickListByAccount', $this->AccountUser->pickList($account_id));
+        $this->set('pickListByAccount', $this->AccountUser->pickList($account_ids));
         $this->set('accounts', $this->Account->pickListActive());
         $this->set('empStatus', $this->Account->empPayStatus());
         $this->set('departments', $this->Department->pickList());
@@ -609,7 +652,8 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-        	
+        	#pr($this->request->data);
+        	#exit;
         	if(!empty($this->request->data['User']['doh'])){
                 $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
             }
@@ -620,9 +664,9 @@ class UsersController extends AppController {
 
             #pr($this->request->data);
             #exit;
-            #pr($this->request->data);
+            
             //update profile image if not empty
-            if(!empty($this->request->data['User']['file'])) {
+            if(!empty($this->request->data['User']['file']['name'])) {
                 $check = $this->User->uploadFile($this->request->data['User']['file']);
 
                 unset($this->request->data['User']['file']);
