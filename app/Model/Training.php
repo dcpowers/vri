@@ -138,6 +138,7 @@ class Training extends AppModel {
 	        $data[$c]['TrainingRecord']['expired'] = 0;
 	        $data[$c]['TrainingRecord']['expiring'] = 0;
 	        $data[$c]['TrainingRecord']['in_progress'] = 0;
+	        $data[$c]['TrainingFile'] = $record['TrainingFile'];
 	        
 	        if(empty($record['TrainingRecord'])){
 	        	$data[$c]['TrainingRecord']['no_record'] = 1;

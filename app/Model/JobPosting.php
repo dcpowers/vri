@@ -90,20 +90,20 @@ class JobPosting extends AppModel {
     public $validationSets = array(
         'newListing' => array(
             'job_id' => array(
-                'rule' => 'notEmpty',
+                'rule' => 'notBlank',
                 'message' => 'Please select a Job Title'
             ),
             'job_talentpattern_id' => array(
-                'rule' => 'notEmpty',
+                'rule' => 'notBlank',
                 'message' => 'Please select a Talent Pattern'
             ),
             'status' => array(
-                'rule' => 'notEmpty',
+                'rule' => 'notBlank',
                 'message' => 'Please select a status',
                 'allowEmpty' => false,
             ),
-            'group_id' => array(
-                'rule' => 'notEmpty',
+            'account_id' => array(
+                'rule' => 'notBlank',
                 'message' => 'Please select a Location/Department'
             ),
         )
