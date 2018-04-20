@@ -1,6 +1,6 @@
 <?php
 echo $this->Form->create('JobPosting', array(
-    'url' => array('controller'=>'JobPostings', 'action'=>'add', 'member'=>true),
+    'url' => array('controller'=>'JobPostings', 'action'=>'add'),
     'role'=>'form',
     //'class'=>'form-horizontal',
     'inputDefaults' => array(
@@ -10,11 +10,12 @@ echo $this->Form->create('JobPosting', array(
         'error'=>false
     )
 ));
-echo $this->Form->hidden('group_id', array('value'=>$group_id));
+
 ?>
 <style type="text/css">
     #ex1Slider .slider-selection {
         background: #BABABA;
+
     }
 </style>
 <div class="modal-header modal-header-success">
@@ -55,7 +56,7 @@ echo $this->Form->hidden('group_id', array('value'=>$group_id));
             <div class="form-group <?=$class?>">
                 <label class="control-label" for="jobTalentpattern">Location:</label>
                 <?php
-                echo $this->Form->input('group_id', array(
+                echo $this->Form->input('account_id', array(
                     'type'=>'select',
                     'options'=>$locations,
                     'empty' => false,
@@ -294,7 +295,7 @@ echo $this->Form->hidden('group_id', array('value'=>$group_id));
 </div>
 <?php echo $this->Form->end();?>
 
-<script language="JavaScript">
+<script type="text/javascript">
     jQuery(window).ready( function($) {
         $(".chzn-select").chosen();
 

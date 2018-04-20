@@ -4,7 +4,7 @@
             	<th class="col-md-6">Training</th>
                 <th>Status</th>
                 <th>Expires Date</th>
-                <th>Required</th>
+                <th class="text-center">Required</th>
             
             </tr>
         </thead>
@@ -46,13 +46,14 @@
                 <tr>
                     <td>
                         <?php
-						if(!empty($t['TrainingFile'])){
+                        if(!empty($t['TrainingFile'])){
                         	echo $this->Html->link(
-                        		$trn['Training']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
-                            	array('controller'=>'Trainings', 'action'=>'play', $trn['Training']['id']),
+                        		$t['TrainingRecord']['name'] .' <i class="fa fa-fw fa-play-circle fa-lg"></i>',
+                            	array('controller'=>'Trainings', 'action'=>'play', $t['TrainingFile'][0]['training_id']),
                             	array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myModal')
                         	);
 						}else{
+							
 							echo $t['TrainingRecord']['name'];
 						}
                         ?>

@@ -135,54 +135,6 @@
 
 <script type="text/javascript">
     jQuery(window).ready( function($) {
-        $("#myModal").on('hidden.bs.modal', function () {
-            $(this).data('bs.modal', null);
-        });
 
-        $("#myModal2").on('hidden.bs.modal', function () {
-            $(this).data('bs.modal', null);
-        });
-
-        $('#ex2').slider({
-            formatter: function(value) {
-                return 'Percent Match: ' + value + '%';
-            }
-        });
-        /*
-        var edit_name_url = '<?php echo Router::url( array('controller'=>'JobTalentpatterns', 'action'=>'inline_edit', 'member'=>true ));?>';
-
-        $('.jobTalentPattern').editable({
-            disabled: false,
-            validate: function(value) {
-                if($.trim(value) == '') return 'This field is required';
-            }
-        });
-
-        $(document).on('click','.editable-submit',function(){
-            var id = $(this).closest('.wrap').attr('id');
-            var value = $('.input-sm').val();
-            var field = $(this).closest('.wrap').attr('field');
-
-            $.ajax({
-                url: edit_name_url,
-                type: 'post',
-                dataType: "json",
-                data: { JobTalentPattern: { id: id, field: field, value: value }},
-                success: function(s){
-                    if(s == 'status'){
-                        $(z).html(y);
-                    }
-
-                    if(s == 'error') {
-                        alert('Error Processing your Request!');
-                    }
-                },
-
-                error: function(e){
-                    alert('Error Processing your Request!!');
-                }
-            });
-        });
-        */
     });
 </script>
