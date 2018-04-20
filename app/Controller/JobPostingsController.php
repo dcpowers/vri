@@ -19,18 +19,15 @@ class JobPostingsController extends AppController {
         'Job',
         'JobQuestion',
         'JobTalentpattern',
-        'Group',
-        'GroupMembership',
         'GroupCredit',
         'JobPosting',
-        'DetailUser',
         'ApplyJob',
         'ExemptJob',
         'EmploymentType',
         'Collaborater',
         'User',
         'TalentpatternUser',
-        'ZipCode'
+        'Account'
     );
 
     //beforeFilter callback
@@ -116,19 +113,13 @@ class JobPostingsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['JobPosting']['posted_by'] = AuthComponent::user('id');
 
-            if(!empty($this->request->data['JobPosting']['active_till_date'])){
-                $pieces = explode("-", $this->request->data['JobPosting']['active_till_date']);
-
-                $day = $pieces[1];
-                $month = $pieces[0];
-                $year = $pieces[2];
-
-                $this->request->data['JobPosting']['active_till_date'] = $year.'-'.$month.'-'.$day;
+			if(!empty($this->request->data['JobPosting']['active_till_date'])){
+				$this->request->data['JobPosting']['active_till_date'] = date('Y-m-d', strtotime($this->request->data['JobPosting']['active_till_date']));
             }
 
             $error = false;
             $validationErrors = array();
-
+            pr($this->request->data);
             $this->JobPosting->validate = $this->JobPosting->validationSets['newListing'];
             $this->JobPosting->set($this->request->data['JobPosting']);
 
@@ -137,35 +128,26 @@ class JobPostingsController extends AppController {
                 $error = true;
             }
 
+			pr($this->JobPosting->validates());
+			pr($validationErrors);
+            pr($this->request->data);
+			exit;
             if($error == false){
-                $error = $this->GroupCredit->useCredit(AuthComponent::user('parent_group_ids.1'), 1);
-
-                if($error[0] == false){
-                    if ($this->JobPosting->saveall($this->request->data)) {
-
-                        //Audit::log('Group record edited', $this->request->data );
-                        $this->Session->setFlash(
-                            __('Job Posting Has Been saved'),
-                            'alert-box',
-                            array('class'=>'alert-success')
-                        );
-
-                        return $this->redirect(array('controller'=>'JobPostings','action' => 'index', 'member'=>true));
-
-                    } else {
-                        $this->Session->setFlash(
-                            __('There Was An Error! Job Posting information was not saved. Please try again.'),
-                            'alert-box',
-                            array('class'=>'alert-danger')
-                        );
-                    }
-                }else{
+                if ($this->JobPosting->saveall($this->request->data)) {
+					//Audit::log('Group record edited', $this->request->data );
                     $this->Session->setFlash(
-                        __('You do not have enough credits to post a job.'),
+                    	__('Job Posting Has Been saved'),
+                        'alert-box',
+                        array('class'=>'alert-success')
+                    );
+                } else {
+                	$this->Session->setFlash(
+                    	__('There Was An Error! Job Posting information was not saved. Please try again.'),
                         'alert-box',
                         array('class'=>'alert-danger')
                     );
                 }
+
             }else{
                 $this->Session->setFlash(
                     __('Information not save! Please see errors below'),
@@ -174,12 +156,14 @@ class JobPostingsController extends AppController {
                 );
                 $this->set( compact( 'validationErrors' ) );
             }
+
+			return $this->redirect(array('controller'=>'JobPostings','action' => 'index'));
         }
 
         //Get Jobs
         $jobs = $this->Job->find('list', array(
         	'conditions' => array(
-            	'Job.group_id' => $group_ids
+            	#'Job.group_id' => $group_ids
             ),
             'contain' => array(
             )
@@ -188,7 +172,7 @@ class JobPostingsController extends AppController {
         //Get Talent Patterns
         $jobTalentpattern = $this->JobTalentpattern->find('list', array(
         	'conditions' => array(
-            	'JobTalentpattern.group_id' => $group_ids
+            	#'JobTalentpattern.group_id' => $group_ids
             ),
             'contain' => array(
             )
@@ -197,38 +181,24 @@ class JobPostingsController extends AppController {
         //Get Questions
         $jobQuestion = $this->JobQuestion->find('list', array(
         	'conditions' => array(
-            	'JobQuestion.group_id' => $group_ids
+            	#'JobQuestion.group_id' => $group_ids
             ),
             'contain' => array(
             )
         ));
 
         //Get Percent Match options
-        $group_list = $this->Group->find('list', array(
+        $group_list = $this->Account->find('list', array(
         	'conditions' => array(
-            	'Group.id' => $group_ids,
-                'Group.zip !=' => '',
-                'Group.city !=' => '',
-                'Group.state !=' => '',
+            	#'Account.zip !=' => '',
+                #'Account.city !=' => '',
+                #'Account.state !=' => '',
             ),
             'contain' => array(
             ),
         ));
 
-        $group = $this->Group->find('first', array(
-        	'conditions' => array(
-            	'Group.id' => AuthComponent::user('parent_group_ids.1')
-            ),
-            'contain' => array(
-            ),
-            'fields'=>array('Group.id', 'Group.group_type_id')
-        ));
-
-        if($group['Group']['group_type_id'] >= 1){
-        	$percent_match_options = 'true';
-        }else{
-        	$percent_match_options = 'false';
-        }
+        $percent_match_options = 'true';
 
         $settings['status'] = $this->Job->jobStatusInt();
         $settings['salaryTypes'] = $this->Job->salaryTypesInt();
@@ -241,8 +211,6 @@ class JobPostingsController extends AppController {
         $this->set( 'jobQuestion', $jobQuestion );
         $this->set( 'settings', $settings );
 
-        $this->set( 'group_id', $group_id[0]);
-        $this->set( 'title', $title );
         $this->set( 'employmentTypes', $employmentTypes );
 
         $this->set( 'today', date('m-d-Y', strtotime('now')) );
