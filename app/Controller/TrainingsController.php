@@ -1122,10 +1122,10 @@ class TrainingsController extends AppController {
 
 	public function edit($id = null){
 		if ($this->request->is('post') || $this->request->is('put')) {
-
-        	$files = $this->request->data['Training']['files'];
+			
+			$files = $this->request->data['Training']['files'];
 			unset($this->request->data['Training']['files']);
-
+			
 			if(empty($this->request->data['Training']['name'])){
 				$this->Flash->alertBox(
                     'Please Enter A Name',
@@ -1288,7 +1288,7 @@ class TrainingsController extends AppController {
 	public function upload($file=null, $id=null, $type=null){
 		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
         $arr_ext = array('jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt'); //set allowed extensions
-
+		
 		if($file['error'] == 0 && in_array($ext, $arr_ext)){
 			$c = uniqid (rand(), true);;
 			$name = $c.'.'.$ext;
@@ -1306,6 +1306,7 @@ class TrainingsController extends AppController {
 			$this->request->data['TrainingFile']['file_size'] = $file['size'];
 			$this->request->data['TrainingFile']['training_id'] = $id;
 			if (move_uploaded_file($file['tmp_name'], $uploadfile) == TRUE) {
+				
 				$this->TrainingFile->saveAll($this->request->data['TrainingFile']);
 
 				return true;
