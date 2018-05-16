@@ -34,9 +34,11 @@
 	<div class="tabbable" style="margin-top: 20px;">
     	<ul class="nav nav-tabs">
         	<li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training Information</a></li>
+        	<li><a href="#files" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training Files</a></li>
             <?php
 			if(AuthComponent::user('Role.permission_level') >= 60 ){
 				?>
+				<li><a href="#quiz" data-toggle="tab"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i> Training Quiz</a></li>
 				<li><a href="#admin" data-toggle="tab"><i class="fa fa-cogs fa-fw" aria-hidden="true"></i> Administrative Settings</a></li>
             	<li><a href="#use" data-toggle="tab"><i class="fa fa-flag fa-fw" aria-hidden="true"></i> Account Use</a></li>
 				<?php
@@ -81,7 +83,7 @@
 								</label>
 							</div>
 							<div class="form-group">
-								<label for="name" class="control-label">Make Avaiable To Others:</label><br />
+								<label for="name" class="control-label">Make Available To Others:</label><br />
 								<label class="radio-inline">
 									<?php
 									echo $this->Form->radio('is_public',
@@ -91,10 +93,28 @@
 									?>
 								</label>
 							</div>
+							
+							<div class="form-group">
+								<label class="control-label" for="name">Category(s):</label>
+	                            <?php
+	                            $current_cat_ids = Set::extract('{n}.training_category_id',$this->request->data['TrnCat']);
+	                            echo $this->Form->input('TrnCat.training_category_id', array (
+	                                'options'=>$TrnCategory,
+									'value'=>$current_cat_ids,
+	                                'type'=>'select',
+	                                'empty'=>true,
+	                                'multiple'=>true,
+	                                'class'=>'form-select chzn-select',
+	                                'data-placeholder'=>'Select Category(s)'
+	                            ));
+	                            ?>
+							</div>
 						</div>
 					</div>
 				</div>
-
+				
+			</div>
+			<div class="tab-pane fade in" id="files">
 				<div class="form-group">
     				<label for="name" class="control-label">Files:</label>
 			        <?php
@@ -112,6 +132,7 @@
 						<table class="table table-striped table-condensed" id="trainingTable">
         					<thead>
             					<tr class="tr-heading">
+                					<th class="col-md-1">Order</th>
                 					<th>File</th>
 				                    <th>File Type</th>
 				                    <th>File Size</th>
@@ -121,13 +142,25 @@
 
 				            <tbody>
             					<?php
+            					$c = 0;
 				                foreach($this->request->data['TrainingFile'] as $file){
-
-                					$filePath = filesize(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']);
+									$filePath = file_exists(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']) ? filesize(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']) : null;
 				                    $fileSize = human_filesize($filePath);
 
 									?>
 				                    <tr>
+				                    	<td>
+				                    		<div class="form-group">
+				                    			<?php echo $this->Form->hidden('TrainingFile.'.$c.'.id', array('value'=>$file['id'])); ?>
+                                                <label for="inputTitle" class="control-label sr-only">Order:</label>
+                                                <?php 
+                                                echo $this->Form->input('TrainingFile.'.$c.'.order_by', array(
+                                                    'type'=>'text',
+                                                    'value'=>$file['order_by']
+                                                )); 
+                                                ?>
+                                            </div>
+				                    	</td>
                     					<td><?=$file['human_name']?></td>
 				                        <td><?=$file['file_type']?></td>
 				                        <td><?=$fileSize?></td>
@@ -146,6 +179,7 @@
 										</td>
 				                    </tr>
 				                    <?php
+				                    $c++;
 				                }
 				                ?>
 				            </tbody>
@@ -155,6 +189,183 @@
 				    ?>
 				</div>
 			</div>
+			<div class="tab-pane fade" id="quiz">
+                <h4>
+                    Quiz
+                    <span id="sets-control">
+                        <a class="btn btn-default btn-xs append-row"><i class="fa fa-plus fa-fw"></i>Add Question</a>
+                    </span>
+                </h4>
+                <div id="quizSet">
+                    <?php
+                    $c = 0; 
+                    foreach( $this->request->data['TrainingQuiz'] as $record_info ) { 
+                        echo $this->Form->hidden('TrainingQuiz.'.$c.'.id', array('value'=>$record_info['id'])); 
+                        $answerName = 'data[TrainingQuiz]['.$c.'][answer]';
+                        ?>
+                        <div class="panel panel-primary questions">
+                            <div class="panel-heading">
+                                <ul class="list-inline">
+                                    <li class="col-md-1">
+                                        <div class="form-group">
+                                            <label for="inputTitle" class="control-label sr-only">Quiz Order:</label>
+                                            <?php 
+                                            echo $this->Form->input('TrainingQuiz.'.$c.'.quiz_order', array(
+                                                'type'=>'text',
+                                                'value'=>$record_info['quiz_order'],
+                                            )); 
+                                            ?>
+                                        </div>
+                                    </li>
+                                    <li class="col-md-11">
+                                        <div class="form-group">
+                                            <label for="inputTitle" class="control-label sr-only">Question:</label>
+                                            <?php 
+                                            echo $this->Form->input('TrainingQuiz.'.$c.'.question', array(
+                                                'type'=>'text',
+                                                'value'=>$record_info['question']
+                                            )); 
+                                            ?>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div> 
+                            </div>
+                            <div class="panel-body">
+                                <h4>Options</h4>
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <ul class="list-inline">
+                                            <li class="col-md-1 text-center">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="<?=$answerName?>" id="" value="A" <?php if($record_info['answer'] == 'A'){ echo 'checked';} ?>/>
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li class="col-md-11">
+                                                <div class="form-group">
+                                                    <label for="inputTitle" class="control-label sr-only">Answer A:</label>
+                                                    <?php 
+                                                    echo $this->Form->input('TrainingQuiz.'.$c.'.answer_a', array(
+                                                        'type'=>'text',
+                                                        'value'=>$record_info['answer_a']
+                                                    )); 
+                                                    ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <ul class="list-inline">
+                                            <li class="col-md-1 text-center">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="<?=$answerName?>" id="" value="B" <?php if($record_info['answer'] == 'B'){ echo 'checked';} ?> />
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li class="col-md-11">
+                                                <div class="form-group">
+                                                    <label for="inputTitle" class="control-label sr-only">Answer B:</label>
+                                                    <?php 
+                                                    echo $this->Form->input('TrainingQuiz.'.$c.'.answer_b', array(
+                                                        'type'=>'text',
+                                                        'value'=>$record_info['answer_b']
+                                                    )); 
+                                                    ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <ul class="list-inline">
+                                            <li class="col-md-1 text-center">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="<?=$answerName?>" id="" value="C" <?php if($record_info['answer'] == 'C'){ echo 'checked';} ?> />
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li class="col-md-11">
+                                                <div class="form-group">
+                                                    <label for="inputTitle" class="control-label sr-only">Answer C:</label>
+                                                    <?php 
+                                                    echo $this->Form->input('TrainingQuiz.'.$c.'.answer_c', array(
+                                                        'type'=>'text',
+                                                        'value'=>$record_info['answer_c']
+                                                    )); 
+                                                    ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <ul class="list-inline">
+                                            <li class="col-md-1 text-center">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="<?=$answerName?>" id="" value="D" <?php if($record_info['answer'] == 'D'){ echo 'checked';} ?> />
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li class="col-md-11">
+                                                <div class="form-group">
+                                                    <label for="inputTitle" class="control-label sr-only">Answer D:</label>
+                                                    <?php 
+                                                    echo $this->Form->input('TrainingQuiz.'.$c.'.answer_d', array(
+                                                        'type'=>'text',
+                                                        'value'=>$record_info['answer_d']
+                                                    )); 
+                                                    ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li>
+                                        <ul class="list-inline">
+                                            <li class="col-md-1 text-center">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="<?=$answerName?>" id="" value="E" <?php if($record_info['answer'] == 'E'){ echo 'checked';} ?> />
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li class="col-md-11">
+                                                <div class="form-group">
+                                                    <label for="inputTitle" class="control-label sr-only">Answer E:</label>
+                                                    <?php 
+                                                    echo $this->Form->input('TrainingQuiz.'.$c.'.answer_e', array(
+                                                        'type'=>'text',
+                                                        'value'=>$record_info['answer_e']
+                                                    )); 
+                                                    ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <h4>Action Step</h4>
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Action Step:</label>
+                                    <?php 
+                                    echo $this->Form->input('TrainingQuiz.'.$c.'.action_step', array(
+                                        'type'=>'text',
+                                        'value'=>$record_info['action_step']
+                                    )); 
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                        $c++;
+                    }
+                    ?>
+                </div>
+            </div>
 			<?php
 			if(AuthComponent::user('Role.permission_level') >= 60 ){
 				?>
@@ -398,6 +609,19 @@ $trnFile = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'a
 ?>
 <script type="text/javascript">
     jQuery(window).ready( function($) {
+        function addRow(  ) {
+	        var rowCount = $('div.questions').length - 1;
+
+	        var value = $("#template").html();
+	        //var text = value.replace('{val}', rowCount);
+	        $("#quizSet").prepend(value);
+
+	        $("#quizSet :input").each(function(){
+	            //var input = $(this); // This is the jquery object of the input, do what you will
+	            $(this).attr('name',$(this).attr('name').replace('{val}',rowCount));
+	        });
+
+	    }
         $(".chzn-select").chosen({
             allow_single_deselect: true,
 
@@ -427,5 +651,170 @@ $trnFile = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'a
                 },
             });
 		});
+		
+		$( '#sets-control' ).on( 'click', function() {
+            addRow( $( '#sets tr:last' ), 10 );
+        });
     });
 </script>
+
+<div class="hide" id="template">
+    <div class="panel panel-primary questions">
+        <div class="panel-heading">
+            <ul class="list-inline">
+                <li class="col-md-1">
+                    <div class="form-group">
+                        <label for="inputTitle" class="control-label sr-only">Quiz Order:</label>
+                        <?php
+                        echo $this->Form->input('TrainingQuiz.{val}.quiz_order', array(
+                            'type'=>'text',
+                        ));
+                        ?>
+                    </div>
+                </li>
+
+                <li class="col-md-11">
+                    <div class="form-group">
+                        <label for="inputTitle" class="control-label sr-only">Question:</label>
+                        <?php
+                        echo $this->Form->input('TrainingQuiz.{val}.question', array(
+                            'type'=>'text',
+                        ));
+                        ?>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="panel-body">
+            <h4>Options</h4>
+
+            <ul class="list-unstyled">
+                    <li>
+                        <ul class="list-inline">
+                            <li class="col-md-1 text-center">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="data[TrainingQuiz][{val}][answer]" id="" value="A" />
+                                    </label>
+                                </div>
+                            </li>
+
+                            <li class="col-md-11">
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Answer A:</label>
+                                    <?php
+                                    echo $this->Form->input('TrainingQuiz.{val}.answer_a', array(
+                                        'type'=>'text',
+                                    ));
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <ul class="list-inline">
+                            <li class="col-md-1 text-center">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="data[TrainingQuiz][{val}][answer]" id="" value="B" />
+                                    </label>
+                                </div>
+                            </li>
+
+                            <li class="col-md-11">
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Answer B:</label>
+                                    <?php
+                                    echo $this->Form->input('TrainingQuiz.{val}.answer_b', array(
+                                        'type'=>'text',
+                                    ));
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <ul class="list-inline">
+                            <li class="col-md-1 text-center">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="data[TrainingQuiz][{val}][answer]" id="" value="C"/>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="col-md-11">
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Answer C:</label>
+                                    <?php
+                                    echo $this->Form->input('TrainingQuiz.{val}.answer_c', array(
+                                        'type'=>'text',
+                                    ));
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <ul class="list-inline">
+                            <li class="col-md-1 text-center">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="data[TrainingQuiz][{val}][answer]" id="" value="D" />
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="col-md-11">
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Answer D:</label>
+                                    <?php
+                                    echo $this->Form->input('TrainingQuiz.{val}.answer_d', array(
+                                        'type'=>'text',
+                                    ));
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <ul class="list-inline">
+                            <li class="col-md-1 text-center">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="data[TrainingQuiz][{val}][answer]" id="" value="E"/>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="col-md-11">
+                                <div class="form-group">
+                                    <label for="inputTitle" class="control-label sr-only">Answer E:</label>
+                                    <?php
+                                    echo $this->Form->input('TrainingQuiz.{val}.answer_e', array(
+                                        'type'=>'text',
+                                    ));
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+            </ul>
+
+            <h4>Action Step</h4>
+            <div class="form-group">
+                <label for="inputTitle" class="control-label sr-only">Action Step:</label>
+                <?php
+                echo $this->Form->input('TrainingQuiz.{val}.action_step', array(
+                    'type'=>'text',
+                ));
+                ?>
+            </div>
+        </div>
+    </div>
+
+</div>

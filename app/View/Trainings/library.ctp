@@ -37,7 +37,8 @@
                     <?php endif; ?>
                 </th>
 
-                <th class="col-md-4">Description</th>
+                <th class="col-md-2 text-center">Has Files</th>
+                <th class="col-md-2 text-center">Has Quiz</th>
 				<th class="col-md-1 text-center">Status</th>
                 <th class="col-md-3">Categories</th>
                 <th class="col-md-1"></th>
@@ -48,7 +49,14 @@
             <?php
             #pr($trainings);
             $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+            
             foreach($trainings as $trn){
+            	#pr($trn);
+            	#exit;
+            	$hasFiles = (!empty($trn['TrainingFile'])) ? '<i class="fa fa-check fa-2x text-success"></i>' : '<i class="fa fa-ban fa-2x text-danger"></i>' ;
+            	$hasQuiz = (!empty($trn['TrainingQuiz'])) ? '<i class="fa fa-check fa-2x text-success"></i>' : '<i class="fa fa-ban fa-2x text-danger"></i>' ;
+            	$status = ($trn['Training']['is_active'] == 1) ? '<i class="fa fa-check fa-2x text-success"></i>' : '<i class="fa fa-ban fa-2x text-danger"></i>' ;
+            	
 				?>
                 <tr>
                     <td>
@@ -61,11 +69,9 @@
                         ?>
 					</td>
 
-                    <td><?=$trn['Training']['description']?></td>
-
-					<td class="text-center">
-                        <span class="<?=$trn['Status']['color']?> label-as-badge"><i class="fa <?=$trn['Status']['icon']?>"></i></span>
-					</td>
+                    <td class="text-center"><?=$hasFiles?></td>
+                    <td class="text-center"><?=$hasQuiz?></td>
+                    <td class="text-center"><?=$status?></td>
 
                     <td>
                         <?php
