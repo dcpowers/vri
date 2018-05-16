@@ -453,9 +453,9 @@ class TrainingsController extends AppController {
                         'TrnCat.training_category_id',
                     )
                 ),
-                'TrainingFile'=>array(
-                ),
+                'TrainingFile'=>array(),
                 'TrainingMembership'=>array(),
+                'TrainingQuiz'=>array(),
 				'Status'=>array(
                     'fields'=>array('Status.name', 'Status.color', 'Status.icon')
                 ),
@@ -1109,7 +1109,9 @@ class TrainingsController extends AppController {
             $this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
 
 		}
-
+		
+		$this->set('TrnCategory', $this->TrainingCategory->pickList());
+		
 		if(AuthComponent::user('Role.permission_level') >= 60 ){
 
 			$this->set('trnAccount', array());
@@ -1122,7 +1124,8 @@ class TrainingsController extends AppController {
 
 	public function edit($id = null){
 		if ($this->request->is('post') || $this->request->is('put')) {
-			
+			#pr($this->request->data);
+			#exit;
 			$files = $this->request->data['Training']['files'];
 			unset($this->request->data['Training']['files']);
 			
@@ -1134,7 +1137,19 @@ class TrainingsController extends AppController {
 
 				$this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
 			}
+			
+			if(!empty($this->request->data['TrnCat'])){
+                $this->TrnCat->deleteAll(array('TrnCat.training_id' => $this->request->data['Training']['id']), false);
 
+                foreach($this->request->data['TrnCat'] as $item){
+                    foreach($item as $key=>$val){
+                        $this->request->data['TrnCat'][$key]['training_id'] = $this->request->data['Training']['id'];
+                        $this->request->data['TrnCat'][$key]['training_category_id'] = $val;
+                    }
+                }
+                unset($this->request->data['TrnCat']['training_category_id']);
+            }
+            
 			$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
             $this->request->data['Training']['account_id'] = $account_ids[0];
             $this->request->data['Training']['author_id'] = AuthComponent::user('id');
@@ -1203,7 +1218,8 @@ class TrainingsController extends AppController {
 					#exit;
 				}
             }
-
+			#pr($this->request->data);
+			#exit;
 			if ($this->Training->saveAll($this->request->data)) {
 				if(!empty($files)){
                     foreach($files as $file){
@@ -1229,16 +1245,24 @@ class TrainingsController extends AppController {
                 'Training.id' => $id
             ),
             'contain'=>array(
-                'TrainingFile'=>array(),
+                'TrainingFile'=>array(
+                	'order'=>array('TrainingFile.order_by' => 'ASC')
+                ),
+                'TrainingQuiz'=>array(
+                	'order'=>array('TrainingQuiz.quiz_order' => 'ASC')
+                ),
                 'TrainingMembership'=>array(
 					'conditions'=>array(
 						'TrainingMembership.is_manditory'=>1
 					)
 				),
+				'TrnCat'=>array()
             ),
 
         ));
-
+		
+		$this->set('TrnCategory', $this->TrainingCategory->pickList());
+		
 		if(AuthComponent::user('Role.permission_level') >= 60 ){
 			$trnAccount = $this->TrainingMembership->find('all', array(
 	            'conditions' => array(
