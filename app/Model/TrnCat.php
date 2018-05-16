@@ -34,5 +34,4 @@ class TrnCat extends AppModel {
         ));
         return $data; 
     }
-
 }
