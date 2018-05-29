@@ -21,6 +21,7 @@ class TrainingsController extends AppController {
         'TrainingClassroom',
         'TrainingRecord',
         'TrainingFile',
+        'TrainingQuiz',
         'TrainingClassroomDetail',
         'TrnCat',
         'TrainingMembership',
@@ -1352,30 +1353,17 @@ class TrainingsController extends AppController {
                 'Training.id' => $id
             ),
             'contain'=>array(
-                'TrainingFile'=>array()
+                'TrainingFile'=>array(
+                	'order'=>array('TrainingFile.order_by' => 'ASC')
+                ),
+                'TrainingQuiz'=>array(
+                	
+                )
             ),
 
         ));
-
-		$arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
-
-		$poster = null;
-		$video = null;
-
-		foreach($training['TrainingFile'] as $v){
-            if($v['file_type'] == 'mp4'){
-				$video = $v['file'];
-			}
-
-			if(in_array($v['file_type'], $arr_ext)){
-				$poster = $v['file'];
-			}
-		}
-		unset($training['TrainingFile']);
-
 		$this->set('trn', $training);
-		$this->set('poster', $poster);
-		$this->set('video', $video);
+
 	}
 
 	public function signoff($id=null){
@@ -1473,4 +1461,22 @@ class TrainingsController extends AppController {
         #echo json_encode($training);
         
 	}
+	
+	public function quiz( $id ) {
+        $this->Training->id = $id;
+        if (!$this->Training->exists()) {
+            throw new NotFoundException(__('Invalid Quiz'));
+        }
+		
+		$quiz = $this->TrainingQuiz->find('all', array(
+            'conditions'=>array(
+                'TrainingQuiz.training_id'=>$id,
+
+            ),
+            'order'=>array('TrainingQuiz.quiz_order ASC')
+
+        ));
+
+        $this->set( 'quiz', $quiz );
+    }
 }
