@@ -1139,17 +1139,20 @@ class TrainingsController extends AppController {
 				$this->redirect(array('controller'=>'Trainings', 'action'=>'library'));
 			}
 			
-			if(!empty($this->request->data['TrnCat'])){
+			if(!empty($this->request->data['TrnCat']['training_category_id'])){
                 $this->TrnCat->deleteAll(array('TrnCat.training_id' => $this->request->data['Training']['id']), false);
-
-                foreach($this->request->data['TrnCat'] as $item){
+				
+				foreach($this->request->data['TrnCat'] as $item){
+                	
                     foreach($item as $key=>$val){
                         $this->request->data['TrnCat'][$key]['training_id'] = $this->request->data['Training']['id'];
                         $this->request->data['TrnCat'][$key]['training_category_id'] = $val;
                     }
                 }
                 unset($this->request->data['TrnCat']['training_category_id']);
-            }
+            }else{
+				unset($this->request->data['TrnCat']);
+			}
             
 			$account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
             $this->request->data['Training']['account_id'] = $account_ids[0];
