@@ -14,9 +14,9 @@
 	            <tbody>
             		<?php
 	                foreach($trainingFiles as $file){
-
-                		$filePath = filesize(WWW_ROOT .'/files/'.$this->request->data['Training']['id'].'/'.$file['file']);
-	                    $fileSize = human_filesize($filePath);
+						$filePath = file_exists(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']) ? filesize(WWW_ROOT .'/files/training/'.$this->request->data['Training']['id'].'/'.$file['file']) : null;
+				        
+                		$fileSize = human_filesize($filePath);
 
 						?>
 	                    <tr>

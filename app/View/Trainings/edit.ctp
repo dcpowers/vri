@@ -34,7 +34,7 @@
 	<div class="tabbable" style="margin-top: 20px;">
     	<ul class="nav nav-tabs">
         	<li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training Information</a></li>
-        	<li><a href="#files" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training Files</a></li>
+        	<li><a href="#trnFile" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training Files</a></li>
             <?php
 			if(AuthComponent::user('Role.permission_level') >= 60 ){
 				?>
@@ -114,7 +114,7 @@
 				</div>
 				
 			</div>
-			<div class="tab-pane fade in" id="files">
+			<div class="tab-pane fade in" id="trnFile">
 				<div class="form-group">
     				<label for="name" class="control-label">Files:</label>
 			        <?php
@@ -460,7 +460,7 @@
 
 				<div class="tab-pane fade in" id="use">
 					<table class="table table-striped table-condensed" id="trainingTable">
-					<thead>
+						<thead>
     						<tr class="tr-heading">
         						<th class="col-md-8">Account(s)</th>
 			                    <th class="text-center col-md-2">Required</th>
@@ -499,7 +499,7 @@
 			            </tbody>
 			        </table>
 					<table class="table table-striped table-condensed" id="trainingTable">
-					<thead>
+						<thead>
     						<tr class="tr-heading">
         						<th class="col-md-8">Department(s)</th>
 			                    <th class="text-center col-md-2">Required</th>
@@ -538,7 +538,7 @@
 			            </tbody>
 			        </table>
 					<table class="table table-striped table-condensed" id="trainingTable">
-					<thead>
+						<thead>
     						<tr class="tr-heading">
         						<th class="col-md-8">User(s)</th>
 			                    <th class="text-center col-md-2">Required</th>

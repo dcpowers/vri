@@ -42,10 +42,8 @@
     	<thead>
         	<tr class="tr-heading">
             	<th class="col-md-6">Training</th>
-                <th>Status</th>
-                <th>Expires Date</th>
-                <th>Required</th>
-            
+                <th class="col-md-3">Status</th>
+                <th class="col-md-3">Expires Date</th>
             </tr>
         </thead>
     </table>

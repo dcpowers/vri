@@ -2,19 +2,18 @@
     	<thead>
         	<tr class="tr-heading">
             	<th class="col-md-6">Training</th>
-                <th>Status</th>
-                <th>Expires Date</th>
-                <th class="text-center">Required</th>
-            
+                <th class="col-md-3">Status</th>
+                <th class="col-md-3">Expires Date</th>
             </tr>
         </thead>
 
         <tbody>
         	<?php
-            #pr($requiredTraining );
+            #pr($training );
             #pr($data);
             #exit;
             foreach($training as $t){
+            	
             	$status = 'Current';
                 $label = 'label label-success';
 				$showRest = 1;
@@ -41,7 +40,6 @@
                 }
 
                 $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
-                $required = ($t['TrainingRecord']['is_required'] == 1) ? '<i class="fa fa-check-circle-o text-success fa-2x" aria-hidden="true"></i>' : '<i class="fa fa-times-circle-o text-danger fa-2x" aria-hidden="true"></i>' ;
                 ?>
                 <tr>
                     <td>
@@ -62,10 +60,7 @@
                         <span class="<?=$label?>"><?=$status?></span>
                     </td>
                     <td><?=$expires?></td>
-                    <td class="text-center"><?=$required?></td>
-                    
                 </tr>
-                
                 <?php
             }
 
