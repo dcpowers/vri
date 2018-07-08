@@ -22,7 +22,7 @@
         width: 100%;
         clear:none;
         background-color: #fff;
-  opacity: 0.5;
+  		opacity: 0.5;
         /*background:url(/img/transbg.png);
         background-color:#666666;
         border:1px solid #000000;*/
@@ -260,239 +260,19 @@
             </div>
             <div class="tab-pane fade <?=$employeesClass?> in" id="users">
                 <div id="LoadingDiv" style="display:none;">
-                        <?php echo $this->Html->image('ajax-loader-red.gif'); ?>
-                    </div>
+                    <?php echo $this->Html->image('ajax-loader-red.gif'); ?>
+                </div>
                 <div id="employeeList">
-
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <ul class="pagination pagination-sm">
-                                <li class="<?=$deptClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'View By Department',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'type', 'id'=>'department')
-                                    );
-                                    ?>
-                                </li>
-
-                                <li class="<?=$roleClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'View By Role',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'type', 'id'=>'role')
-                                    );
-                                    ?>
-                                </li>
-
-                                <li class="<?=$superClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'View By Supervisor',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'type', 'id'=>'supervisor')
-                                    );
-                                    ?>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-8">
-                            <ul class="pagination pagination-sm">
-                                <li class="<?=$aStatusClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'Active',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'statusType', 'id'=>1)
-                                    );
-                                    ?>
-                                </li>
-
-                                <li class="<?=$iStatusClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'Inactive',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'statusType', 'id'=>2)
-                                    );
-                                    ?>
-                                </li>
-
-                                <li class="<?=$allStatusClass?>">
-                                    <?php
-                                    echo $this->Html->link(
-                                        'View All',
-                                        '#',
-                                        array('escape'=>false, 'class'=>'statusType', 'id'=>'all')
-                                    );
-                                    ?>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <?php
-                    #pr($employees);
-                    foreach($employees as $department=>$employee){
-                        ?>
-                        <div class="hr-divider">
-                            <h3 class="hr-divider-content hr-divider-heading">
-                                <?=$department?>
-                            </h3>
-                        </div>
-                        <table class="table table-striped table-condensed table-hover">
-                            <thead>
-                                <tr>
-                                    <th class="col-sm-2">Name</th>
-                                    <th class="col-sm-2">Username</th>
-                                    <th class="col-sm-2">E-Mail</th>
-                                    <th class="col-sm-2">Role</th>
-                                    <th class="col-sm-2">Supervisor</th>
-                                    <th class="col-sm-2 text-center">Status</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php
-                                foreach($employee as $user){
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <?php
-                                            echo $this->Html->link(
-                                                $user['first_name'].' '.$user['last_name'],
-                                                array('controller'=>'Users', 'action'=>'view', $user['id']),
-                                                array('escape'=>false)
-                                            );
-                                            ?>
-                                        </td>
-
-                                        <td><?=$user['username']?></td>
-
-                                        <td><?=$user['email']?></td>
-
-                                        <td><?=$user['Role']['name']?></td>
-                                        <td>
-                                            <?php
-                                            if(array_key_exists('first_name', $user['Supervisor'])){
-                                                echo $user['Supervisor']['first_name'].' '.$user['Supervisor']['last_name'];
-                                            }else{
-                                                echo '--';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="<?=$user['Status']['color']?> label-as-badge"><i class="fa <?=$user['Status']['icon']?>"></i></span>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                        <?php
-                    }
-                    ?>
                 </div>
             </div>
             <div class="tab-pane fade <?=$recordsClass?> in" id="records">
-                <?php
-                #pr($account['TrainingMembership']);
-                ?>
-                <table class="table table-striped table-condensed" id="assetsTable">
-                    <thead>
-                        <tr class="tr-heading">
-                            <th class="col-md-4">Training</th>
-                            <th>Required</th>
-                            <th>Corp Required</th>
-                            <th class="col-md-2">Renewal Length</th>
-                            <th class="col-md-4">Required For</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php
-                        #pr($trainings);
-                        #exit;
-                        foreach($trainings as $title=>$trn){
-                            #pr($trn);
-                            #exit;
-                            $required = ($trn[0]['is_required'] ==1) ? '<i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color: #00A65A" ></i>' : '<i class="fa fa-times-circle fa-lg" aria-hidden="true" style="color: #DD4B39"></i>' ;
-                            $maditory = ($trn[0]['is_manditory'] ==1) ? '<i class="fa fa-check-circle fa-lg" aria-hidden="true" style="color: #00A65A" ></i>' : '<i class="fa fa-times-circle fa-lg" aria-hidden="true" style="color: #DD4B39"></i>' ;
-
-                            foreach($trn as $record){
-                                if(!empty($record['Department'])){
-                                    $requiredFor['Departments'][] = $record['Department']['name'];
-                                }
-
-                                if(!empty($record['RequiredUser'])){
-                                    $requiredFor['Users'][] = $record['RequiredUser']['first_name'] .' '.$record['RequiredUser']['last_name'];
-                                }
-                            }
-
-                            ?>
-                            <tr>
-                                <td>
-                                    <?php
-                                    echo $this->Html->link(
-                                        $trn[0]['Training']['name'],
-                                        array('controller'=>'Trainings', 'action'=>'index'),
-                                        array('escape'=>false)
-                                    );
-                                    ?>
-                                </td>
-
-                                <td class="text-center"><?=$required?></td>
-
-                                <td class="text-center"><?=$maditory?></td>
-
-                                <td><?=$trn[0]['renewal']?> Mo(s)</td>
-
-                                <td>
-                                    <?php
-                                    if(!empty($requiredFor)){
-                                        foreach($requiredFor as $key=>$val){
-                                            ?>
-                                            <ul>
-                                                <li><?=$key?>
-                                                    <ul>
-                                                        <?php
-                                                        foreach($val as $item){
-                                                            ?>
-                                                            <li><?=$item?></li>
-                                                            <?php
-                                                        }
-                                                        ?>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                            <?php
-                                        }
-                                    }else if($trn[0]['is_required'] ==1){
-                                        ?>
-                                        <ul>
-                                            <li>Everyone</li>
-                                        </ul>
-                                        <?php
-                                    }else{
-                                        ?>
-                                        <ul>
-                                            <li>--</li>
-                                        </ul>
-                                        <?php
-                                    }
-                                    ?>
-                                </td>
-                            </tr>
-                            <?php
-                            unset($requiredFor);
-                        }
-                        ?>
-                    </tbody>
-                </table>
+            	<div id="LoadingDiv" style="display:none;">
+                    <?php echo $this->Html->image('ajax-loader-red.gif'); ?>
+                </div>
+                <div id="trainingList">
+                </div>
             </div>
+            <!--
             <div class="tab-pane fade <?=$assetsClass?> in" id="assets">
                 <table class="table table-striped table-condensed" id="assetsTable">
                     <thead>
@@ -536,6 +316,7 @@
                     </tbody>
                 </table>
             </div>
+            -->
             <div class="tab-pane fade <?=$safetyClass?> in" id="safety">
 				<table class="table table-striped" id="accountsTable">
 			        <thead>
@@ -622,7 +403,7 @@
 									<?php
 									echo $this->Html->link(
 										$month .' ( '. $v['count'] .' ) ',
-						                array('controller'=>'Awards', 'action'=>'monthView', $title, $m),
+						                array('controller'=>'Awards', 'action'=>'monthView', $title, $m, $id),
 						                array('escape'=>false, 'data-toggle'=>'modal', 'data-target'=>'#myLgModal')
 						            );
 									?>
@@ -702,6 +483,7 @@
 
 <?php
     $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Accounts', 'action' => 'employeeView', $account['Account']['id']));
+    $trnurl = $this->Html->url(array('plugin'=>false, 'controller'=>'TrainingMemberships', 'action' => 'getAccountTraining', $account['Account']['id']));
 ?>
 <script type="text/javascript">
     jQuery(window).ready( function($) {
@@ -766,5 +548,51 @@
             return false;
 
         });
-    });
+        
+        $.ajax({
+            type: 'POST',
+            url:'<?=$url?>/' + '<?=$pageStatus?>/' + '/<?=$viewBy?>' + '.json',
+            cache: false,
+            dataType: "html",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                $('#LoadingDiv').show();
+                $('#employeeList').empty();
+            },
+            complete: function(){
+                $('#LoadingDiv').hide();
+            },
+            success: function(response) {
+                $('#employeeList').html(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+        
+        $.ajax({
+            type: 'POST',
+            url:'<?=$trnurl?>/' + '1.json',
+            cache: false,
+            dataType: "html",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                $('#LoadingDiv').show();
+                $('#trainingList').empty();
+            },
+            complete: function(){
+                $('#LoadingDiv').hide();
+            },
+            success: function(response) {
+                $('#trainingList').html(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+	});
 </script>

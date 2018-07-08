@@ -6,8 +6,8 @@
 <div class="account index bg-white">
     <div class="dashhead" style="border-bottom: 2px solid #00A65A;">
         <div class="dashhead-titles">
-            <h6 class="dashhead-subtitle">List Of Accidents</h6>
-            <h3 class="dashhead-title"><i class="fa fa-home fa-fw"></i><?=$title?> Accidents</h3>
+            <h6 class="dashhead-subtitle"><?=$title?> Accidents</h6>
+            <h3 class="dashhead-title"><i class="fa fa-ambulance fa-fw"></i>Accidents</h3>
         </div>
         <div class="dashhead-toolbar">
             <?php #echo $this->element( 'Accounts/search' );?>
@@ -20,6 +20,8 @@
         <div class="flextable-item">
 			<?php echo $this->element( 'Accidents/status_filter' );?>
             <?php #echo $this->element( 'Accidents/search_filter', ['in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy] );?>
+        </div>
+        <div class="flextable-item">
         </div>
     </div>
 	<?php

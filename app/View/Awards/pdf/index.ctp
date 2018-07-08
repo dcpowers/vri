@@ -26,15 +26,16 @@
 			$end = date("Y-m-d", strtotime('+'. $numDays .' days', strtotime($start)));
 			if(isset($results)){
 				foreach($results as $r){
-					$amount = ($r['User']['pay_status'] == 1) ? '5.00' : '2.50' ;
-					$amount = ($r['User']['is_award'] == 0) ? 0 : $amount ;
+					#$amount = ($r['User']['pay_status'] == 1) ? '5.00' : '2.50' ;
+					#$amount = ($r['User']['is_award'] == 0) ? 0 : $amount ;
+					$amount = $this->Number->currency($r['User']['award_amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));
 					$name = $r['User']['first_name'].' '.$r['User']['last_name'];
 					?>
 					<tr>
 						
-						<td style="height: 50px; border-bottom: 1px #000000 solid"><?=$name?></td>
-						<td style="height: 50px; border-bottom: 1px #000000 solid"><?=$amount;?></td>
-						<td style="height: 50px; border-bottom: 1px #000000 solid"></td>
+						<td style="height: 30px; border-bottom: 1px #000000 solid"><?=$name?></td>
+						<td style="height: 30px; border-bottom: 1px #000000 solid"><?=$amount;?></td>
+						<td style="height: 30px; border-bottom: 1px #000000 solid"></td>
 					</tr>
 					<?php
 					$c++;

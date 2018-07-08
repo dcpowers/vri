@@ -20,6 +20,7 @@
         $("#myModal").on('hidden.bs.modal', function () {
             $(this).data('bs.modal', null);
         });
+        
         $.ajax({
             type: 'POST',
             url: '/Trainings/userRequiredTraining/1.json',

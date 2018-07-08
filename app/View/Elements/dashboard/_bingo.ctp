@@ -8,11 +8,17 @@
         		<h3 class="box-title">Bingo</h3>
 				<div class="box-tools pull-right">
             <?php
-            echo $this->Html->link(
-                '<i class="fa fa-plus fa-fw"></i> <span>New Game</span>',
-                array('controller'=>'BingoGame', 'action'=>'add'),
-                array('escape'=>false)
-            );
+            $currentGame = 0;
+            if(!empty($dashboardData)){
+				$currentGame = ($dashboardData[0]['BingoGame']['end_date'] == null) ? 1 : 0 ;
+			}
+			if($currentGame == 0){
+				echo $this->Html->link(
+	                '<i class="fa fa-plus fa-fw"></i> <span>New Game</span>',
+	                array('controller'=>'BingoGame', 'action'=>'add'),
+	                array('escape'=>false)
+	            );
+			}
             ?>
         </div>
 			</div>

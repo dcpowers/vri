@@ -19,13 +19,18 @@
         )
     ));
 
-	$this->request->data['AccountUser']['account_id'] = (!empty(key($account))) ? key($account) : null ;
-	$a_id = (!empty(key($account))) ? key($account) : null ;
-	$a_name = (!empty($account)) ? $account[$a_id] : null ;
-
-	echo $this->Form->hidden('AccountUser.account_id', array('value'=>$a_id));
+	
+	echo $this->Form->hidden('AccountUser.account_id', array('value'=>$account));
 
 	?>
+	<style type="text/css">
+        .fileupload-new{ color: black; }
+        .fileupload-exists{ color: black; }
+
+        .fileupload-exists a{ padding: 0px; }
+        
+        
+    </style>
 <div class="modal-header modal-header-warning bg-maroon">
 	<a class="close" data-dismiss="modal"><i class="fa fa-close fa-2x"></i></a>
   	<h2><?php echo __('Add Employee:'); ?></h2>
@@ -33,7 +38,7 @@
 
 <div class="modal-body">
     <div class="row">
-    	<div class="col-md-2 headerContent">
+    	<div class="col-md-3 headerContent">
         	<div class="form-group">
                 <div class="fileupload fileupload-new " data-provides="fileupload">
                     <div class="fileupload-new thumbnail">
@@ -65,7 +70,7 @@
             </div>
         </div>
 
-		<div class="col-md-10">
+		<div class="col-md-9">
     		<h3><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</h3>
             <hr/>
             <label class="control-label text-danger" for="firstname">Name:</label>
@@ -138,6 +143,8 @@
                             	'options'=>$accounts,
                                 'class'=>'chzn-select form-control',
                                 'multiple'=>false,
+                                'value'=>$account,
+                                'id'=>'account_id',
                                 'between' => '<div class="input-group">',
                                 'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                             ));
@@ -270,7 +277,10 @@
     ?>
 </div>
 <?php echo $this->Form->end();?>
-
+<?php
+        $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
+    ?>
 
 <script type="text/javascript">
 	jQuery(document).ready( function($) {
@@ -289,7 +299,53 @@
                 close: "fa fa-trash",
             }
         });
-
-
+        
+        $('#account_id').change(function() {
+            $.ajax({
+                type: 'post',
+                url: '<?=$groupRequest_url?>/' + $(this).val() + '.json',
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#DepartmentUserDepartmentId').html(response);
+                    $('#DepartmentUserDepartmentId' ).val('').trigger( 'chosen:updated' );
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                },
+                complete: function(){
+                    $('#overlay').remove();
+                },
+            });
+        
+            $.ajax({
+                type: 'post',
+                url: '<?=$userRequest_url?>/' + $(this).val() + '.json',
+                dataType: "html",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('#UserSupervisorId').html(response);
+                    $('#UserSupervisorId' ).val('').trigger( 'chosen:updated' );
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                },
+                complete: function(){
+                    $('#overlay').remove();
+                },
+            });
+        });
     });
 </script>

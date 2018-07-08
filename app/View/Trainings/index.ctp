@@ -101,7 +101,7 @@
 						}
 						?>
 					</td>
-					<td>
+					<td class="text-center">
 						<?php
 	                    echo $this->Html->link(
 	                    	'<i class="fa fa-print fa-fw"></i>',

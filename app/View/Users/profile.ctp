@@ -2,14 +2,13 @@
     $doh = (!empty($this->request->data['User']['doh'])) ? date('F d, Y', strtotime($this->request->data['User']['doh'])) : 'N/A' ;
     $dob = (!empty($this->request->data['User']['dob'])) ? date('F d, Y', strtotime($this->request->data['User']['dob'])) : 'N/A' ;
 
-	$jobClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'employees') ? 'active' : null;
-    $recordsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'records') ? 'active' : null;
-    $assetsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'assets') ? 'active' : null;
-    $testingClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'testing') ? 'active' : null;
-    $awardClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'award') ? 'active' : null;
+	$recordsClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'records') ? 'active' : null;
+	$testingClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'testing') ? 'active' : null;
+	$awardClass = (!empty($this->params['pass'][0]) && $this->params['pass'][0] == 'award') ? 'active' : null;
 
-    $personalClass = (empty($this->params['pass'][0]) || $this->params['pass'][0] == 'info') ? 'active' : null;
-
+    $personalClass = (is_null($recordsClass) && is_null($testingClass) && is_null($awardClass)) ? 'active' : null;
+	
+	
     $this->Html->css('bootstrap-fileupload.min.css', '', array('block' => 'csslib') );
     $this->Html->script('bootstrap-fileupload.js', array('block' => 'scriptsBottom'));
 
@@ -35,8 +34,7 @@
     ));
 
     echo $this->Form->hidden('id', array('value'=>$this->request->data['User']['id']));
-	
-    ?>
+	?>
     <style type="text/css">
         .headerDiv{
             background-color: #ff6700 ;
@@ -139,7 +137,7 @@
                                     <li class="<?=$personalClass?>"><a href="#info" data-toggle="tab"><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</a></li>
                                     <li class="<?=$recordsClass?>"><a href="#records" data-toggle="tab"><i class="fa fa-book fa-fw" aria-hidden="true"></i> Training</a></li>
 									<li class="<?=$testingClass?>"><a href="#testing" data-toggle="tab"><i class="fa fa-clipboard fa-fw" aria-hidden="true"></i> Testing</a></li>
-                                    <li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab"><i class="fa fa-car fa-fw" aria-hidden="true"></i> Assets</a></li>
+                                    <!--<li class="<?=$assetsClass?>"><a href="#assets" data-toggle="tab"><i class="fa fa-car fa-fw" aria-hidden="true"></i> Assets</a></li>-->
                                     <li class="<?=$awardClass?>"><a href="#award" data-toggle="tab"><i class="fa fa-trophy fa-fw" aria-hidden="true"></i> Awards</a></li>
                                 </ul>
 
@@ -151,34 +149,7 @@
                                         <hr/>
                                         <label class="control-label text-danger" for="firstname">Name:</label>
 										<p class="form-control-static"><?=$this->request->data['User']['first_name']?> <?=$this->request->data['User']['last_name']?></p>
-
-										<!--
-										<div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <?php
-                                                    echo $this->Form->input('first_name', array (
-                                                        'type'=>'text',
-                                                        'id'=> 'first_name',
-                                                        'placeholder'=>'Firstname',
-                                                    ));
-                                                    ?>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <?php
-                                                    echo $this->Form->input('last_name', array (
-                                                        'type'=>'text',
-                                                        'id'=> 'last_name',
-                                                        'placeholder'=>'Lastname',
-                                                    ));
-                                                    ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        -->
+										
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -212,7 +183,45 @@
                                                 </div>
                                             </div>
                                         </div>
-
+										<?php 
+										
+                                        unset($class,$error);
+                                        $class = !empty($validationErrors['User']['password']) ? 'has-error has-feedback' : ''; 
+                                        $error = !empty($validationErrors['User']['password']) ? $validationErrors['User']['password'][0] : '';
+                                        ?>
+										<div class="form-group">
+											<div class="row">
+                                            	<div class="col-md-6 <?=$class?>">
+                                                	<label class="control-label" for="password">Password:</label>
+                                                    <?php
+                                                    echo $this->Form->input('password', array (
+                                                        'type'=>'password',
+                                                        'id'=> 'password',
+                                                        
+                                                    ));
+                                                    ?>
+                                                    <span class="text-danger"><?=$error?></span>
+                                                </div>
+                                            	<?php 
+                                                unset($class,$error);
+                                                $class = !empty($validationErrors['User']['password_confirm']) ? 'has-error has-feedback' : ''; 
+                                                $error = !empty($validationErrors['User']['password_confirm']) ? $validationErrors['User']['password_confirm'][0] : '';
+                                                ?>
+                                            	<div class="col-md-6 <?=$class?>">
+                                                	<label class="control-label" for="password">Confirm Password:</label>
+                                                    <?php
+                                                    echo $this->Form->input('password_confirm', array (
+                                                        'type'=>'password',
+                                                        'id'=> 'password_confirm',
+                                                        
+                                                    ));
+                                                    ?>
+                                                    <span class="text-danger"><?=$error?></span>
+                                                </div>
+                                            </div>
+                                            <small>Password must have a mimimum of 6 characters</small><br />
+                                            <small>Leave blank if no change</small>
+                                        </div>
 
                                         <hr style="border: 1px #C0C0C0 solid; "/>
                                         <h3><i class="fa fa-suitcase fa-fw" aria-hidden="true"></i> Job</h3>
@@ -315,7 +324,7 @@
 										</div>
                                     </div>
 
-                                    <div class="tab-pane fade <?=$assetsClass?> in" id="assets">
+                                    <!--<div class="tab-pane fade <?=$assetsClass?> in" id="assets">
                                         <table class="table table-striped table-condensed" id="assetsTable">
                                             <thead>
                                                 <tr class="tr-heading">
@@ -358,10 +367,10 @@
                                                 ?>
                                             </tbody>
                                         </table>
-                                    </div>
+                                    </div>-->
 
                                     <div class="tab-pane fade <?=$testingClass?> in" id="testing">
-										<?php #pr($user['AssignedTest']); ?>
+										<?php #pr($this->request->data['AssignedTest']); ?>
 										<table class="table table-hover table-condensed">
 									        <thead>
 									            <tr class="tr-heading">
@@ -375,8 +384,8 @@
 									        </thead>
 									        <tbody>
 									            <?php
-									            if(!empty($user['AssignedTest'])){
-									                foreach($user['AssignedTest'] as $key=>$item){
+									            if(!empty($this->request->data['AssignedTest'])){
+									                foreach($this->request->data['AssignedTest'] as $key=>$item){
 														#pr($item);
 									                    $c_date = (!is_null($item['completion_date'])) ? date( APP_DATE_FORMAT,strtotime($item['completion_date'])) : null;
 									                    $warning = strtotime("-14 day", strtotime($item['expires_date']));
@@ -461,48 +470,44 @@
 
                                             <tbody>
                                                 <?php
-                                                foreach($user['Award'] as $award){
-													$paid_date = (!empty($award['paid_date'])) ? date('F d, Y', strtotime($award['paid_date'])) : '<span class="fa-stack fa-lg"><i class="fa fa-dollar fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>' ;
-													?>
-                                                    <tr>
-                                                        <td><?=$award['Type']['award']?></td>
-                                                        <td><?php echo $this->Number->currency($award['amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></td>
-                                                        <td><?=$paid_date?></td>
-                                                    </tr>
-                                                    <?php
-                                                }
-
-                                                if(empty($user['Award'])){
+                                                
+                                                if(empty($this->request->data['Award'])){
                                                     ?>
                                                     <tr>
                                                         <td colspan="4" class="text-center">No Records Found</td>
                                                     </tr>
                                                     <?php
+                                                } else {
+													foreach($this->request->data['Award'] as $award){
+														$paid_date = (!empty($award['paid_date'])) ? date('F d, Y', strtotime($award['paid_date'])) : '<span class="fa-stack fa-lg"><i class="fa fa-dollar fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>' ;
+														?>
+	                                                    <tr>
+	                                                        <td><?=$award['Type']['award']?></td>
+	                                                        <td><?php echo $this->Number->currency($award['amount'], false, $options=array('before'=>'$', 'zero'=>'$0.00'));?></td>
+	                                                        <td><?=$paid_date?></td>
+	                                                    </tr>
+	                                                    <?php
+													}
                                                 }
-
-                                                ?>
+												?>
                                             </tbody>
                                         </table>
-                                        <?php #pr(); ?>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <?php echo $this->Form->end(); ?>
-
         </div>
     </div>
     <?php echo $this->Form->end(); ?>
     <?php
-        $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
-        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
-        $trnRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'deleteRecord'));
-        $getRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'getRecord'));
+    $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+    $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
+    $trnRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'deleteRecord'));
+    $getRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'getRecord'));
     ?>
     <script type="text/javascript">
         jQuery(document).ready( function($) {

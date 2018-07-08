@@ -1,6 +1,7 @@
     <?php
     $activeclass = ($status == 1) ? 'active' : null ;
     $inactiveclass = ($status == 2) ? 'active' : null ;
+    $allClass = (empty($activeclass) && empty($inactiveclass)) ? 'active' : null ;
     ?>
 
     <ul class="pagination pagination-sm text-center">
@@ -24,10 +25,10 @@
             ?>
         </li>
 
-        <li>
+        <li class="<?=$allClass?>">
             <?php
             echo $this->Html->link(
-                'Clear Status Filter',
+                'View All',
                 array('controller'=>'Trainings', 'action'=>'library', $cat, 'All'),
                 array( 'escape'=>false)
             );

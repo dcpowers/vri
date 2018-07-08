@@ -39,6 +39,7 @@
     echo $this->Form->hidden('AccountUser.account_id', array('value'=>$this->request->data['AccountUser'][0]['account_id']));
 	
 	#pr($this->request->data);
+	#pr($user);
     #pr($requiredTraining);
     #pr($allRecords);
     #exit;    
