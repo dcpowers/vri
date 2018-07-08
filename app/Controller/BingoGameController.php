@@ -79,7 +79,10 @@ class BingoGameController extends AppController {
 				),
 			),
 		));
-
+		if(empty($bingo)){
+			$bingo['BingoGame']['start_date'] = 'Not Started';
+		}
+		#exit;
 		$balls = $this->BingoBall->find('all', array(
             'conditions' => array(
             ),
@@ -296,7 +299,6 @@ class BingoGameController extends AppController {
 						'Winner.last_name'
 					)
 				)
-
 			),
 			'order'=>array('BingoGame.start_date' => 'DESC'),
 		));
@@ -397,11 +399,15 @@ class BingoGameController extends AppController {
 			),
 			'order'=>array('Accident.date' => 'Desc'),
 		));
-
-		$diff = floor((strtotime('now') - strtotime($accident['Accident']['date'])) /86400);
-        if($diff == 0){$diff = 'Today';}
-        if($diff == 1){$diff = 'Yesterday';}
-        if($diff >= 2){$diff = $diff.' Days Ago';}
+		
+		if(!empty($accident)){
+			$diff = floor((strtotime('now') - strtotime($accident['Accident']['date'])) /86400);
+        	if($diff == 0){$diff = 'Today';}
+        	if($diff == 1){$diff = 'Yesterday';}
+        	if($diff >= 2){$diff = $diff.' Days Ago';}
+		} else {
+			$diff = null;
+		}
 		/*
 		$diff = CakeTime::timeAgoInWords(
 			$accident['Accident']['date'],

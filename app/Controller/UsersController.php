@@ -17,7 +17,9 @@ class UsersController extends AppController {
         'Account',
         'Department'
     );
-
+	
+	public $helpers = array('Session');
+	
     public $profileUploadDir = 'img/profiles';
 
     public function isAuthorized($user = null) {
@@ -80,14 +82,17 @@ class UsersController extends AppController {
                     ),
                     'contain'=>array(
                         'DepartmentUser',
-                        'AccountUser',
+                        'AccountUser'=>array(
+                        	'Account'=>array()	
+                        ),
                     )
                 ));
+                
                 unset($user['User']);
                 $user = array_merge($this->Auth->user(), $user);
 
                 #check user is active
-                if($user['is_active'] == 0){
+                if($user['is_active'] == 0 || $user['AccountUser'][0]['Account']['is_active'] == 0){
                     #set flash and redirect back to home page
                     $this->Session->destroy();
                     #$this->Cookie->destroy();
@@ -459,7 +464,13 @@ class UsersController extends AppController {
                 unset($this->request->data['User']['file']);
             }
             
-			$this->User->set($this->request->data);
+            //validate User
+            $this->request->data['User']['password'] = 'vanguard';
+            $this->request->data['User']['password_confirm'] = 'vanguard';
+            
+            $this->User->validate = $this->User->validationSets['password_update']; 
+            $this->User->set($this->request->data);
+            
             if(!$this->User->validates()){
                 $validationErrors['User'] = $this->User->validationErrors;
                 $error = true;
@@ -494,20 +505,27 @@ class UsersController extends AppController {
             $this->set( compact( 'validationErrors' ) );
         }
 		
-		$account_ids = (is_null($account_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id') : $account_id;
-		
-        $this->set('account', $this->Account->pickListById($account_ids));
-        $this->set('status', $this->User->statusInt());
-        $this->set('pickListByAccount', $this->AccountUser->pickList($account_ids));
+		$account_id = (is_null($account_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id') : array($account_id);
+		//get accounts
+		$this->set('account',$account_id[0]);
+        #$this->set('account', $this->Account->pickListById($account_ids));
         $this->set('accounts', $this->Account->pickListActive());
+        
+        //settings
+        $this->set('status', $this->User->statusInt());
         $this->set('empStatus', $this->Account->empPayStatus());
-        $this->set('departments', $this->Department->pickList());
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
-
-
+        
+        //Get users for account
+        $user_ids = $this->AccountUser->pickListByAccount($account_id[0]);
+        $this->set('pickListByAccount', $this->User->pickListById($user_ids));
+        
+        //get departments
+        $dept_ids = $this->AccountDepartment->getDepartmentIds($account_id[0]);
+        $this->set('departments', $this->Department->pickListById($dept_ids));
     }
-
-	public function member_getUserInfo(){
+    
+    public function member_getUserInfo(){
 
         $record = $this->User->getUserInfo();
 
@@ -613,28 +631,15 @@ class UsersController extends AppController {
         return $this->redirect(array('action' => 'index'));
     }
 
-    public function resetPassword($id = null){
-        $this->request->data['User']['id'] = $id;
-        $this->request->data['User']['ForcePassChange'] = 1;
-        $this->request->data['User']['password'] = 'vanguard';
-        $this->request->data['User']['password_confirm'] = 'vanguard';
-        #debug(get_class($this->User));
-        #pr($this->request->data);
-        #exit;
-        $this->User->save($this->request->data);
-
-
-
-    }
-
     public function updateSupervisorList($id = null){
-        $data = $this->AccountUser->pickList($id);
-
+        $user_ids = $this->AccountUser->pickListByAccount($id);
+		$data = $this->User->pickListById($user_ids);
         $this->set(compact('data'));
     }
 
-    public function updateDeptList($id = null){
-        $data = $this->Department->pickListById($id);
+    public function updateDeptList($acct_id = null){
+    	$dept_ids = $this->AccountDepartment->getDepartmentIds($acct_id);
+    	$data = $this->Department->pickListById($dept_ids);
 
         $this->set(compact('data'));
     }
@@ -810,6 +815,156 @@ class UsersController extends AppController {
         $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
 		$this->set('empStatus', $this->Account->empPayStatus());
     }
+    
+    public function acctView($id = null) {
+        $this->User->id = $id;
+        if (!$this->User->exists()) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+        	#pr($this->request->data);
+        	#exit;
+        	if(!empty($this->request->data['User']['doh'])){
+                $this->request->data['User']['doh'] = date('Y-m-d', strtotime($this->request->data['User']['doh']));
+            }
+
+            if(!empty($this->request->data['User']['dob'])){
+                $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
+            }
+
+            #pr($this->request->data);
+            #exit;
+            
+            //update profile image if not empty
+            if(!empty($this->request->data['User']['file']['name'])) {
+                $check = $this->User->uploadFile($this->request->data['User']['file']);
+
+                unset($this->request->data['User']['file']);
+            }
+
+
+			$this->DepartmentUser->deleteAll(array('DepartmentUser.user_id' => $this->request->data['User']['id']), false);
+            if(!empty($this->request->data['DepartmentUser']['department_id'])){
+                $this->request->data['DepartmentUser'][0]['user_id'] = $this->request->data['User']['id'];
+                $this->request->data['DepartmentUser'][0]['department_id'] = $this->request->data['DepartmentUser']['department_id'];
+			}
+			
+			$this->AccountUser->deleteAll(array('AccountUser.user_id' => $this->request->data['User']['id']), false);
+            if(!empty($this->request->data['AccountUser']['account_id'])){
+                $this->request->data['AccountUser'][0]['user_id'] = $this->request->data['User']['id'];
+                $this->request->data['AccountUser'][0]['account_id'] = $this->request->data['AccountUser']['account_id'];
+			}
+			
+            unset($this->request->data['DepartmentUser']['department_id']);
+            unset($this->request->data['AccountUser']['account_id']);
+            #pr($check);
+            #pr($this->request->data['User']['id']);
+            #pr($this->request->data);
+            #exit;
+            if($this->User->saveAll($this->request->data)) {
+                 $this->Flash->alertBox(
+                    'User Infomation has been saved', [
+                        'key' => 'profile',
+                        'params' => [ 'class'=>'alert-success' ]
+                    ]
+                );
+
+                #return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
+            }else{
+                #debug($this->User->validationErrors); //show validationErrors
+                #debug($this->User->getDataSource()->getLog(false, false)); //show last sql query
+                #exit;
+
+                $this->Flash->alertBox(
+                    'User Information could not be saved. Please, try again.', [
+                        'key' => 'profile',
+                        'params' => [ 'class'=>'alert-danger' ]
+                    ]
+                );
+
+                #return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
+            }
+
+        }
+
+        $user = $this->request->data = $this->User->find('first', array(
+            'conditions' => array(
+                'User.id' => $id
+            ),
+            'contain'=>array(
+                'AccountUser'=>array(
+                    'Account'=>array(
+                        'fields'=>array(
+                            'Account.id',
+                            'Account.name'
+                        )
+                    )
+                ),
+                'Role'=>array(
+                    'fields'=>array('Role.name', 'Role.lft')
+                ),
+                
+                'Supervisor'=>array(
+                    'fields'=>array('Supervisor.first_name', 'Supervisor.last_name')
+                ),
+                'DepartmentUser'=>array(
+                    'Department'=>array(
+                        'fields'=>array('Department.id','Department.name', 'Department.abr')
+                    )
+                ),
+                'Status'=>array(
+                    'fields'=>array('Status.name', 'Status.color', 'Status.icon')
+                ),
+                'TrainingExempt'=>array(),
+                'Accident'=>array(
+					'AccidentArea'=>array(
+						'AccidentAreaLov'=>array()
+					)
+				),
+				'AssignedTest'=>array(
+					'Test'=>array(
+						'ReportSwitch'=>array(
+							'Report'=>array(
+								'fields'=>array(
+									'Report.id',
+									'Report.name',
+									'Report.is_user_report',
+									'Report.action',
+								)
+							)
+						),
+						'fields'=>array(
+							'Test.name'
+						),
+					),
+					'fields'=>array(
+						'AssignedTest.assigned_date',
+						'AssignedTest.completion_date',
+						'AssignedTest.expires_date',
+						'AssignedTest.complete',
+						'AssignedTest.id'
+					)
+				),
+				'Award'=>array(
+					'Type'=>array()
+				)
+            ),
+
+        ));
+		
+		$acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
+    	#$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
+    	
+    	$this->set('payStatus', $this->User->empPayStatus());
+        $this->set('status', $this->User->statusInt());
+        $this->set('yesNo', $this->User->yesNo());
+        $this->set('pickListByAccount', $this->AccountUser->pickList($acctIds));
+        $this->set('accounts', $this->Account->pickListActive());
+        $this->set('departments', $this->AccountDepartment->pickListByAccount($acctIds));
+        $this->set('roles', $this->AuthRole->pickListByRole($this->Auth->user('Role.id')));
+		$this->set('empStatus', $this->Account->empPayStatus());
+    }
 
     public function profile(){
         $this->User->id = AuthComponent::user('id');
@@ -818,49 +973,48 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-
+			
+			$validationErrors = array();
+			
             if(!empty($this->request->data['User']['dob'])){
                 $this->request->data['User']['dob'] = date('Y-m-d', strtotime($this->request->data['User']['dob']));
             }
 
-            #pr($this->request->data);
-            #exit;
-            pr($this->request->data);
             //update profile image if not empty
             if(!empty($this->request->data['User']['file'])) {
                 $check = $this->User->uploadFile($this->request->data['User']['file']);
-
-            }
-            #pr($check);
+			}
+            
             unset($this->request->data['User']['file']);
-            #pr($this->request->data);
-            #exit;
-            if($this->User->save($this->request->data)) {
-                 $this->Flash->alertBox(
-                    'Your profile has been saved', [
-                        'key' => 'profile',
-                        'params' => [ 'class'=>'alert-success' ]
-                    ]
-                );
-
-                return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
-            }
-
-            #debug($this->User->validationErrors); //show validationErrors
-            #debug($this->User->getDataSource()->getLog(false, false)); //show last sql query
-            #exit;
-
-            $this->Flash->alertBox(
-                'Profile could not be saved. Please, try again.', [
-                    'key' => 'profile',
-                    'params' => [ 'class'=>'alert-danger' ]
-                ]
-            );
-
-            return $this->redirect(array('controller'=>'Users', 'action' => 'profile'));
-
-        }
-
+            
+            if(!empty($this->request->data['User']['password'])) {
+            	//validate password
+            	$this->User->validate = $this->User->validationSets['password_update']; 
+            	$this->User->set($this->request->data);
+			}
+            
+            if(!$this->User->validates()){
+                $validationErrors['User'] = $this->User->validationErrors;
+                $this->set( compact( 'validationErrors' ) );
+                
+                $this->Flash->alertBox(
+	                'Profile could not be saved. Please see error below.', [
+	                    'key' => 'profile',
+	                    'params' => [ 'class'=>'alert-danger' ]
+	                ]
+	            );
+	        } else {
+				if($this->User->save($this->request->data)) {
+	                 $this->Flash->alertBox(
+	                    'Your profile has been saved', [
+	                        'key' => 'profile',
+	                        'params' => [ 'class'=>'alert-success' ]
+	                    ]
+	                );
+				}
+			}
+		}
+		
         $user = $this->request->data = $this->User->find('first', array(
             'conditions' => array(
                 'User.id' => AuthComponent::user('id')
@@ -934,7 +1088,10 @@ class UsersController extends AppController {
             ),
 
         ));
-		
+        
+        unset( $this->request->data['User']['password'], $this->request->data['User']['password_old'] );
+        #pr($user);
+        #exit;
 		if ($this->request->is('requested')) {
         	unset(
         		$this->request->data['Award'],
@@ -948,26 +1105,37 @@ class UsersController extends AppController {
         $acctIds = Hash::extract($user, 'AccountUser.{n}.account_id');
     	$deptIds = Hash::extract($user, 'DepartmentUser.{n}.department_id');
     	
-    	#$reqTrnIds = $this->TrainingMembership->getRequiredTrainingIds($acctIds,$deptIds,$user['User']['id']);
-    	#$allTrnIds = $this->TrainingMembership->getAllTrainingIds($acctIds,$deptIds,$user['User']['id']);
-    	
-    	#$reqTrn = $this->Training->getTraining($reqTrnIds, $user['User']['id']);
-    	#$allTrn = $this->Training->getTraining($allTrnIds, $user['User']['id']);
-    	
-    	#pr($reqTrn);
-    	#pr($allTrn);
-    	#exit;
-    	#$allRecords = $this->TrainingRecord->findRecords($user['User']['id']);
-
-        
-		#pr($allTraining);
-		#exit;
-        #$this->set('user', $user);
-        #$this->set('records', $reqTrn);
-        #$this->set('allRecords', $allRecords);
         $this->set('payStatus', $this->User->empPayStatus());
     }
-
-
-
+    
+    public function resetPassword($id = null){
+        $this->User->id = $id;
+        if (!$this->User->exists()) {
+            throw new NotFoundException(__('Invalid User'));
+        }
+        
+        $newPass = 'vanguard'. mt_rand(1,99999);
+        
+        $data = array(
+        	'id' => $id, 
+        	'password' => $newPass, 
+        	'password_confirm'=> $newPass,
+        	'password_old'=>null
+        );
+        
+        $response=array();
+         
+        if($this->User->save($data)){
+            $response['status']='success';
+            $response['message']='Password Reset: '. $newPass;
+            echo json_encode($response);
+            die;
+        }else{
+            $response['status']='error';
+            $response['message']='There Was An Error! Please Try Again.';
+            echo json_encode($response);
+            die;
+        }
+        
+    }
 }

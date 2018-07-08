@@ -263,9 +263,10 @@ class TrainingsController extends AppController {
 
     }
 
-	public function details($id=null) {
+	public function details($id=null, $acct_id = null) {
 
-        $account_ids = Set::extract( AuthComponent::user(), '/AccountUser/account_id' );
+        $account_ids = (is_null($acct_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id' ) : array($acct_id);
+        
         $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
         $user_ids = $this->AccountUser->getAccountIds($account_ids);
 
@@ -383,6 +384,135 @@ class TrainingsController extends AppController {
         $this->set('accts', $this->Account->pickListById($account_ids));
         $this->set('users', $this->AccountUser->pickList($account_ids));
 
+		$this->set('trn', $trainings);
+        $this->set('records', $data);
+        $this->set('classRooms', $classRooms);
+        $this->set('settings', $this->TrainingMembership->required());
+
+    }
+    
+    public function acctDetails($id=null, $acct_id = null) {
+
+        $account_ids = (is_null($acct_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id' ) : array($acct_id);
+        
+        $department_ids = $this->AccountDepartment->getDepartmentIds($account_ids);
+        $user_ids = $this->AccountUser->getAccountIds($account_ids);
+
+		$this->set('account_ids', $account_ids);
+        $this->set('department_ids', $department_ids);
+        $this->set('user_ids', $user_ids);
+
+        $trainings = $this->TrainingMembership->find('first', array(
+            'conditions'=>array(
+                'TrainingMembership.training_id' => $id,
+            ),
+            'contain'=>array(
+                'Training'=>array(
+                    'TrainingFile'=>array(
+
+                    ),
+					'TrainingRecord'=>array(
+                        'conditions'=>array(
+                            'TrainingRecord.user_id' => $user_ids
+                        ),
+                        'User'=>array(
+                            'fields'=>array(
+                                'User.id',
+                                'User.first_name',
+                                'User.last_name',
+                            ),
+
+                        ),
+                        'order'=>array(
+                            'TrainingRecord.expires_on' => 'DESC'
+                        )
+                    )
+                ),
+            ),
+
+        ));
+		#pr($trainings);
+		#exit;
+        $records = array();
+        foreach($trainings['Training']['TrainingRecord'] as $key=>$item){
+
+            if (!array_key_exists($item['user_id'], $records)) {
+                $records[$item['user_id']] = $item;
+				$records[$item['user_id']]['status'] = 'Current';
+				$records[$item['user_id']]['tblrow'] = 'success';
+
+				if(!is_null($item['started_on']) && is_null($item['completed_on'])){
+                	$records[$item['user_id']]['status'] = 'in progress';
+					$records[$item['user_id']]['tblrow'] = 'info';
+                }
+
+                if(strtotime($item['expires_on']) < strtotime('now')){
+                	$records[$item['user_id']]['status'] = 'Expired';
+					$records[$item['user_id']]['tblrow'] = 'danger';
+                }
+
+				if(strtotime($item['expires_on']) >= strtotime('now') && strtotime($item['expires_on']) <= strtotime('+30 days') ){
+                	$records[$item['user_id']]['status'] = 'Expiring';
+					$records[$item['user_id']]['tblrow'] = 'warning';
+                }
+
+				$keysort[$item['user_id']] = $item['User']['first_name'];
+        	}
+        }
+
+		unset($trainings['Training']['TrainingRecord']);
+
+		if($trainings['TrainingMembership']['is_required'] == 1 || $trainings['TrainingMembership']['is_manditory'] == 1){
+			$no_records = array_diff_key($user_ids, $records);
+
+			$no_record = $this->User->find('all', array(
+	            'conditions'=>array(
+	                'User.id' => $no_records,
+	            ),
+	            'contain'=>array(
+
+	            ),
+				'fields'=>array( 'User.id', 'User.first_name', 'User.last_name' ),
+				'order'=>array('User.first_name' => 'DESC', 'User.last_name' => 'DESC' ),
+	        ));
+
+			foreach($no_record as $h){
+				$records[$h['User']['id']] = $h;
+				$records[$h['User']['id']]['expires_on'] = null;
+				$records[$h['User']['id']]['status'] = 'No Record Found';
+				$records[$h['User']['id']]['tblrow'] = 'danger';
+				$keysort[$h['User']['id']] = $h['User']['first_name'];
+			}
+		}
+
+		$data = array();
+
+		if(!empty($records)){
+            array_multisort($keysort, SORT_ASC, $records);
+
+			foreach($records as $m){
+				$data[$m['User']['id']] = $m;
+			}
+        }
+
+        $classRooms = $this->TrainingClassroom->find('all', array(
+            'conditions'=>array(
+                'TrainingClassroom.account_id' => $account_ids,
+                'TrainingClassroom.training_id' => $id,
+			),
+            'contain'=>array(
+                'TrainingClassroomDetail'=>array(
+                ),
+				'Instructor'=>array()
+            ),
+            'order'=>array('TrainingClassroom.date' => 'DESC'),
+        ));
+
+		$this->set('depts', $this->Department->pickListById($department_ids));
+        $this->set('accts', $this->Account->pickListById($account_ids));
+        
+        $this->set('users',$this->User->pickListById($user_ids));
+        
 		$this->set('trn', $trainings);
         $this->set('records', $data);
         $this->set('classRooms', $classRooms);

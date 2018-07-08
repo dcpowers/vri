@@ -154,7 +154,7 @@ class AccountsController extends AppController {
 
         $this->set('pageStatus', $setStatus);
         $user_ids = $this->AccountUser->getAccountIds($id, $pageStatus);
-
+		
 		$account = $this->request->data = $this->Account->find('first', array(
             'conditions' => array(
                 'Account.id' => $id
@@ -170,22 +170,7 @@ class AccountsController extends AppController {
                     'fields'=>array('RegionalAdmin.id', 'RegionalAdmin.first_name', 'RegionalAdmin.last_name')
                 ),
                 'Status'=>array(),
-                'Asset'=>array(
-                    'Manufacturer'=>array(
-                        'fields'=>array('Manufacturer.id', 'Manufacturer.name')
-                    ),
-                    'Vendor'=>array(
-                        'fields'=>array('Vendor.id', 'Vendor.name')
-                    ),
-                    'AssignedTo'=>array(
-                        'fields'=>array('AssignedTo.id', 'AssignedTo.first_name', 'AssignedTo.last_name')
-                    ),
-                    'AssetType'=>array(
-                        'fields'=>array('AssetType.id', 'AssetType.name')
-                    ),
-                    'order'=>array('Asset.asset_type_id'=> 'asc', 'Asset.asset' => 'asc'),
-                ),
-				'Accident'=>array(
+                'Accident'=>array(
 					'Dept'=>array(
 						'fields'=>array('Dept.name')
 					),
@@ -200,58 +185,7 @@ class AccountsController extends AppController {
                         )
                     )
                 ),
-                'User'=>array(
-                    'conditions'=>array(
-						'User.id' => $user_ids,
-                        'User.is_active'=>$pageStatus
-                    ),
-                    'Status'=>array(
-                        'fields'=>array('Status.name', 'Status.color', 'Status.icon')
-                    ),
-                    'Supervisor'=>array(
-                        'Status'=>array(
-                            'fields'=>array('Status.name', 'Status.color')
-                        )
-                    ),
-                    'Role'=>array(
-                        'fields'=>array('Role.name', 'Role.lft')
-                    ),
-                    'DepartmentUser'=>array(
-                        'Department'=>array(
-                            'fields'=>array('Department.name', 'Department.abr')
-                        )
-                    ),
-					'fields'=>array(
-                        'User.id',
-                        'User.first_name',
-                        'User.last_name',
-                        'User.username',
-                        'User.email',
-                    ),
-                    'order'=>array(
-                        'User.first_name'=>'asc',
-                        'User.last_name'=>'asc',
-                    ),
-                ),
-                'TrainingMembership'=>array(
-                    'Training'=>array(
-                        'fields'=>array(
-                            'Training.id',
-                            'Training.name'
-                        )
-                    ),
-                    'ReqDept'=>array(
-                        'fields'=>array(
-                            'ReqDept.name'
-                        )
-                    ),
-                    'ReqUser'=>array(
-                        'fields'=>array(
-                            'ReqUser.first_name',
-                            'ReqUser.last_name'
-                        )
-                    ),
-				),
+                
 				'Award'=>array(
 					'Type'=>array(
 						'fields'=>array('Type.award')
@@ -268,7 +202,6 @@ class AccountsController extends AppController {
             ),
 
         ));
-
 		$awardList = array();
 
 		foreach($account['Award'] as $v){
@@ -282,7 +215,7 @@ class AccountsController extends AppController {
 				$awardList[$p[0]][$m]['count'] = 1;
 			}
         }
-
+		
 		unset($account['Award']);
 		$testing = $this->AssignedTest->find('all', array(
             'conditions' => array(
@@ -317,105 +250,26 @@ class AccountsController extends AppController {
 			}
 
 		}
-
+		
 		$dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
 
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
 
         $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
         $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
-        $training = array();
-        #pr($account['TrainingMembership']);
-        #exit;
-        if(!empty($account['TrainingMembership'])){
-            foreach($account['TrainingMembership'] as $key=>$trn){
-                $index = $trn['Training']['name'];
-
-                $tvalue[$index][] = $trn;
-                $tkeysort[$index] = $trn['Training']['name'];
-
-                $training = array_merge($training,$tvalue);
-            }
-
-            unset($account['TrainingMembership']);
-
-            array_multisort($tkeysort, SORT_ASC, $training);
-
-            #pr($training);
-            #exit;
-        }
-
-        $users = array();
-
-        foreach($account['User'] as $data){
-            switch($viewBy){
-                case 'supervisor':
-                    if(array_key_exists('first_name', $data['Supervisor'])){
-                        $indexName = $data['Supervisor']['first_name'].' '. $data['Supervisor']['last_name'].'<small> [ '.$data['Supervisor']['Status']['name'].' ]</small>';
-                        $keysort[$indexName] = $data['Supervisor']['first_name'];
-                    }else{
-                        $indexName = '--';
-                        $keysort[$indexName] = '--';
-                    }
-                    $superClass = 'active';
-                    $value[$indexName][] = $data;
-                    break;
-
-                case 'role':
-                    $indexName = $data['Role']['name'];
-                    $keysort[$indexName] = $data['Role']['lft'];
-                    $roleClass = 'active';
-                    $value[$indexName][] = $data;
-                    break;
-
-                case 'department':
-                default:
-                    if(!empty($data['DepartmentUser'])){
-                        foreach($data['DepartmentUser'] as $newItem){
-                            $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
-                            $keysort[$indexName] = $newItem['Department']['name'];
-
-                            $value[$indexName][] = $data;
-                        }
-
-                    }else{
-                        $indexName = '--';
-                        $keysort[$indexName] = '--';
-                        $value[$indexName][] = $data;
-                    }
-                    $deptClass = 'active';
-                    break;
-
-            }
-
-            #$value[$indexName][] = $data;
-
-            $users = array_merge($users,$value);
-        }
-        #pr($users);
-        #exit;
-        if(!empty($account['User'])){
-            array_multisort($keysort, SORT_ASC, $users);
-        }
-        $assets = $account['Asset'];
-
-        unset($account['User']);
+        
         unset($account['Asset']);
 
         #pr($account);
         #exit;
-
+		
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
-
-        $userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
+		
+		$userList['Vanguard Resources'] = $this->User->pickListByRole($corp_emp_ids);
         $userList[$account['Account']['name']] = $this->User->pickListByAccount($id);
-        #pr($users);
-        #exit;
-
+        
+        $this->set('id', $id);
         $this->set('account', $account);
-        $this->set('assets', $assets);
-        $this->set('employees', $users);
-        $this->set('trainings', $training);
         $this->set('testing', $g);
         $this->set('awards', $awardList);
 
@@ -526,8 +380,8 @@ class AccountsController extends AppController {
             ),
 
         ));
-
-        $dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
+		
+		$dept_ids = $this->request->data['AccountDepartment']['department_id'] = Set::extract( $account['AccountDepartment'], '/department_id' );
 
         $users = array();
 
@@ -535,7 +389,7 @@ class AccountsController extends AppController {
             switch($viewBy){
                 case 'supervisor':
                     if(array_key_exists('first_name', $data['Supervisor'])){
-                        $indexName = $data['Supervisor']['first_name'].' '. $data['Supervisor']['last_name'].'<small> [ '.$data['Supervisor']['Status']['name'].' ]</small>';
+                        $indexName = $data['Supervisor']['first_name'].' '. $data['Supervisor']['last_name'];
                         $keysort[$indexName] = $data['Supervisor']['first_name'];
                     }else{
                         $indexName = '--';
@@ -556,8 +410,8 @@ class AccountsController extends AppController {
                 default:
                     if(!empty($data['DepartmentUser'])){
                         foreach($data['DepartmentUser'] as $newItem){
-                            $indexName = $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
-                            $keysort[$indexName] = $newItem['Department']['name'];
+                            $indexName = (empty($newItem['Department']['name']) || empty($newItem['Department']['abr'])) ? 'Undefined' : $newItem['Department']['name'].' ( '. $newItem['Department']['abr'] .' )';
+                            $keysort[$indexName] = (empty($newItem['Department']['name'])) ? 'Undefined' : $newItem['Department']['name'];
 
                             $value[$indexName][] = $data;
                         }
@@ -576,7 +430,7 @@ class AccountsController extends AppController {
 
             $users = array_merge($users,$value);
         }
-        #pr($users);
+        
         if(!empty($account['User'])){
             array_multisort($keysort, SORT_ASC, $users);
         }
@@ -660,35 +514,44 @@ class AccountsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $error = false;
             $validationErrors = array();
+			$this->request->data['Account']['is_active'] = (empty($this->request->data['Account']['is_active'])) ? 1 : $this->request->data['Account']['is_active'] ;
 
-            $this->Group->validate = $this->Group->validationSets['subGroup'];
-            $this->Group->set($this->request->data['Group']);
+            $this->request->data['Account']['EVS'] = (empty($this->request->data['Account']['EVS'])) ? 0 : $this->request->data['Account']['EVS'] ;
+            $this->request->data['Account']['CE'] = (empty($this->request->data['Account']['CE'])) ? 0 : $this->request->data['Account']['CE'] ;
+            $this->request->data['Account']['Food'] = (empty($this->request->data['Account']['Food'])) ? 0 : $this->request->data['Account']['Food'] ;
+            $this->request->data['Account']['POM'] = (empty($this->request->data['Account']['POM'])) ? 0 : $this->request->data['Account']['POM'] ;
+            $this->request->data['Account']['LAU'] = (empty($this->request->data['Account']['LAU'])) ? 0 : $this->request->data['Account']['LAU'] ;
+            $this->request->data['Account']['SEC'] = (empty($this->request->data['Account']['SEC'])) ? 0 : $this->request->data['Account']['SEC'] ;
 
-            if(!$this->Group->validates()){
-                $validationErrors['Group'] = $this->Group->validationErrors;
-                $error = true;
-            }
-
-            if($error == false){
-                if ($this->Group->saveall($this->request->data)) {
-                    #Audit::log('Group record added', $this->request->data );
-                    //$this->Group->reorder(array('id' => $parent[0]['Group']['id'], 'field' => 'name', 'order' => 'ASC', 'verify' => true));
-                    $this->Session->setFlash(__('The Group: "'.$this->request->data['Group']['name'].'" has been saved'), 'alert-box', array('class'=>'alert-success'));
-
-                    $this->redirect(array('controller'=>'groups', 'action'=>'orgLayout', 'member'=>true));
-                } else {
-                    $this->Session->setFlash(__('The Group could not be saved. Please, try again.'), 'alert-box', array('class'=>'alert-danger'));
+            if(!empty($this->request->data['AccountDepartment'])){
+                foreach($this->request->data['AccountDepartment'] as $item){
+                    foreach($item as $key=>$val){
+                        $this->request->data['AccountDepartment'][$key]['department_id'] = $val;
+                    }
                 }
-            }else{
-                $this->Session->setFlash(
-                    __('Information not save! Please see errors below'),
-                    'alert-box',
-                    array('class'=>'alert-danger')
+                unset($this->request->data['AccountDepartment']['department_id']);
+            }
+            
+            if ($this->Account->saveAll($this->request->data)) {
+                $this->Flash->alertBox(
+                    'The Account: "'.$this->request->data['Account']['name'].'" has been saved',
+                    array('params' => array('class'=>'alert-success'))
                 );
+                
+                $this->redirect(array('controller'=>'Accounts', 'action'=>'view', $this->Account->id));
+            } else {
+                $this->Flash->alertBox(
+                    'The Account could not be saved. Please, try again.',
+                    array('params' => array('class'=>'alert-success'))
+                );
+
                 $this->set( compact( 'validationErrors' ) );
 
-                $id =  $this->request->data['Group']['parent_id'];
             }
+			
+			$this->request->data = $this->request->data;
+			
+            $this->redirect(array('controller'=>'Accounts', 'action'=>'add'));
         }
 
         $corp_emp_ids = $this->AuthRole->pickListByRole(AuthComponent::user('Role.id'));
