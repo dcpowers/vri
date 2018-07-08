@@ -135,89 +135,96 @@ class User extends AppModel {
 
     );
     */
-    public $validate = array(
-        'username' => array(
-            'nonEmpty' => array(
-                'rule' => array('notBlank'),
-                'message' => 'A Username is required',
-                'allowEmpty' => false
-            ),
-            'unique' => array(
-                'rule'    => array('isUniqueUsername'),
-                'message' => 'This Username is already in use'
-            ),
-        ),
-        'first_name' => array(
-            'nonEmpty' => array(
-                'rule' => array('notBlank'),
-                'message' => 'A Firstname is required',
-                'allowEmpty' => false
-            ),
-        ),
-        'last_name' => array(
-            'nonEmpty' => array(
-                'rule' => array('notBlank'),
-                'message' => 'A Lastname is required',
-                'allowEmpty' => false
-            ),
-        ),
+    public $validationSets = array( 
+        'add' => array(
+	        'username' => array(
+	            'nonEmpty' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'A Username is required',
+	                'allowEmpty' => false
+	            ),
+	            'unique' => array(
+	                'rule'    => array('isUniqueUsername'),
+	                'message' => 'This Username is already in use'
+	            ),
+	        ),
+	        'first_name' => array(
+	            'nonEmpty' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'A Firstname is required',
+	                'allowEmpty' => false
+	            ),
+	        ),
+	        'last_name' => array(
+	            'nonEmpty' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'A Lastname is required',
+	                'allowEmpty' => false
+	            ),
+	        ),
+	        'email' => array(
+	            'required' => array(
+	                'rule' => array('email', true),
+	                'message' => 'Please provide a valid email address.'
+	            ),
+	             'unique' => array(
+	                'rule'    => array('isUniqueEmail'),
+	                'message' => 'This email is already in use',
+	            ),
+	            'between' => array(
+	                'rule' => array('between', 6, 60),
+	                'message' => 'Usernames must be between 6 to 60 characters'
+	            )
+	        ),
+	        'password' => array(
+	            'required' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'A password is required',
 
-        'password' => array(
-            'required' => array(
-                'rule' => array('notBlank'),
-                'message' => 'A password is required',
+	            ),
+	            'min_length' => array(
+	                'rule' => array('minLength', '6'),
+	                'message' => 'Password must have a mimimum of 6 characters',
 
-            ),
-            'min_length' => array(
-                'rule' => array('minLength', '6'),
-                'message' => 'Password must have a mimimum of 6 characters',
+	            )
+	        ),
 
-            )
-        ),
+	        'password_confirm' => array(
+	            'required' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'Please confirm your password'
+	            ),
+	             'equaltofield' => array(
+	                'rule' => array('equaltofield','password'),
+	                'message' => 'Both passwords must match.'
+	            )
+	        )
+	    ),
+	    'password_update' => array( 
+	    	'password' => array(
+	            'required' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'A password is required',
 
-        'password_confirm' => array(
-            'required' => array(
-                'rule' => array('notBlank'),
-                'message' => 'Please confirm your password'
-            ),
-             'equaltofield' => array(
-                'rule' => array('equaltofield','password'),
-                'message' => 'Both passwords must match.'
-            )
-        ),
+	            ),
+	            'min_length' => array(
+	                'rule' => array('minLength', '6'),
+	                'message' => 'Password must have a mimimum of 6 characters',
 
-        'email' => array(
-            'required' => array(
-                'rule' => array('email', true),
-                'message' => 'Please provide a valid email address.'
-            ),
-             'unique' => array(
-                'rule'    => array('isUniqueEmail'),
-                'message' => 'This email is already in use',
-            ),
-            'between' => array(
-                'rule' => array('between', 6, 60),
-                'message' => 'Usernames must be between 6 to 60 characters'
-            )
-        ),
+	            )
+	        ),
 
-        'password_update' => array(
-            'min_length' => array(
-                'rule' => array('minLength', '6'),
-                'message' => 'Password must have a mimimum of 6 characters',
-                'allowEmpty' => true,
-                'required' => false
-            )
-        ),
-        'password_confirm_update' => array(
-             'equaltofield' => array(
-                'rule' => array('equaltofield','password_update'),
-                'message' => 'Both passwords must match.',
-                'required' => false,
-            )
-        )
-
-
+	        'password_confirm' => array(
+	            'required' => array(
+	                'rule' => array('notBlank'),
+	                'message' => 'Please confirm your password'
+	            ),
+	             'equaltofield' => array(
+	                'rule' => array('equaltofield','password'),
+	                'message' => 'Both passwords must match.'
+	            )
+	        )
+	    ),
     );
 
         /**
@@ -356,7 +363,8 @@ class User extends AppModel {
         $this->virtualFields['fullName'] = 'CONCAT(first_name, " ", last_name)';
         $find_options = array(
             'conditions'=>array(
-                $this->alias.'.id'=>$id
+                $this->alias.'.id'=>$id,
+                $this->alias.'.is_active'=>1
             ),
             'order'=>array(
                 ''.$this->alias.'.first_name' => 'asc'
@@ -381,24 +389,23 @@ class User extends AppModel {
 
 	public function pickListByRole( $role_ids = null ) {
         $dataArr = array();
-
-        $find_options = array(
+		
+		$this->virtualFields['name'] = 'CONCAT(first_name, " " ,last_name)';
+		
+		$find_options = array(
             'conditions'=>array(
                 $this->alias.'.auth_role_id <='=>4
             ),
-            'order'=>$this->alias.'.first_name asc'
+            'contain'=>array(),
+            'order'=>array(''.$this->alias.'.first_name' => 'ASC', ''.$this->alias.'.last_name' => 'ASC'),
+            'fields'=>array($this->alias.'.id', $this->alias.'.name')
         );
 
         #pr($find_options);
         #exit;
-        $recs = $this->find('all', $find_options );
-
-        foreach ( $recs as $key=>$rec ) {
-            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['first_name'])) . ' ' . ucwords( strtolower($rec[$this->alias]['last_name'] ));
-        }
-		#pr($dataArr);
-		#exit;
-        return $dataArr;
+        $recs = $this->find('list', $find_options );
+		
+		return $recs;
     }
 
     public function pickListByAccount( $account_id = null, $status = 1 ) {
@@ -446,6 +453,7 @@ class User extends AppModel {
 				$this->alias.'.first_name',
 				$this->alias.'.last_name',
 				$this->alias.'.department_id',
+				$this->alias.'.is_active',
 			),
             'order'=>array(
 				$this->alias.'.first_name asc',
@@ -506,7 +514,8 @@ class User extends AppModel {
 				$this->alias.'.first_name',
 				$this->alias.'.last_name',
 				$this->alias.'.pay_status',
-				$this->alias.'.is_award'
+				$this->alias.'.is_award',
+				$this->alias.'.is_active'
 			),
             'order'=>array(
 				$this->alias.'.first_name asc',
@@ -679,34 +688,43 @@ class User extends AppModel {
 				$this->alias.'.first_name',
 				$this->alias.'.last_name',
 				$this->alias.'.pay_status',
-				$this->alias.'.is_award'
+				$this->alias.'.is_award',
+				$this->alias.'.is_active'
 			),
             'order'=>array(
 				$this->alias.'.first_name asc',
 				$this->alias.'.last_name asc'
 			)
         ));
-		
 		#pr($recs);
 		#exit;
-		
-		
 		$c = 0;
 		foreach($recs as $key=>$v){
+			#pr($v);
+			#exit;
 			#pr($accidents);
-			if (array_key_exists($v['DepartmentUser'][0]['department_id'], $accidents) && $accidents[$v['DepartmentUser'][0]['department_id']] == $v['AccountUser'][0]['account_id'] ) {
+			$department_id = (isset($v['DepartmentUser'][0]['department_id'])) ? $v['DepartmentUser'][0]['department_id']  : null ;
+			$department_name = (isset($v['DepartmentUser'][0]['Department']['name'])) ? $v['DepartmentUser'][0]['Department']['name']  : null ;
+			
+			$account_id = (isset($v['AccountUser'][0]['account_id'])) ? $v['AccountUser'][0]['account_id']  : null ;
+			$account_name = (isset($v['AccountUser'][0]['Account']['name'])) ? $v['AccountUser'][0]['Account']['name']  : null ;
+			
+			if (array_key_exists($department_id, $accidents) && $accidents[$department_id] == $account_id ) {
 			
 			}else{
-				$a_name = $v['AccountUser'][0]['Account']['name'];
-				$d_name = $v['DepartmentUser'][0]['Department']['name'];
+				$a_name = $account_name;
+				$d_name = $department_name;
 				
 				$keysort[$a_name] = $a_name;
 				
 				$data[$a_name][$c] = $v['User'];
 				$data[$a_name][$c]['acct'] = $a_name;
 				$data[$a_name][$c]['dept'] = $d_name;
-				$data[$a_name][$c]['acct_id'] = $v['AccountUser'][0]['account_id'];
-				$data[$a_name][$c]['dept_id'] = $v['DepartmentUser'][0]['department_id'];
+				$data[$a_name][$c]['acct_id'] = $account_id;
+				$data[$a_name][$c]['dept_id'] = $department_id;
+				
+				$data[$a_name][$c]['dept_name'] = $department_name;
+				$data[$a_name][$c]['acct_name'] = $account_name;
 				
 				if(!empty($v['Award'])){
 					foreach($v['Award'] as $akey=>$item){

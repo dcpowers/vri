@@ -58,22 +58,23 @@ class Department extends AppModel {
 
     public function pickListById( $ids=null ) {
         $dataArr = array();
-
+		
+		$this->virtualFields['name'] = 'CONCAT(name, " ( " ,abr, " ) ")';
+		
         $find_options = array(
             'conditions'=>array(
                 $this->alias.'.is_active'=>1,
                 $this->alias.'.id'=>$ids
             ),
-            'order'=>$this->alias.'.name asc'
+            'order'=>$this->alias.'.name asc',
+            'fields'=>array($this->alias.'.id', $this->alias.'.name')
         );
 
         //pr($find_options);
         //exit;
-        $recs = $this->find('all', $find_options );
-
-        foreach ( $recs as $key=>$rec ) {
-            $dataArr[$rec[$this->alias]['id']] = ucwords( strtolower($rec[$this->alias]['name'])) . ' ( ' . ucwords( strtolower($rec[$this->alias]['abr'] .' )'));
-        }
-        return $dataArr;
+        $recs = $this->find('list', $find_options );
+		
+		return $recs;
+	
     }
 }

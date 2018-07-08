@@ -47,7 +47,7 @@ class Award extends AppModel {
             'className' => 'User',
             'foreignKey' => 'user_id',
             'conditions' => '',
-            'fields' => array('User.id', 'User.first_name', 'User.last_name',),
+            'fields' => array('User.id', 'User.first_name', 'User.last_name', 'User.is_active'),
             'order' => ''
         ),
 		'CreatedBy' => array(
@@ -140,4 +140,50 @@ class Award extends AppModel {
         #exit;
         return $recs;
     }
+    
+    public function historyMenu($acct_id = null){
+    	//Grab all awards history
+		for($y=date('Y', strtotime('now')); $y>=2013; $y--){
+			for($mon=1; $mon<=12; $mon++){
+				$dateObj   = DateTime::createFromFormat('!m', $mon);
+				$m = $dateObj->format('F'); // March
+				
+				$awardList[$y][$m]['verified'] = 0;
+				$awardList[$y][$m]['paid'] = 0;
+				$awardList[$y][$m]['count'] = 0;
+			}
+		}
+		
+		$history = $this->find('all', array(
+            'conditions' => array(
+                'Award.account_id' => $acct_id,
+            ),
+            'contain' => array(
+            ),
+            'order'=>array('Award.date' => 'DESC')
+
+        ));
+        
+        foreach($history as $v){
+			$p = explode("-", $v['Award']['date']);
+
+			$m = date('F', strtotime($v['Award']['date']));
+			$awardList[$p[0]][$m]['count']++;
+				
+			if(!empty($v['Award']['verified_date']) && !is_null($v['Award']['verified_date'])) {
+				$awardList[$p[0]][$m]['verified']++;
+			}
+				
+			if(!empty($v['Award']['paid_date']) && !is_null($v['Award']['paid_date'])) {
+				$awardList[$p[0]][$m]['paid']++;
+			}
+			
+			
+		}
+		#pr($awardList);
+		#exit;
+		unset($history);
+		
+		return $awardList;
+	}
 }

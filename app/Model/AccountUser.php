@@ -65,6 +65,22 @@ class AccountUser extends AppModel {
 
         return $dataArr;
     }
+    
+    public function pickListByAccount($account_id=null){
+        $dataArr = array();
+
+        $dataArr = $this->find('list', array(
+            'conditions' => array(
+                $this->alias.'.account_id'=>$account_id
+            ),
+            'contain'=>array(
+                
+            ),
+            'fields'=>array($this->alias.'.user_id', $this->alias.'.user_id'),
+        ));
+		
+		return $dataArr;
+    }
 
 	public function pickListActive($account_id=null, $dept_id = null){
         $dataArr = array();
@@ -98,7 +114,7 @@ class AccountUser extends AppModel {
     }
 
     public function getAccountIds($account_id=null, $status = null){
-        $dataArr = array();
+    	$dataArr = array();
 
 		$status = (is_null($status)) ? 1 : $status ;
 		$status = ($status == 'All') ? array(1,2) : $status ;
@@ -120,11 +136,13 @@ class AccountUser extends AppModel {
             ),
             'fields'=>array(),
         ));
+        
         foreach ( $items as $key=>$rec ) {
 			if(!empty($rec['User']['id'])){
 				$dataArr[$rec['User']['id']] = $rec['User']['id'];
 			}
         }
+        
 		return $dataArr;
     }
 

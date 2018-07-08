@@ -113,6 +113,7 @@ class Training extends AppModel {
     	#pr($trnIds);
     	#exit;
 		$c = 0;
+		$data = array();
 		foreach($trnIds as $trn){
 			$record = $this->find('first', array(
 	            'conditions' => array(

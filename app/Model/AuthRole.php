@@ -50,7 +50,7 @@ class AuthRole extends AppModel {
             'fields'=>array($this->alias.'.permission_level')
         ));
 
-        $data = $this->find('all', array(
+        $data = $this->find('list', array(
             'conditions' => array(
                 $this->alias.'.permission_level <=' => $parent[$this->alias]['permission_level'],
             ),
@@ -58,11 +58,13 @@ class AuthRole extends AppModel {
             ),
             'order'=>array($this->alias.'.lft')
         ));
-
+		return $data;
+		/*
         foreach($data as $rec=>$v){
             $dataArr[$v['AuthRole']['id']] = $v['AuthRole']['name'];
         }
 
         return $dataArr;
+        */
     }
 }

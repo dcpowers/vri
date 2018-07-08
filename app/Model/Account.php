@@ -154,8 +154,24 @@ class Account extends AppModel {
         #exit;
         $recs = $this->find('list', $find_options );
 
-        #pr($recs);
+        return $recs;
+    }
+    
+    
+    public function getAcctName( $ids=null ) {
+        $dataArr = array();
+
+        $find_options = array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$ids
+            ),
+            'order'=>$this->alias.'.name asc'
+        );
+
+        #pr($find_options);
         #exit;
+        $recs = $this->find('list', $find_options );
+
         return $recs;
     }
 }
