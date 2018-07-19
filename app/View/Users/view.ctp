@@ -94,6 +94,7 @@
     <div style="margin-top: -7px">
         <div class="headerDiv">
         </div>
+        
         <div id="employeeList">
             <div class="row">
                 <div class="col-md-2 headerContent bg-white">
@@ -132,6 +133,13 @@
 
                     </div>
 					<div style="color: #000;">
+						<?php
+                        echo $this->Html->link(
+                            'Reset Password',
+                            '#',
+                            array('escape'=>false, 'id'=>$this->request->data['User']['id'], 'class'=>'reset')
+                        );
+                        ?>
                     	<div class="form-group">
                         	<label class="control-label">Status:</label>
 							<?php
@@ -196,7 +204,7 @@
                             </h2>
                         </div>
                         <div class="col-md-12">
-
+							<div class="alert alertdisplay" role="alert" style="display: none; margin-top: 20px;"></div>
                             <div class="tabbable bg-white" style="margin-top: 20px;">
                                 <ul class="nav nav-tabs">
                                     <li class="<?=$personalClass?>"><a href="#info" data-toggle="tab"><i class="fa fa-address-card-o fa-fw" aria-hidden="true"></i> Personal</a></li>
@@ -607,6 +615,7 @@
         $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
         $trnRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'deleteRecord'));
         $getRecord = $this->Html->url(array('plugin'=>false, 'controller'=>'Trainings', 'action' => 'getRecord'));
+        $reset = $this->Html->url(array('plugin'=>false, 'controller'=>'users', 'action' => 'resetPassword'));
     ?>
     <script type="text/javascript">
         jQuery(document).ready( function($) {
@@ -774,5 +783,38 @@
                     },
                 });
 			});
+			$('.reset').click(function(e){
+	        	
+	            $.ajax({
+	                type : 'POST',
+	                url : '<?=$reset?>/' + $(this).attr("id") + '.json',
+	                cache: false,
+	                dataType: "html",
+	                beforeSend: function(xhr){
+	                    
+	                },
+	                success : function(response) {
+	                	var response1=jQuery.parseJSON(response);
+	                	if(response1.status=='success'){
+	                		$('.alertdisplay').addClass('alert-success');
+	                		$('.alertdisplay').show();
+	                	} else {
+	                		$('.alertdisplay').addClass('alert-danger');
+							$('.alertdisplay').show();
+						}
+						
+						$(".alertdisplay").html(response1.message);
+	            	},
+	                complete: function(){
+	                    
+	                },
+	                error: function (jqXHR, textStatus, errorThrown) {
+	                    console.log(jqXHR);
+	                    console.log(textStatus);
+	                    console.log(errorThrown);
+	                }
+	            });
+	            
+	        });
         });
     </script>
