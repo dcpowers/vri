@@ -38,8 +38,8 @@
                     $label = 'label label-danger';
 					$showRest = 0;
                 }
-
-                $expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
+				
+				$expires = (!empty($t['TrainingRecord']['expires_on'])) ? date('F d, Y', strtotime($t['TrainingRecord']['expires_on'])) : '--' ;
                 ?>
                 <tr>
                     <td>
@@ -64,7 +64,7 @@
                 <?php
             }
 
-            if(empty($data)){
+            if(empty($training)){
             	?>
                 <tr>
                 	<td colspan="4" class="text-center">No Records Found</td>
