@@ -179,6 +179,9 @@ class Training extends AppModel {
                     $data[$c]['TrainingRecord']['expiring'] = 0;
                 }
                 
+                if($data[$c]['TrainingRecord']['no_record'] == 0 && $data[$c]['TrainingRecord']['expired'] == 0 && $data[$c]['TrainingRecord']['expiring'] == 0){
+					unset($data[$c]);
+				}
                 #pr($data);
                 #exit;
 			}
