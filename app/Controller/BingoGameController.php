@@ -316,7 +316,8 @@ class BingoGameController extends AppController {
 
 		#pr(AuthComponent::user('id'));
         $current_amount = $this->getCurrentAmount();
-
+		#pr($current_amount);
+		#exit;
 		$current_bingo = $this->BingoGame->find('first', array(
             'conditions' => array(
                 'BingoGame.account_id' => $account_id,
@@ -431,7 +432,6 @@ class BingoGameController extends AppController {
 
 	public function getCurrentAmount(){
 		$account_id = AuthComponent::user('AccountUser.0.account_id');
-
 		$userList = $this->User->find('list', array(
             'conditions' => array(
                 'User.account_id' => $account_id,
@@ -485,7 +485,8 @@ class BingoGameController extends AppController {
 
 			$this->BingoGame->saveAll($this->request->data);
 		}
-
+		#pr($amount);
+		#exit;
 		return $amount;
 	}
 
