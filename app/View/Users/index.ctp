@@ -25,7 +25,7 @@
                 <?php echo $this->element( 'Users/search_filter', array('in'=>$in, 'var'=>$var, 'viewBy'=>$viewBy) );?>
             </div>
         </div>
-
+		<div class="alert alertdisplay" role="alert" style="display: none"></div>
         <div id="employeeList">
             <div class="collapse <?=$in?>" id="collapseExample" aria-expanded="<?=$var?>">
                 <div class="flextable well">
@@ -44,6 +44,7 @@
                     <thead>
                         <tr class="tr-heading">
                             <th class="col-sm-3">Employee</th>
+                            <th class="col-sm-3">Reset Password</th>
                             <th class="col-sm-3">Department(s)</th>
                             <th class="col-sm-2">Role</th>
                             <th class="col-sm-1 text-center">Status</th>
@@ -66,6 +67,15 @@
                                     );
                                     ?>
                                 </td>
+                                <td>
+			                    	<?php
+			                        echo $this->Html->link(
+			                            'Reset Password',
+			                            '#',
+			                            array('escape'=>false, 'id'=>$user['User']['id'], 'class'=>'reset')
+			                        );
+			                        ?>
+			                    </td> 
                                 <td>
                                     <ul class="list-unstyled">
                                         <?php
@@ -101,7 +111,9 @@
         </div>
         <?php echo $this->element( 'paginate' );?>
     </div>
-
+	<?php
+    $reset = $this->Html->url(array('plugin'=>false, 'controller'=>'users', 'action' => 'resetPassword'));
+	?>
     <script type="text/javascript">
         jQuery(window).ready( function($) {
             $("#myModal").on('hidden.bs.modal', function () {
@@ -116,5 +128,39 @@
               var height = $(window).height() - 200;
               $(this).find(".modal-body").css("max-height", height);
             });
+            
+            $('.reset').click(function(e){
+	        	
+	            $.ajax({
+	                type : 'POST',
+	                url : '<?=$reset?>/' + $(this).attr("id") + '.json',
+	                cache: false,
+	                dataType: "html",
+	                beforeSend: function(xhr){
+	                    
+	                },
+	                success : function(response) {
+	                	var response1=jQuery.parseJSON(response);
+	                	if(response1.status=='success'){
+	                		$('.alertdisplay').addClass('alert-success');
+	                		$('.alertdisplay').show();
+	                	} else {
+	                		$('.alertdisplay').addClass('alert-danger');
+							$('.alertdisplay').show();
+						}
+						
+						$(".alertdisplay").html(response1.message);
+	            	},
+	                complete: function(){
+	                    
+	                },
+	                error: function (jqXHR, textStatus, errorThrown) {
+	                    console.log(jqXHR);
+	                    console.log(textStatus);
+	                    console.log(errorThrown);
+	                }
+	            });
+	            
+	        });
          });
     </script>

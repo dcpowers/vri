@@ -91,7 +91,7 @@
 	        <thead>
 	            <tr>
 	                <th class="col-sm-2">Name</th>
-	                <th class="col-sm-2">Rest Password</th>
+	                <th class="col-sm-2">Reset Password</th>
 	                <th class="col-sm-2">Username</th>
 	                <th class="col-sm-2">E-Mail</th>
 	                <th class="col-sm-1">Role</th>
