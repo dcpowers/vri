@@ -73,6 +73,7 @@ class Training extends AppModel {
         'TrnCat',
         'TrainingFile',
         'TrainingQuiz',
+        'TrainingUpload',
     );
     
     
