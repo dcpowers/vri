@@ -85,7 +85,15 @@
                     );
                 	?>
                 </li>
-
+				<li>
+                	<?php
+                    echo $this->Html->link(
+                    	'<i class="fa fa-upload fa-fw"></i> Training uploads',
+                        '#'.$trn['Training']['id'].'uploads',
+                        array('escape'=>false, 'aria-controls'=>'uploads', 'role'=>'tab', 'data-toggle'=>'tab')
+                    );
+                	?>
+                </li>
                 <?php
                 if(AuthComponent::user('Role.permission_level') >= 30 && $trn['TrainingMembership']['is_manditory'] == 0){
                 	?>
@@ -382,6 +390,84 @@
                                 </tr>
                                 <?php
                             }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div role="tabpanel" class="tab-pane fade" id="<?=$trn['Training']['id']?>uploads">
+                	<div class="pull-right">
+                    	<ul class="list-inline">
+                        	<li>
+                            	<?php
+                                echo $this->Html->link(
+                                	'<i class="fa fa-upload fa-fw"></i> Upload Files',
+                                    array('controller'=>'Trainings', 'action'=>'files', $trn['Training']['id'], $account_ids[0]),
+                                    array('escape'=>false, 'data-target'=>'#myModal', 'data-toggle'=>'modal')
+                                );
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                	<table class="table table-striped table-condensed" id="trainingTable">
+                        <thead>
+                            <tr>
+                                <th class="col-sm-3">Description</th>
+                                <th class="col-sm-3">Uploaded By</th>
+                                <th class="col-sm-3 text-center">Date</th>
+                                <th class="col-sm-3 text-center"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php
+                            #pr($trn['Training']['TrainingUpload']);
+							
+                            foreach($trn['Training']['TrainingUpload'] as $v){
+                            	#pr($v);
+                            	
+								$date = (is_null($v['date'])) ? null : date('M d, Y', strtotime($v['date'])) ;
+                                ?>
+                                <tr>
+                                    <td>
+                                    	<?php
+                            			echo $this->Html->link(
+											$v['description'],
+		                        			'/files/trainings/uploads/'.$v['account_id'].'/'.$v['training_id'].'/'.$v['name'],
+		                        			array('escape'=>false)
+		                    			);
+										?>	
+                                    </td>
+									<td><?=$v['CreatedBy']['first_name']?> <?=$v['CreatedBy']['last_name']?></td>
+                                    <td class="text-center"><?=$date?></td>
+                                    <td class="text-center">
+                                    	<ul class="list-inline">
+											<li>
+												<?php
+												echo $this->Html->link(
+													'<i class="fa fa-download fa-fw fa-lg"></i>',
+			                        				array('controller'=>'Trainings', 'action'=>'downloadUserFiles', $v['id']),
+			                        				array('escape'=>false)
+			                    				);
+												?>
+											</li>
+											<li>
+												<?php
+												echo $this->Html->link(
+													'<i class="fa fa-trash fa-fw fa-lg text-danger"></i>',
+			                        				array('controller'=>'Trainings', 'action'=>'deleteUserFiles', $v['id'], $v['training_id'], $v['account_id']),
+			                        				array('escape'=>false),
+			                        				'Are you sure you want to delete this file?'
+			                    				);
+												?>
+											</li>
+										</ul>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                            
                             ?>
                         </tbody>
                     </table>
