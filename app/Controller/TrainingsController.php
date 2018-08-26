@@ -21,6 +21,7 @@ class TrainingsController extends AppController {
         'TrainingClassroom',
         'TrainingRecord',
         'TrainingFile',
+        'TrainingUpload',
         'TrainingQuiz',
         'TrainingClassroomDetail',
         'TrnCat',
@@ -298,14 +299,18 @@ class TrainingsController extends AppController {
                         'order'=>array(
                             'TrainingRecord.expires_on' => 'DESC'
                         )
+                    ),
+                    'TrainingUpload'=>array(
+                    	'conditions'=>array(
+                    		'TrainingUpload.account_id' => $account_ids[0]
+                    	),
+                    	'CreatedBy'=>array()
                     )
                 ),
             ),
 
         ));
-		#pr($trainings);
-		#exit;
-        $records = array();
+		$records = array();
         foreach($trainings['Training']['TrainingRecord'] as $key=>$item){
 
             if (!array_key_exists($item['user_id'], $records)) {
@@ -383,7 +388,6 @@ class TrainingsController extends AppController {
 		$this->set('depts', $this->Department->pickListById($department_ids));
         $this->set('accts', $this->Account->pickListById($account_ids));
         $this->set('users', $this->AccountUser->pickList($account_ids));
-
 		$this->set('trn', $trainings);
         $this->set('records', $data);
         $this->set('classRooms', $classRooms);
@@ -1611,5 +1615,135 @@ class TrainingsController extends AppController {
         ));
 
         $this->set( 'quiz', $quiz );
+    }
+    
+    public function files($id=null, $acct_id=null){
+        if ($this->request->is('post') || $this->request->is('put')) {
+            #pr($this->request->data);
+            #exit;
+			$c=0;
+			
+			$trn_id = $this->request->data['TrainingUploads']['training_id'];
+			$acct_id = $this->request->data['TrainingUploads']['account_id'];
+			
+			foreach($this->request->data['TrainingFile'] as $v){
+				if($v['files']['error'] == 0){
+					$this->request->data[$c]['TrainingUpload']['name'] = $this->uploadUserFiles($v['files'], $trn_id, null, $acct_id);
+					$this->request->data[$c]['TrainingUpload']['created_by'] = AuthComponent::user('id');
+					$this->request->data[$c]['TrainingUpload']['training_id'] = $trn_id;
+					$this->request->data[$c]['TrainingUpload']['description'] = $v['description'];
+					$this->request->data[$c]['TrainingUpload']['date'] = date('Y-m-d', strtotime('now'));
+					$this->request->data[$c]['TrainingUpload']['account_id'] = $acct_id;
+					$this->request->data[$c]['TrainingUpload']['is_active'] = 1;
+					$c++;
+				}
+
+			}
+			unset(
+				$this->request->data['TrainingUploads'],
+				$this->request->data['TrainingFile']
+			);
+			#pr($this->request->data);
+			#exit;
+			if ($this->TrainingUpload->saveAll($this->request->data)) {
+            	#Audit::log('Group record added', $this->request->data );
+                $this->Flash->alertBox(
+	            	'Training File(s) Have Been Added',
+	                array( 'params' => array( 'class'=>'alert-success' ))
+	            );
+            }else{
+            	$this->Flash->alertBox(
+	            	'There Were Problems, Please Try Again',
+	                array( 'params' => array( 'class'=>'alert-danger' ))
+	            );
+            }
+
+			$this->redirect(array('controller'=>'Trainings', 'action'=>'details', $id));
+        }
+
+        $this->request->data['TrainingDetail']['account_id'] = $acct_id;
+        $this->request->data['TrainingDetail']['training_id'] = $id;
+    }
+    
+    public function downloadUserFiles($id = null) {
+
+        $v = $this->TrainingUpload->find('first', array(
+            'conditions' => array(
+                'TrainingUpload.id' => $id,
+            ),
+            'contain'=>array()
+        ));
+		
+		$trn_id = $v['TrainingUpload']['training_id'];
+		$acct_id = $v['TrainingUpload']['account_id'];
+        $name = $v['TrainingUpload']['name'];
+        
+        if(!is_null($trn_id) && !is_null($acct_id) && !empty($name)){
+        	$this->response->file( 'webroot/files/trainings/uploads/'. $acct_id .'/'. $trn_id .'/'. $name, array(
+                'download' => true,
+                'name' => $name,
+            ));
+
+            return $this->response;
+		}
+
+        $this->Session->setFlash(__('Please select a file to download'), 'alert-box', array('class'=>'alert-danger'));
+        $this->redirect(array('controller'=>'accidents', 'action' => 'index'));
+
+    }
+    
+    public function deleteUserFiles($id = null, $trn_id = null, $acct_id=null){
+		$file = $this->TrainingUpload->find('first', array(
+            'conditions' => array(
+                'TrainingUpload.id' => $id
+            ),
+            'contain'=>array(
+            ),
+            'fields'=>array('TrainingUpload.name')
+        ));
+
+		$file = '../webroot/files/trainings/uploads/'. $acct_id .'/'.$trn_id.'/'.$file['TrainingUpload']['name'];
+
+		if($this->TrainingUpload->delete($id)) {
+			if (file_exists($file)) {
+				unlink($file);
+			}
+        	#Audit::log('Group record added', $this->request->data );
+            $this->Flash->alertBox(
+            	'Uploaded File Has Been Deleted',
+                array( 'params' => array( 'class'=>'alert-success' ))
+            );
+        }else{
+        	$this->Flash->alertBox(
+            	'There Were Problems, Please Try Again',
+                array( 'params' => array( 'class'=>'alert-danger' ))
+            );
+        }
+		
+		$this->redirect(array('controller'=>'Trainings', 'action'=>'details', $trn_id));
+
+    }
+    
+    public function uploadUserFiles($file=null, $trn_id=null, $type=null, $acct_id=null){
+		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
+		
+		if($file['error'] == 0){
+			$name = time() . '_' . rand(100, 999) . '.' . $ext;
+			#$name = $file['name'];
+            $dir = '../webroot/files/trainings/uploads/'.$acct_id.'/'.$trn_id;
+
+			$uploadfile = $dir.'/'. $name;
+			
+			if (!is_dir($dir)) {
+			    mkdir($dir, 0777, true);
+			}
+			
+			if (move_uploaded_file($file['tmp_name'], $uploadfile) == TRUE) {
+				#$this->TrainingFile->saveAll($this->request->data['TrainingFile']);
+                return $name;
+            }else{
+            	return false;
+            }
+        }
     }
 }
