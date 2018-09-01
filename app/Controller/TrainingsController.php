@@ -1145,7 +1145,7 @@ class TrainingsController extends AppController {
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$files = $this->request->data['Training']['files'];
 			unset($this->request->data['Training']['files']);
-
+			
 			if(empty($this->request->data['Training']['name'])){
 				$this->Flash->alertBox(
                     'Please Enter A Name',
@@ -1223,7 +1223,21 @@ class TrainingsController extends AppController {
 					#exit;
 				}
             }
-
+			
+			if(empty($this->request->data['TrnCat']['training_category_id'])){
+				unset($this->request->data['TrnCat']);
+			}
+			
+			
+			if(!empty($this->request->data['TrnCat']['training_category_id'])){
+                foreach($this->request->data['TrnCat'] as $item){
+                	foreach($item as $key=>$val){
+                        $this->request->data['TrnCat'][$key]['training_category_id'] = $val;
+                    }
+                }
+                unset($this->request->data['TrnCat']['training_category_id']);
+            }
+            
 			if ($this->Training->saveAll($this->request->data)) {
 				if(!empty($files)){
                     foreach($files as $file){
@@ -1235,6 +1249,10 @@ class TrainingsController extends AppController {
                     array( 'params' => array( 'class'=>'alert-success' ))
                 );
             }else{
+            	#debug($this->Training->validationErrors);
+            	#debug($this->Training->invalidFields());
+            	#pr($this->request->data);
+				#exit;
                 $this->Flash->alertBox(
                     'There Was An Error, Please Try Again!',
                     array( 'params' => array( 'class'=>'alert-danger' ))
@@ -1449,7 +1467,7 @@ class TrainingsController extends AppController {
 
 	public function upload($file=null, $id=null, $type=null){
 		$ext = substr(strtolower(strrchr($file['name'], '.')), 1); //get the extension
-        $arr_ext = array('jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt'); //set allowed extensions
+        $arr_ext = array('exe', 'jpg', 'jpeg', 'gif', 'png', 'mp4', 'ppt', 'zip', 'pdf', 'mp3', 'tiff', 'bmp', 'doc', 'docx', 'pptx', 'txt'); //set allowed extensions
 		
 		if($file['error'] == 0 && in_array($ext, $arr_ext)){
 			$c = uniqid (rand(), true);;

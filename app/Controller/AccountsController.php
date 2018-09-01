@@ -522,7 +522,7 @@ class AccountsController extends AppController {
             $this->request->data['Account']['POM'] = (empty($this->request->data['Account']['POM'])) ? 0 : $this->request->data['Account']['POM'] ;
             $this->request->data['Account']['LAU'] = (empty($this->request->data['Account']['LAU'])) ? 0 : $this->request->data['Account']['LAU'] ;
             $this->request->data['Account']['SEC'] = (empty($this->request->data['Account']['SEC'])) ? 0 : $this->request->data['Account']['SEC'] ;
-
+			
             if(!empty($this->request->data['AccountDepartment'])){
                 foreach($this->request->data['AccountDepartment'] as $item){
                     foreach($item as $key=>$val){
