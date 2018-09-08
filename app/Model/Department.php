@@ -55,7 +55,7 @@ class Department extends AppModel {
         }
         return $dataArr;
     }
-
+    
     public function pickListById( $ids=null ) {
         $dataArr = array();
 		
@@ -76,5 +76,36 @@ class Department extends AppModel {
 		
 		return $recs;
 	
+    }
+    
+    public function getRecord( $id=null ) {
+        $dataArr = array();
+		
+		$find_options = array(
+            'conditions'=>array(
+                $this->alias.'.id'=>$id
+            ),
+        );
+
+        //pr($find_options);
+        //exit;
+        $recs = $this->find('first', $find_options );
+		
+		return $recs;
+	
+    }
+    
+    
+    public function pickListAll(){
+        $data = $this->find('all', array(
+            'conditions' => array(
+                #'TrainingCategory.is_active' => 1
+            ),
+            'contain'=>array(),
+            #'fields'=>array('TrainingCategory.id', 'TrainingCategory.name'),
+            'order'=>array('Department.name')
+        ));
+        
+        return $data; 
     }
 }
