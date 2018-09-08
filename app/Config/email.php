@@ -45,11 +45,11 @@ class EmailConfig {
 
 	public $smtp = array(
 		'transport' => 'Smtp',
-		'from' => array('support@vrifm.com' => 'VRI Support'),
-		'host' => 'sub5.mail.dreamhost.com',
-		'port' => 25,
+		'from' => array('administrator@vanguardresources.com' => 'VRI Support'),
+		'host' => 'smtp.office365.com',
+		'port' => 587,
 		'timeout' => 30,
-		'username' => 'support@vrifm.com',
+		'username' => 'administrator@vanguardresources.com',
 		'password' => 'Vanguard1$',
 		'client' => null,
 		'log' => false,
