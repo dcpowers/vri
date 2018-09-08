@@ -29,15 +29,56 @@
                     <?php
                     if(AuthComponent::user('Role.permission_level') >= 70){
                         ?>
-                        <li>
-                            <!--<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>-->
+                        <li class="dropdown user user-menu">
+                            <!--<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i><span class="fa fa-chevron-down"></span></a>-->
                             <?php
                             echo $this->Html->link(
-                                '<i class="fa fa-cogs"></i>',
-                                array('controller'=>'settings', 'action'=>''),
-                                array('escape'=>false )
+                                '<i class="fa fa-cogs"></i><span class="fa fa-chevron-down"></span>',
+                                '#',
+                                array('escape'=>false, 'class'=>'dropdown-toggle', 'data-toggle'=>'dropdown')
                             );
                             ?>
+                            
+                            <ul class="dropdown-menu">
+                            	<!--
+                            	<li>                            				
+	                        		<?php
+						            echo $this->Html->link(
+						                'User: Employment Type',
+						                array('controller'=>'Settings', 'action'=>'view', 'types'),
+						                array('escape'=>false)
+						            );
+						            ?>
+							    </li>
+							    <li>
+						    	    <?php
+						            echo $this->Html->link(
+						                'User: Permissions',
+						                array('controller'=>'Settings', 'action'=>'view', 'permissions'),
+						                array('escape'=>false)
+						            );
+						            ?>
+							    </li>
+							    -->
+							    <li>
+							  		<?php
+						            echo $this->Html->link(
+						                'Training: Category Settings',
+						                array('controller'=>'Settings', 'action'=>'view', 'categories'),
+						                array('escape'=>false)
+						            );
+						            ?>
+						        </li>
+						        <li>
+						        	<?php
+						            echo $this->Html->link(
+						                'Account: Department',
+						                array('controller'=>'Settings', 'action'=>'view', 'departments'),
+						                array('escape'=>false)
+						            );
+						            ?>
+						        </li>
+							</ul>
                         </li>
                         <?php
                     }
