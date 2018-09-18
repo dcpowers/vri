@@ -47,7 +47,7 @@ class EmailConfig {
 		'transport' => 'Smtp',
 		'from' => array('administrator@vanguardresources.com' => 'VRI Support'),
 		'host' => 'smtp.office365.com',
-		'port' => 587,
+		'port' => 25,
 		'timeout' => 30,
 		'username' => 'administrator@vanguardresources.com',
 		'password' => 'Vanguard1$',
