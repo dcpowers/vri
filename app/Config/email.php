@@ -53,6 +53,7 @@ class EmailConfig {
 		'password' => 'Vanguard1$',
 		'client' => null,
 		'log' => false,
+		'tls' => true
 		//'charset' => 'utf-8',
 		//'headerCharset' => 'utf-8',
 	);
