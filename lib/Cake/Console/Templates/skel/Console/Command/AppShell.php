@@ -2,7 +2,7 @@
 /**
  * AppShell file
  *
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @since         CakePHP(tm) v 2.0
  */
 

@@ -2,25 +2,25 @@
 /**
  * HelpFormatterTest file
  *
- * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Console
  * @since         CakePHP(tm) v 2.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('ConsoleOptionParser', 'Console');
 App::uses('HelpFormatter', 'Console');
 
 /**
- * HelpFormatterTest
+ * Class HelpFormatterTest
  *
  * @package       Cake.Test.Case.Console
  */
@@ -299,8 +299,8 @@ TEXT;
 		$expected = <<<TEXT
 <?xml version="1.0"?>
 <shell>
-<command>mycommand</command>
-<description />
+<name>mycommand</name>
+<description>Description text</description>
 <subcommands />
 <options>
 	<option name="--help" short="-h" help="Display this help." boolean="1">
@@ -322,14 +322,11 @@ TEXT;
 			<choice>aro</choice>
 		</choices>
 	</argument>
-	<argument help="Another argument." name="other_longer" required="0">
-		<choices/>
-	</argument>
 </arguments>
-<epilog />
+<epilog>epilog text</epilog>
 </shell>
 TEXT;
-		$this->assertXmlStringEqualsXmlString($expected, $result, 'Help does not match');
+		$this->assertEquals(new DomDocument($expected), new DomDocument($result), 'Help does not match');
 	}
 
 /**
@@ -349,7 +346,7 @@ TEXT;
 		$expected = <<<TEXT
 <?xml version="1.0"?>
 <shell>
-<command>mycommand</command>
+<name>mycommand</name>
 <description>Description text</description>
 <subcommands />
 <options>
@@ -370,7 +367,7 @@ TEXT;
 <epilog>epilog text</epilog>
 </shell>
 TEXT;
-		$this->assertXmlStringEqualsXmlString($expected, $result, 'Help does not match');
+		$this->assertEquals(new DomDocument($expected), new DomDocument($result), 'Help does not match');
 	}
 
 /**
@@ -388,7 +385,7 @@ TEXT;
 		$expected = <<<TEXT
 <?xml version="1.0"?>
 <shell>
-<command>mycommand</command>
+<name>mycommand</name>
 <description/>
 <subcommands>
 	<command name="method" help="This is another command" />
@@ -407,7 +404,7 @@ TEXT;
 <epilog/>
 </shell>
 TEXT;
-		$this->assertXmlStringEqualsXmlString($expected, $result, 'Help does not match');
+		$this->assertEquals(new DomDocument($expected), new DomDocument($result), 'Help does not match');
 	}
 
 /**
@@ -427,7 +424,7 @@ TEXT;
 		$expected = <<<TEXT
 <?xml version="1.0"?>
 <shell>
-<command>mycommand</command>
+<name>mycommand</name>
 <description/>
 <subcommands/>
 <options>
@@ -448,7 +445,7 @@ TEXT;
 <epilog/>
 </shell>
 TEXT;
-		$this->assertXmlStringEqualsXmlString($expected, $result, 'Help does not match');
+		$this->assertEquals(new DomDocument($expected), new DomDocument($result), 'Help does not match');
 	}
 
 /**
@@ -467,7 +464,7 @@ TEXT;
 		$expected = <<<TEXT
 <?xml version="1.0"?>
 <shell>
-	<command>mycommand</command>
+	<name>mycommand</name>
 	<description/>
 	<subcommands/>
 	<options>
@@ -491,7 +488,7 @@ TEXT;
 	<epilog/>
 </shell>
 TEXT;
-		$this->assertXmlStringEqualsXmlString($expected, $result, 'Help does not match');
+		$this->assertEquals(new DomDocument($expected), new DomDocument($result), 'Help does not match');
 	}
 
 /**

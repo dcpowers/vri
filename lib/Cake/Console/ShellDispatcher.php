@@ -2,17 +2,17 @@
 /**
  * ShellDispatcher file
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @since         CakePHP(tm) v 2.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 /**
@@ -106,7 +106,7 @@ class ShellDispatcher {
 			$message = "This file has been loaded incorrectly and cannot continue.\n" .
 				"Please make sure that " . DS . 'lib' . DS . 'Cake' . DS . "Console is in your system path,\n" .
 				"and check the cookbook for the correct usage of this command.\n" .
-				"(https://book.cakephp.org/)";
+				"(http://book.cakephp.org/)";
 			throw new CakeException($message);
 		}
 
@@ -129,22 +129,15 @@ class ShellDispatcher {
 			define('APP', $this->params['working'] . DS);
 		}
 		if (!defined('WWW_ROOT')) {
-			if (!$this->_isAbsolutePath($this->params['webroot'])) {
-				$webroot = realpath(APP . $this->params['webroot']);
-			} else {
-				$webroot = $this->params['webroot'];
-			}
-			define('WWW_ROOT', $webroot . DS);
+			define('WWW_ROOT', APP . $this->params['webroot'] . DS);
 		}
 		if (!defined('TMP') && !is_dir(APP . 'tmp')) {
 			define('TMP', CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
 		}
-
-		// $boot is used by Cake/bootstrap.php file
 		$boot = file_exists(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
 		require CORE_PATH . 'Cake' . DS . 'bootstrap.php';
 
-		if (!file_exists(CONFIG . 'core.php')) {
+		if (!file_exists(APP . 'Config' . DS . 'core.php')) {
 			include_once CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'Config' . DS . 'core.php';
 			App::build();
 		}
@@ -312,43 +305,23 @@ class ShellDispatcher {
 			}
 		}
 
-		if ($this->_isAbsolutePath($params['app'])) {
+		if ($params['app'][0] === '/' || preg_match('/([a-z])(:)/i', $params['app'], $matches)) {
 			$params['root'] = dirname($params['app']);
 		} elseif (strpos($params['app'], '/')) {
 			$params['root'] .= '/' . dirname($params['app']);
 		}
-		$isWindowsAppPath = $this->_isWindowsPath($params['app']);
+
 		$params['app'] = basename($params['app']);
 		$params['working'] = rtrim($params['root'], '/');
 		if (!$isWin || !preg_match('/^[A-Z]:$/i', $params['app'])) {
 			$params['working'] .= '/' . $params['app'];
 		}
 
-		if ($isWindowsAppPath || !empty($isWin)) {
+		if (!empty($matches[0]) || !empty($isWin)) {
 			$params = str_replace('/', '\\', $params);
 		}
 
 		$this->params = $params + $this->params;
-	}
-
-/**
- * Checks whether the given path is absolute or relative.
- *
- * @param string $path absolute or relative path.
- * @return bool
- */
-	protected function _isAbsolutePath($path) {
-		return $path[0] === '/' || $this->_isWindowsPath($path);
-	}
-
-/**
- * Checks whether the given path is Window OS path.
- *
- * @param string $path absolute path.
- * @return bool
- */
-	protected function _isWindowsPath($path) {
-		return preg_match('/([a-z])(:)/i', $path) == 1;
 	}
 
 /**
@@ -359,7 +332,7 @@ class ShellDispatcher {
  */
 	protected function _parsePaths($args) {
 		$parsed = array();
-		$keys = array('-working', '--working', '-app', '--app', '-root', '--root', '-webroot', '--webroot');
+		$keys = array('-working', '--working', '-app', '--app', '-root', '--root');
 		$args = (array)$args;
 		foreach ($keys as $key) {
 			while (($index = array_search($key, $args)) !== false) {

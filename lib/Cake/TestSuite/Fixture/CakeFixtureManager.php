@@ -2,18 +2,18 @@
 /**
  * A factory class to manage the life cycle of test fixtures
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.TestSuite.Fixture
  * @since         CakePHP(tm) v 2.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('ConnectionManager', 'Model');
@@ -98,7 +98,7 @@ class CakeFixtureManager {
 /**
  * Parse the fixture path included in test cases, to get the fixture class name, and the
  * real fixture path including sub-directories
- *
+ * 
  * @param string $fixturePath the fixture path to parse
  * @return array containing fixture class name and optional additional path
  */
@@ -175,7 +175,7 @@ class CakeFixtureManager {
 	}
 
 /**
- * Runs the drop, create and truncate commands on the fixtures if necessary.
+ * Runs the drop and create commands on the fixtures if necessary.
  *
  * @param CakeTestFixture $fixture the fixture object to create
  * @param DataSource $db the datasource instance to use
@@ -191,7 +191,6 @@ class CakeFixtureManager {
 			}
 		}
 		if (!empty($fixture->created) && in_array($db->configKeyName, $fixture->created)) {
-			$fixture->truncate($db);
 			return;
 		}
 
@@ -206,7 +205,6 @@ class CakeFixtureManager {
 			$fixture->create($db);
 		} else {
 			$fixture->created[] = $db->configKeyName;
-			$fixture->truncate($db);
 		}
 	}
 
@@ -231,6 +229,7 @@ class CakeFixtureManager {
 				$db = ConnectionManager::getDataSource($fixture->useDbConfig);
 				$db->begin();
 				$this->_setupTable($fixture, $db, $test->dropTables);
+				$fixture->truncate($db);
 				$fixture->insert($db);
 				$db->commit();
 			}
@@ -275,6 +274,7 @@ class CakeFixtureManager {
 				$db = ConnectionManager::getDataSource($fixture->useDbConfig);
 			}
 			$this->_setupTable($fixture, $db, $dropTables);
+			$fixture->truncate($db);
 			$fixture->insert($db);
 		} else {
 			throw new UnexpectedValueException(__d('cake_dev', 'Referenced fixture class %s not found', $name));

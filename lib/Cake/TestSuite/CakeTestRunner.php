@@ -2,29 +2,21 @@
 /**
  * TestRunner for CakePHP Test suite.
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @since         CakePHP(tm) v 2.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-if (!class_exists('PHPUnit_TextUI_TestRunner')) {
+if (!defined('__PHPUNIT_PHAR__')) {
 	require_once 'PHPUnit/TextUI/TestRunner.php';
-}
-if (class_exists('SebastianBergmann\CodeCoverage\CodeCoverage')) {
-	class_alias('SebastianBergmann\CodeCoverage\CodeCoverage', 'PHP_CodeCoverage');
-	class_alias('SebastianBergmann\CodeCoverage\Report\Text', 'PHP_CodeCoverage_Report_Text');
-	class_alias('SebastianBergmann\CodeCoverage\Report\PHP', 'PHP_CodeCoverage_Report_PHP');
-	class_alias('SebastianBergmann\CodeCoverage\Report\Clover', 'PHP_CodeCoverage_Report_Clover');
-	class_alias('SebastianBergmann\CodeCoverage\Report\Html\Facade', 'PHP_CodeCoverage_Report_HTML');
-	class_alias('SebastianBergmann\CodeCoverage\Exception', 'PHP_CodeCoverage_Exception');
 }
 
 App::uses('CakeFixtureManager', 'TestSuite/Fixture');
@@ -52,20 +44,15 @@ class CakeTestRunner extends PHPUnit_TextUI_TestRunner {
  *
  * @param PHPUnit_Framework_Test $suite The test suite to run
  * @param array $arguments The CLI arguments
- * @param bool $exit Exits by default or returns the results
  * @return void
  */
-	public function doRun(PHPUnit_Framework_Test $suite, array $arguments = array(), $exit = true) {
+	public function doRun(PHPUnit_Framework_Test $suite, array $arguments = array()) {
 		if (isset($arguments['printer'])) {
 			static::$versionStringPrinted = true;
 		}
 
 		$fixture = $this->_getFixtureManager($arguments);
-		$iterator = $suite->getIterator();
-		if ($iterator instanceof RecursiveIterator) {
-			$iterator = new RecursiveIteratorIterator($iterator);
-		}
-		foreach ($iterator as $test) {
+		foreach ($suite->getIterator() as $test) {
 			if ($test instanceof CakeTestCase) {
 				$fixture->fixturize($test);
 				$test->fixtureManager = $fixture;
@@ -105,7 +92,7 @@ class CakeTestRunner extends PHPUnit_TextUI_TestRunner {
  * @throws RuntimeException When fixture manager class cannot be loaded.
  */
 	protected function _getFixtureManager($arguments) {
-		if (!empty($arguments['fixtureManager'])) {
+		if (isset($arguments['fixtureManager'])) {
 			App::uses($arguments['fixtureManager'], 'TestSuite');
 			if (class_exists($arguments['fixtureManager'])) {
 				return new $arguments['fixtureManager'];

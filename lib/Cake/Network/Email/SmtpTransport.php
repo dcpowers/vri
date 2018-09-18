@@ -2,20 +2,20 @@
 /**
  * Send mail using SMTP protocol
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Network.Email
  * @since         CakePHP(tm) v 2.0.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-App::uses('AbstractTransport', 'Network/Email');
+
 App::uses('CakeSocket', 'Network');
 
 /**
@@ -31,6 +31,13 @@ class SmtpTransport extends AbstractTransport {
  * @var CakeSocket
  */
 	protected $_socket;
+
+/**
+ * CakeEmail
+ *
+ * @var CakeEmail
+ */
+	protected $_cakeEmail;
 
 /**
  * Content of email to return
@@ -83,10 +90,12 @@ class SmtpTransport extends AbstractTransport {
  * @throws SocketException
  */
 	public function send(CakeEmail $email) {
+		$this->_cakeEmail = $email;
+
 		$this->_connect();
 		$this->_auth();
-		$this->_sendRcpt($email);
-		$this->_sendData($email);
+		$this->_sendRcpt();
+		$this->_sendData();
 		$this->_disconnect();
 
 		return $this->_content;
@@ -226,13 +235,12 @@ class SmtpTransport extends AbstractTransport {
 /**
  * Prepares the `from` email address.
  *
- * @param CakeEmail $email CakeEmail
  * @return array
  */
-	protected function _prepareFromAddress(CakeEmail $email) {
-		$from = $email->returnPath();
+	protected function _prepareFromAddress() {
+		$from = $this->_cakeEmail->returnPath();
 		if (empty($from)) {
-			$from = $email->from();
+			$from = $this->_cakeEmail->from();
 		}
 		return $from;
 	}
@@ -240,34 +248,31 @@ class SmtpTransport extends AbstractTransport {
 /**
  * Prepares the recipient email addresses.
  *
- * @param CakeEmail $email CakeEmail
  * @return array
  */
-	protected function _prepareRecipientAddresses(CakeEmail $email) {
-		$to = $email->to();
-		$cc = $email->cc();
-		$bcc = $email->bcc();
+	protected function _prepareRecipientAddresses() {
+		$to = $this->_cakeEmail->to();
+		$cc = $this->_cakeEmail->cc();
+		$bcc = $this->_cakeEmail->bcc();
 		return array_merge(array_keys($to), array_keys($cc), array_keys($bcc));
 	}
 
 /**
  * Prepares the message headers.
  *
- * @param CakeEmail $email CakeEmail
  * @return array
  */
-	protected function _prepareMessageHeaders(CakeEmail $email) {
-		return $email->getHeaders(array('from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'subject'));
+	protected function _prepareMessageHeaders() {
+		return $this->_cakeEmail->getHeaders(array('from', 'sender', 'replyTo', 'readReceipt', 'to', 'cc', 'subject'));
 	}
 
 /**
  * Prepares the message body.
  *
- * @param CakeEmail $email CakeEmail
  * @return string
  */
-	protected function _prepareMessage(CakeEmail $email) {
-		$lines = $email->message();
+	protected function _prepareMessage() {
+		$lines = $this->_cakeEmail->message();
 		$messages = array();
 		foreach ($lines as $line) {
 			if ((!empty($line)) && ($line[0] === '.')) {
@@ -282,15 +287,14 @@ class SmtpTransport extends AbstractTransport {
 /**
  * Send emails
  *
- * @param CakeEmail $email CakeEmail
  * @return void
  * @throws SocketException
  */
-	protected function _sendRcpt(CakeEmail $email) {
-		$from = $this->_prepareFromAddress($email);
+	protected function _sendRcpt() {
+		$from = $this->_prepareFromAddress();
 		$this->_smtpSend($this->_prepareFromCmd(key($from)));
 
-		$emails = $this->_prepareRecipientAddresses($email);
+		$emails = $this->_prepareRecipientAddresses();
 		foreach ($emails as $email) {
 			$this->_smtpSend($this->_prepareRcptCmd($email));
 		}
@@ -299,15 +303,14 @@ class SmtpTransport extends AbstractTransport {
 /**
  * Send Data
  *
- * @param CakeEmail $email CakeEmail
  * @return void
  * @throws SocketException
  */
-	protected function _sendData(CakeEmail $email) {
+	protected function _sendData() {
 		$this->_smtpSend('DATA', '354');
 
-		$headers = $this->_headersToString($this->_prepareMessageHeaders($email));
-		$message = $this->_prepareMessage($email);
+		$headers = $this->_headersToString($this->_prepareMessageHeaders());
+		$message = $this->_prepareMessage();
 
 		$this->_smtpSend($headers . "\r\n\r\n" . $message . "\r\n\r\n\r\n.");
 		$this->_content = array('headers' => $headers, 'message' => $message);
@@ -352,11 +355,7 @@ class SmtpTransport extends AbstractTransport {
 			$response = '';
 			$startTime = time();
 			while (substr($response, -2) !== "\r\n" && ((time() - $startTime) < $this->_config['timeout'])) {
-				$bytes = $this->_socket->read();
-				if ($bytes === false || $bytes === null) {
-					break;
-				}
-				$response .= $bytes;
+				$response .= $this->_socket->read();
 			}
 			if (substr($response, -2) !== "\r\n") {
 				throw new SocketException(__d('cake_dev', 'SMTP timeout.'));
