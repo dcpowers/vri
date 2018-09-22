@@ -4,18 +4,18 @@
  *
  * Series of tests for flash helper.
  *
- * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.View.Helper
  * @since         CakePHP(tm) v 2.7.0-dev
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('FlashHelper', 'View/Helper');
@@ -57,45 +57,25 @@ class FlashHelperTest extends CakeTestCase {
 		CakeSession::write(array(
 			'Message' => array(
 				'flash' => array(
-					array(
-						'key' => 'flash',
-						'message' => 'This is the first Message',
-						'element' => 'Flash/default',
-						'params' => array()
-					),
-					array(
-						'key' => 'flash',
-						'message' => 'This is the second Message',
-						'element' => 'Flash/default',
-						'params' => array()
-					)
+					'key' => 'flash',
+					'message' => 'This is a calling',
+					'element' => 'Flash/default',
+					'params' => array()
 				),
 				'notification' => array(
-					array(
-						'key' => 'notification',
-						'message' => 'Broadcast message testing',
-						'element' => 'flash_helper',
-						'params' => array(
-							'title' => 'Notice!',
-							'name' => 'Alert!'
-						)
+					'key' => 'notification',
+					'message' => 'Broadcast message testing',
+					'element' => 'flash_helper',
+					'params' => array(
+						'title' => 'Notice!',
+						'name' => 'Alert!'
 					)
 				),
 				'classy' => array(
-					array(
-						'key' => 'classy',
-						'message' => 'Recorded',
-						'element' => 'flash_classy',
-						'params' => array()
-					)
-				),
-				'default' => array(
-					array(
-						'key' => 'default',
-						'message' => 'Default',
-						'element' => 'default',
-						'params' => array()
-					)
+					'key' => 'classy',
+					'message' => 'Recorded',
+					'element' => 'flash_classy',
+					'params' => array()
 				)
 			)
 		));
@@ -119,7 +99,7 @@ class FlashHelperTest extends CakeTestCase {
  */
 	public function testFlash() {
 		$result = $this->Flash->render();
-		$expected = '<div class="message">This is the first Message</div><div class="message">This is the second Message</div>';
+		$expected = '<div class="message">This is a calling</div>';
 		$this->assertContains($expected, $result);
 
 		$expected = '<div id="classy-message">Recorded</div>';
@@ -172,15 +152,6 @@ class FlashHelperTest extends CakeTestCase {
 
 		$result = $this->Flash->render('flash', array('element' => 'TestPlugin.plugin_element'));
 		$expected = 'this is the plugin element';
-		$this->assertContains($expected, $result);
-	}
-
-/**
- * Test that the default element fallbacks to the Flash/default element.
- */
-	public function testFlashFallback() {
-		$result = $this->Flash->render('default');
-		$expected = '<div class="message">Default</div>';
 		$this->assertContains($expected, $result);
 	}
 }

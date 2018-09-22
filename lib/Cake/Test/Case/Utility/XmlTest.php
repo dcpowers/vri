@@ -2,18 +2,18 @@
 /**
  * XmlTest file
  *
- * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Utility
  * @since         CakePHP(tm) v 1.2.0.5432
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Xml', 'Utility');
@@ -165,18 +165,6 @@ class XmlTest extends CakeTestCase {
 
 		$obj = Xml::build($xml, array('return' => 'domdocument', 'encoding' => null));
 		$this->assertNotRegExp('/encoding/', $obj->saveXML());
-	}
-
-/**
- * test build() method with huge option
- *
- * @return void
- */
-	public function testBuildHuge() {
-		$xml = '<tag>value</tag>';
-		$obj = Xml::build($xml, array('parseHuge' => true));
-		$this->assertEquals('tag', $obj->getName());
-		$this->assertEquals('value', (string)$obj);
 	}
 
 /**
@@ -407,14 +395,7 @@ XML;
 		$obj = Xml::fromArray($xml, 'attributes');
 		$xmlText = '<' . '?xml version="1.0" encoding="UTF-8"?><tags><tag id="1">defect</tag></tags>';
 		$this->assertXmlStringEqualsXmlString($xmlText, $obj->asXML());
-	}
 
-/**
- * Test fromArray() with zero values.
- *
- * @return void
- */
-	public function testFromArrayZeroValue() {
 		$xml = array(
 			'tag' => array(
 				'@' => 0,
@@ -425,16 +406,6 @@ XML;
 		$xmlText = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <tag test="A test">0</tag>
-XML;
-		$this->assertXmlStringEqualsXmlString($xmlText, $obj->asXML());
-
-		$xml = array(
-			'tag' => array('0')
-		);
-		$obj = Xml::fromArray($xml);
-		$xmlText = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<tag>0</tag>
 XML;
 		$this->assertXmlStringEqualsXmlString($xmlText, $obj->asXML());
 	}
@@ -823,16 +794,16 @@ XML;
 		$this->assertEquals('2.0', $rssAsArray['rss']['@version']);
 		$this->assertEquals(2, count($rssAsArray['rss']['channel']['item']));
 
-		$atomLink = array('@href' => 'https://bakery.cakephp.org/articles/rss', '@rel' => 'self', '@type' => 'application/rss+xml');
+		$atomLink = array('@href' => 'http://bakery.cakephp.org/articles/rss', '@rel' => 'self', '@type' => 'application/rss+xml');
 		$this->assertEquals($rssAsArray['rss']['channel']['atom:link'], $atomLink);
-		$this->assertEquals('https://bakery.cakephp.org/', $rssAsArray['rss']['channel']['link']);
+		$this->assertEquals('http://bakery.cakephp.org/', $rssAsArray['rss']['channel']['link']);
 
 		$expected = array(
 			'title' => 'Alertpay automated sales via IPN',
-			'link' => 'https://bakery.cakephp.org/articles/view/alertpay-automated-sales-via-ipn',
+			'link' => 'http://bakery.cakephp.org/articles/view/alertpay-automated-sales-via-ipn',
 			'description' => 'I\'m going to show you how I implemented a payment module via the Alertpay payment processor.',
 			'pubDate' => 'Tue, 31 Aug 2010 01:42:00 -0500',
-			'guid' => 'https://bakery.cakephp.org/articles/view/alertpay-automated-sales-via-ipn'
+			'guid' => 'http://bakery.cakephp.org/articles/view/alertpay-automated-sales-via-ipn'
 		);
 		$this->assertSame($expected, $rssAsArray['rss']['channel']['item'][1]);
 
@@ -842,22 +813,22 @@ XML;
 				'@version' => '2.0',
 				'channel' => array(
 					'atom:link' => array(
-						'@href' => 'https://bakery.cakephp.org/articles/rss',
+						'@href' => 'http://bakery.cakephp.org/articles/rss',
 						'@rel' => 'self',
 						'@type' => 'application/rss+xml'
 					),
 					'title' => 'The Bakery: ',
-					'link' => 'https://bakery.cakephp.org/',
+					'link' => 'http://bakery.cakephp.org/',
 					'description' => 'Recent  Articles at The Bakery.',
 					'pubDate' => 'Sun, 12 Sep 2010 04:18:26 -0500',
 					'item' => array(
 						array(
 							'title' => 'CakePHP 1.3.4 released',
-							'link' => 'https://bakery.cakephp.org/articles/view/cakephp-1-3-4-released'
+							'link' => 'http://bakery.cakephp.org/articles/view/cakephp-1-3-4-released'
 						),
 						array(
 							'title' => 'Wizard Component 1.2 Tutorial',
-							'link' => 'https://bakery.cakephp.org/articles/view/wizard-component-1-2-tutorial'
+							'link' => 'http://bakery.cakephp.org/articles/view/wizard-component-1-2-tutorial'
 						)
 					)
 				)
@@ -868,18 +839,18 @@ XML;
 <?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
 <channel>
-	<atom:link href="https://bakery.cakephp.org/articles/rss" rel="self" type="application/rss+xml"/>
+	<atom:link href="http://bakery.cakephp.org/articles/rss" rel="self" type="application/rss+xml"/>
 	<title>The Bakery: </title>
-	<link>https://bakery.cakephp.org/</link>
+	<link>http://bakery.cakephp.org/</link>
 	<description>Recent  Articles at The Bakery.</description>
 	<pubDate>Sun, 12 Sep 2010 04:18:26 -0500</pubDate>
 	<item>
 		<title>CakePHP 1.3.4 released</title>
-		<link>https://bakery.cakephp.org/articles/view/cakephp-1-3-4-released</link>
+		<link>http://bakery.cakephp.org/articles/view/cakephp-1-3-4-released</link>
 	</item>
 	<item>
 		<title>Wizard Component 1.2 Tutorial</title>
-		<link>https://bakery.cakephp.org/articles/view/wizard-component-1-2-tutorial</link>
+		<link>http://bakery.cakephp.org/articles/view/wizard-component-1-2-tutorial</link>
 	</item>
 </channel>
 </rss>
@@ -1035,7 +1006,7 @@ XML;
  */
 	public function testNamespace() {
 		$xml = <<<XML
-<root xmlns:ns="https://cakephp.org">
+<root xmlns:ns="http://cakephp.org">
 	<ns:tag id="1">
 		<child>good</child>
 		<otherchild>bad</otherchild>
@@ -1056,7 +1027,7 @@ XML;
 		);
 		$this->assertEquals($expected, Xml::toArray($xmlResponse));
 
-		$xmlResponse = Xml::build('<root xmlns:ns="https://cakephp.org"><ns:tag id="1" /><tag><id>1</id></tag></root>');
+		$xmlResponse = Xml::build('<root xmlns:ns="http://cakephp.org"><ns:tag id="1" /><tag><id>1</id></tag></root>');
 		$expected = array(
 			'root' => array(
 				'ns:tag' => array(
@@ -1069,7 +1040,7 @@ XML;
 		);
 		$this->assertEquals($expected, Xml::toArray($xmlResponse));
 
-		$xmlResponse = Xml::build('<root xmlns:ns="https://cakephp.org"><ns:attr>1</ns:attr></root>');
+		$xmlResponse = Xml::build('<root xmlns:ns="http://cakephp.org"><ns:attr>1</ns:attr></root>');
 		$expected = array(
 			'root' => array(
 				'ns:attr' => '1'
@@ -1077,25 +1048,25 @@ XML;
 		);
 		$this->assertEquals($expected, Xml::toArray($xmlResponse));
 
-		$xmlResponse = Xml::build('<root><ns:attr xmlns:ns="https://cakephp.org">1</ns:attr></root>');
+		$xmlResponse = Xml::build('<root><ns:attr xmlns:ns="http://cakephp.org">1</ns:attr></root>');
 		$this->assertEquals($expected, Xml::toArray($xmlResponse));
 
 		$xml = array(
 			'root' => array(
 				'ns:attr' => array(
-					'xmlns:ns' => 'https://cakephp.org',
+					'xmlns:ns' => 'http://cakephp.org',
 					'@' => 1
 				)
 			)
 		);
-		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root><ns:attr xmlns:ns="https://cakephp.org">1</ns:attr></root>';
+		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root><ns:attr xmlns:ns="http://cakephp.org">1</ns:attr></root>';
 		$xmlResponse = Xml::fromArray($xml);
 		$this->assertEquals($expected, str_replace(array("\r", "\n"), '', $xmlResponse->asXML()));
 
 		$xml = array(
 			'root' => array(
 				'tag' => array(
-					'xmlns:pref' => 'https://cakephp.org',
+					'xmlns:pref' => 'http://cakephp.org',
 					'pref:item' => array(
 						'item 1',
 						'item 2'
@@ -1106,7 +1077,7 @@ XML;
 		$expected = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<tag xmlns:pref="https://cakephp.org">
+	<tag xmlns:pref="http://cakephp.org">
 		<pref:item>item 1</pref:item>
 		<pref:item>item 2</pref:item>
 	</tag>
@@ -1118,29 +1089,29 @@ XML;
 		$xml = array(
 			'root' => array(
 				'tag' => array(
-					'xmlns:' => 'https://cakephp.org'
+					'xmlns:' => 'http://cakephp.org'
 				)
 			)
 		);
-		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root><tag xmlns="https://cakephp.org"/></root>';
+		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root><tag xmlns="http://cakephp.org"/></root>';
 		$xmlResponse = Xml::fromArray($xml);
 		$this->assertXmlStringEqualsXmlString($expected, $xmlResponse->asXML());
 
 		$xml = array(
 			'root' => array(
-				'xmlns:' => 'https://cakephp.org'
+				'xmlns:' => 'http://cakephp.org'
 			)
 		);
-		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root xmlns="https://cakephp.org"/>';
+		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root xmlns="http://cakephp.org"/>';
 		$xmlResponse = Xml::fromArray($xml);
 		$this->assertXmlStringEqualsXmlString($expected, $xmlResponse->asXML());
 
 		$xml = array(
 			'root' => array(
-				'xmlns:ns' => 'https://cakephp.org'
+				'xmlns:ns' => 'http://cakephp.org'
 			)
 		);
-		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root xmlns:ns="https://cakephp.org"/>';
+		$expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root xmlns:ns="http://cakephp.org"/>';
 		$xmlResponse = Xml::fromArray($xml);
 		$this->assertXmlStringEqualsXmlString($expected, $xmlResponse->asXML());
 	}

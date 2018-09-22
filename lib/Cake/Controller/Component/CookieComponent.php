@@ -2,18 +2,18 @@
 /**
  * Cookie Component
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Controller.Component
  * @since         CakePHP(tm) v 1.2.0.4213
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Component', 'Controller');
@@ -26,7 +26,7 @@ App::uses('Hash', 'Utility');
  * Cookie handling for the controller.
  *
  * @package       Cake.Controller.Component
- * @link https://book.cakephp.org/2.0/en/core-libraries/components/cookie.html
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/cookie.html
  */
 class CookieComponent extends Component {
 
@@ -211,7 +211,7 @@ class CookieComponent extends Component {
  * @param int|string $expires Can be either the number of seconds until a cookie
  *   expires, or a strtotime compatible time offset.
  * @return void
- * @link https://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::write
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::write
  */
 	public function write($key, $value = null, $encrypt = true, $expires = null) {
 		if (empty($this->_values[$this->name])) {
@@ -229,14 +229,27 @@ class CookieComponent extends Component {
 		}
 
 		foreach ($key as $name => $value) {
+			$names = array($name);
 			if (strpos($name, '.') !== false) {
-				$this->_values[$this->name] = Hash::insert($this->_values[$this->name], $name, $value);
-				list($name) = explode('.', $name, 2);
-				$value = $this->_values[$this->name][$name];
-			} else {
-				$this->_values[$this->name][$name] = $value;
+				$names = explode('.', $name, 2);
 			}
-			$this->_write('[' . $name . ']', $value);
+			$firstName = $names[0];
+			$isMultiValue = (is_array($value) || count($names) > 1);
+
+			if (!isset($this->_values[$this->name][$firstName]) && $isMultiValue) {
+				$this->_values[$this->name][$firstName] = array();
+			}
+
+			if (count($names) > 1) {
+				$this->_values[$this->name][$firstName] = Hash::insert(
+					$this->_values[$this->name][$firstName],
+					$names[1],
+					$value
+				);
+			} else {
+				$this->_values[$this->name][$firstName] = $value;
+			}
+			$this->_write('[' . $firstName . ']', $this->_values[$this->name][$firstName]);
 		}
 		$this->_encrypted = true;
 	}
@@ -249,7 +262,7 @@ class CookieComponent extends Component {
  *
  * @param string $key Key of the value to be obtained. If none specified, obtain map key => values
  * @return string|null Value for specified key
- * @link https://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::read
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::read
  */
 	public function read($key = null) {
 		if (empty($this->_values[$this->name]) && isset($_COOKIE[$this->name])) {
@@ -261,7 +274,19 @@ class CookieComponent extends Component {
 		if ($key === null) {
 			return $this->_values[$this->name];
 		}
-		return Hash::get($this->_values[$this->name], $key);
+
+		if (strpos($key, '.') !== false) {
+			$names = explode('.', $key, 2);
+			$key = $names[0];
+		}
+		if (!isset($this->_values[$this->name][$key])) {
+			return null;
+		}
+
+		if (!empty($names[1]) && is_array($this->_values[$this->name][$key])) {
+			return Hash::get($this->_values[$this->name][$key], $names[1]);
+		}
+		return $this->_values[$this->name][$key];
 	}
 
 /**
@@ -294,23 +319,27 @@ class CookieComponent extends Component {
  *
  * @param string $key Key of the value to be deleted
  * @return void
- * @link https://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::delete
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::delete
  */
 	public function delete($key) {
 		if (empty($this->_values[$this->name])) {
 			$this->read();
 		}
 		if (strpos($key, '.') === false) {
-			unset($this->_values[$this->name][$key]);
-			$this->_delete('[' . $key . ']');
-		} else {
-			$this->_values[$this->name] = Hash::remove((array)$this->_values[$this->name], $key);
-			list($key) = explode('.', $key, 2);
-			if (isset($this->_values[$this->name][$key])) {
-				$value = $this->_values[$this->name][$key];
-				$this->_write('[' . $key . ']', $value);
+			if (isset($this->_values[$this->name][$key]) && is_array($this->_values[$this->name][$key])) {
+				foreach ($this->_values[$this->name][$key] as $idx => $val) {
+					$this->_delete("[$key][$idx]");
+				}
 			}
+			$this->_delete("[$key]");
+			unset($this->_values[$this->name][$key]);
+			return;
 		}
+		$names = explode('.', $key, 2);
+		if (isset($this->_values[$this->name][$names[0]])) {
+			$this->_values[$this->name][$names[0]] = Hash::remove($this->_values[$this->name][$names[0]], $names[1]);
+		}
+		$this->_delete('[' . implode('][', $names) . ']');
 	}
 
 /**
@@ -320,7 +349,7 @@ class CookieComponent extends Component {
  * Failure to do so will result in header already sent errors.
  *
  * @return void
- * @link https://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::destroy
+ * @link http://book.cakephp.org/2.0/en/core-libraries/components/cookie.html#CookieComponent::destroy
  */
 	public function destroy() {
 		if (isset($_COOKIE[$this->name])) {
@@ -328,7 +357,14 @@ class CookieComponent extends Component {
 		}
 
 		foreach ($this->_values[$this->name] as $name => $value) {
-			$this->delete($name);
+			if (is_array($value)) {
+				foreach ($value as $key => $val) {
+					unset($this->_values[$this->name][$name][$key]);
+					$this->_delete("[$name][$key]");
+				}
+			}
+			unset($this->_values[$this->name][$name]);
+			$this->_delete("[$name]");
 		}
 	}
 
@@ -455,7 +491,7 @@ class CookieComponent extends Component {
  * Decrypts $value using public $type method in Security class
  *
  * @param array $values Values to decrypt
- * @return array decrypted string
+ * @return string decrypted string
  */
 	protected function _decrypt($values) {
 		$decrypted = array();
@@ -477,7 +513,7 @@ class CookieComponent extends Component {
  * Decodes and decrypts a single value.
  *
  * @param string $value The value to decode & decrypt.
- * @return string|array Decoded value.
+ * @return string Decoded value.
  */
 	protected function _decode($value) {
 		$prefix = 'Q2FrZQ==.';
@@ -513,7 +549,7 @@ class CookieComponent extends Component {
  * Maintains reading backwards compatibility with 1.x CookieComponent::_implode().
  *
  * @param string $string A string containing JSON encoded data, or a bare string.
- * @return string|array Map of key and values
+ * @return array Map of key and values
  */
 	protected function _explode($string) {
 		$first = substr($string, 0, 1);

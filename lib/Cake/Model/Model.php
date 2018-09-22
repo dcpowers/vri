@@ -4,18 +4,18 @@
  *
  * DBO-backed object data model, for mapping database tables to CakePHP objects.
  *
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
  * @package       Cake.Model
  * @since         CakePHP(tm) v 0.10.0.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('ClassRegistry', 'Utility');
@@ -40,9 +40,9 @@ App::uses('CakeEventManager', 'Event');
  * The table is required to have at least 'id auto_increment' primary key.
  *
  * @package       Cake.Model
- * @link          https://book.cakephp.org/2.0/en/models.html
+ * @link          http://book.cakephp.org/2.0/en/models.html
  */
-class Model extends CakeObject implements CakeEventListener {
+class Model extends Object implements CakeEventListener {
 
 /**
  * The name of the DataSource connection that this Model uses
@@ -51,15 +51,15 @@ class Model extends CakeObject implements CakeEventListener {
  * or created using `ConnectionManager::create()`.
  *
  * @var string
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#usedbconfig
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#usedbconfig
  */
 	public $useDbConfig = 'default';
 
 /**
  * Custom database table name, or null/false if no table association is desired.
  *
- * @var string|false
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#usetable
+ * @var string
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#usetable
  */
 	public $useTable = null;
 
@@ -68,8 +68,8 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * This field is also used in `find('list')` when called with no extra parameters in the fields list
  *
- * @var string|false
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#displayfield
+ * @var string
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#displayfield
  */
 	public $displayField = null;
 
@@ -84,8 +84,8 @@ class Model extends CakeObject implements CakeEventListener {
 /**
  * Container for the data that this model gets from persistent storage (usually, a database).
  *
- * @var array|false
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#data
+ * @var array
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#data
  */
 	public $data = array();
 
@@ -107,7 +107,7 @@ class Model extends CakeObject implements CakeEventListener {
  * The name of the primary key field for this model.
  *
  * @var string
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#primarykey
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#primarykey
  */
 	public $primaryKey = null;
 
@@ -206,8 +206,8 @@ class Model extends CakeObject implements CakeEventListener {
  * - `on`: Possible values: `update`, `create`. Indicate to apply this rule only on update or create
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#validate
- * @link https://book.cakephp.org/2.0/en/models/data-validation.html
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#validate
+ * @link http://book.cakephp.org/2.0/en/models/data-validation.html
  */
 	public $validate = array();
 
@@ -229,7 +229,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Database table prefix for tables in model.
  *
  * @var string
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#tableprefix
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#tableprefix
  */
 	public $tablePrefix = null;
 
@@ -244,7 +244,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Name of the model.
  *
  * @var string
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#name
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#name
  */
 	public $name = null;
 
@@ -267,7 +267,7 @@ class Model extends CakeObject implements CakeEventListener {
  * caching only, the results are not stored beyond the current request.
  *
  * @var bool
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#cachequeries
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#cachequeries
  */
 	public $cacheQueries = false;
 
@@ -314,7 +314,7 @@ class Model extends CakeObject implements CakeEventListener {
  * - `counterScope`: Optional conditions array to use for updating counter cache field.
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#belongsto
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#belongsto
  */
 	public $belongsTo = array();
 
@@ -357,7 +357,7 @@ class Model extends CakeObject implements CakeEventListener {
  *   User will also delete her associated Profile.
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasone
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasone
  */
 	public $hasOne = array();
 
@@ -406,7 +406,7 @@ class Model extends CakeObject implements CakeEventListener {
  *   records. This should be used in situations that require very custom results.
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasmany
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasmany
  */
 	public $hasMany = array();
 
@@ -467,25 +467,18 @@ class Model extends CakeObject implements CakeEventListener {
  *   be used in situations that require very custom results.
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasandbelongstomany-habtm
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#hasandbelongstomany-habtm
  */
 	public $hasAndBelongsToMany = array();
 
 /**
  * List of behaviors to load when the model object is initialized. Settings can be
- * passed to behaviors by using the behavior name as index.
+ * passed to behaviors by using the behavior name as index. Eg:
  *
- * For example:
- *
- * ```
- * public $actsAs = array(
- *     'Translate',
- *     'MyBehavior' => array('setting1' => 'value1')
- * );
- * ```
+ * public $actsAs = array('Translate', 'MyBehavior' => array('setting1' => 'value1'))
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/behaviors.html#using-behaviors
+ * @link http://book.cakephp.org/2.0/en/models/behaviors.html#using-behaviors
  */
 	public $actsAs = null;
 
@@ -522,7 +515,7 @@ class Model extends CakeObject implements CakeEventListener {
  * the first level by default.
  *
  * @var int
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#recursive
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#recursive
  */
 	public $recursive = 1;
 
@@ -533,7 +526,7 @@ class Model extends CakeObject implements CakeEventListener {
  * public $order = array("Post.view_count DESC", "Post.rating DESC");
  *
  * @var string
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#order
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#order
  */
 	public $order = null;
 
@@ -547,7 +540,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Is a simplistic example of how to set virtualFields
  *
  * @var array
- * @link https://book.cakephp.org/2.0/en/models/model-attributes.html#virtualfields
+ * @link http://book.cakephp.org/2.0/en/models/model-attributes.html#virtualfields
  */
 	public $virtualFields = array();
 
@@ -632,7 +625,7 @@ class Model extends CakeObject implements CakeEventListener {
 /**
  * The ID of the model record that was last inserted.
  *
- * @var int|string
+ * @var int
  */
 	protected $_insertID = null;
 
@@ -699,7 +692,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param bool|int|string|array $id Set this ID for this model on startup,
  * can also be an array of options, see above.
- * @param string|false $table Name of database table to use.
+ * @param string $table Name of database table to use.
  * @param string $ds DataSource connection name.
  */
 	public function __construct($id = false, $table = null, $ds = null) {
@@ -945,7 +938,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param array $params Set of bindings (indexed by binding type)
  * @param bool $reset Set to false to make the binding permanent
  * @return bool Success
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly
  */
 	public function bindModel($params, $reset = true) {
 		foreach ($params as $assoc => $model) {
@@ -995,7 +988,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param array $params Set of bindings to unbind (indexed by binding type)
  * @param bool $reset Set to false to make the unbinding permanent
  * @return bool Success
- * @link https://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly
+ * @link http://book.cakephp.org/2.0/en/models/associations-linking-models-together.html#creating-and-destroying-associations-on-the-fly
  */
 	public function unbindModel($params, $reset = true) {
 		foreach ($params as $assoc => $models) {
@@ -1042,13 +1035,13 @@ class Model extends CakeObject implements CakeEventListener {
 						unset($association[$assoc]);
 						$assoc = $value;
 						$value = array();
-						$association[$assoc] = $value;
-					}
 
-					if (!isset($value['className']) && strpos($assoc, '.') !== false) {
-						unset($association[$assoc]);
-						list($plugin, $assoc) = pluginSplit($assoc, true);
-						$association[$assoc] = array('className' => $plugin . $assoc) + $value;
+						if (strpos($assoc, '.') !== false) {
+							list($plugin, $assoc) = pluginSplit($assoc, true);
+							$association[$assoc] = array('className' => $plugin . $assoc);
+						} else {
+							$association[$assoc] = $value;
+						}
 					}
 
 					$this->_generateAssociation($type, $assoc);
@@ -1196,9 +1189,9 @@ class Model extends CakeObject implements CakeEventListener {
  * a one-item, two-dimensional array using $one for a key and $two as its value.)
  *
  * @param string|array|SimpleXmlElement|DomNode $one Array or string of data
- * @param string|false $two Value string for the alternative indata method
+ * @param string $two Value string for the alternative indata method
  * @return array|null Data with all of $one's keys and values, otherwise null.
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html
  */
 	public function set($one, $two = null) {
 		if (!$one) {
@@ -1570,7 +1563,7 @@ class Model extends CakeObject implements CakeEventListener {
  *   schema data defaults are not merged.
  * @param bool $filterKey If true, overwrites any primary key input with an empty value
  * @return array The current Model::data; after merging $data and/or defaults from database
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-create-array-data-array
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-create-array-data-array
  */
 	public function create($data = array(), $filterKey = false) {
 		$defaults = array();
@@ -1614,8 +1607,8 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param string|array $fields String of single field name, or an array of field names.
  * @param int|string $id The ID of the record to read
- * @return array|false Array of database fields, or false if not found
- * @link https://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-read
+ * @return array Array of database fields, or false if not found
+ * @link http://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-read
  */
 	public function read($fields = null, $id = null) {
 		$this->validationErrors = array();
@@ -1648,12 +1641,12 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param string $name The name of the field to get.
  * @param array $conditions SQL conditions (defaults to NULL).
- * @param string|array $order SQL ORDER BY fragment.
+ * @param string $order SQL ORDER BY fragment.
  * @return string|false Field content, or false if not found.
- * @link https://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-field
+ * @link http://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-field
  */
 	public function field($name, $conditions = null, $order = null) {
-		if ($conditions === null && !in_array($this->id, array(false, null), true)) {
+		if ($conditions === null && $this->id !== false) {
 			$conditions = array($this->alias . '.' . $this->primaryKey => $this->id);
 		}
 
@@ -1695,10 +1688,8 @@ class Model extends CakeObject implements CakeEventListener {
  *   If an array, allows control of 'validate', 'callbacks' and 'counterCache' options.
  *   See Model::save() for details of each options.
  * @return bool|array See Model::save() False on failure or an array of model data on success.
- * @deprecated 3.0.0 To ease migration to the new major, do not use this method anymore.
- *   Stateful model usage will be removed. Use the existing save() methods instead.
  * @see Model::save()
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-savefield-string-fieldname-string-fieldvalue-validate-false
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-savefield-string-fieldname-string-fieldvalue-validate-false
  */
 	public function saveField($name, $value, $validate = false) {
 		$id = $this->id;
@@ -1735,7 +1726,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @throws PDOException
  * @triggers Model.beforeSave $this, array($options)
  * @triggers Model.afterSave $this, array($created, $options)
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html
  */
 	public function save($data = null, $validate = true, $fieldList = array()) {
 		$defaults = array(
@@ -1789,7 +1780,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @return mixed On success Model::$data if its not empty or true, false on failure
  * @throws PDOException
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html
  */
 	protected function _doSave($data = null, $options = array()) {
 		$_whitelist = $this->whitelist;
@@ -2267,8 +2258,8 @@ class Model extends CakeObject implements CakeEventListener {
  * @return mixed If atomic: True on success, or false on failure.
  *    Otherwise: array similar to the $data array passed, but values are set to true/false
  *    depending on whether each record saved successfully.
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveassociated-array-data-null-array-options-array
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveall-array-data-null-array-options-array
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveassociated-array-data-null-array-options-array
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveall-array-data-null-array-options-array
  */
 	public function saveAll($data = array(), $options = array()) {
 		$options += array('validate' => 'first');
@@ -2307,7 +2298,7 @@ class Model extends CakeObject implements CakeEventListener {
  *    Otherwise: array similar to the $data array passed, but values are set to true/false
  *    depending on whether each record saved successfully.
  * @throws PDOException
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-savemany-array-data-null-array-options-array
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-savemany-array-data-null-array-options-array
  */
 	public function saveMany($data = null, $options = array()) {
 		if (empty($data)) {
@@ -2440,7 +2431,7 @@ class Model extends CakeObject implements CakeEventListener {
  *    Otherwise: array similar to the $data array passed, but values are set to true/false
  *    depending on whether each record saved successfully.
  * @throws PDOException
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveassociated-array-data-null-array-options-array
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-saveassociated-array-data-null-array-options-array
  */
 	public function saveAssociated($data = null, $options = array()) {
 		if (empty($data)) {
@@ -2666,7 +2657,7 @@ class Model extends CakeObject implements CakeEventListener {
  *    Fields are treated as SQL snippets, to insert literal values manually escape your data.
  * @param mixed $conditions Conditions to match, true for all records
  * @return bool True on success, false on failure
- * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-updateall-array-fields-mixed-conditions
+ * @link http://book.cakephp.org/2.0/en/models/saving-your-data.html#model-updateall-array-fields-mixed-conditions
  */
 	public function updateAll($fields, $conditions = true) {
 		return $this->getDataSource()->update($this, $fields, null, $conditions);
@@ -2680,7 +2671,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @return bool True on success
  * @triggers Model.beforeDelete $this, array($cascade)
  * @triggers Model.afterDelete $this
- * @link https://book.cakephp.org/2.0/en/models/deleting-data.html
+ * @link http://book.cakephp.org/2.0/en/models/deleting-data.html
  */
 	public function delete($id = null, $cascade = true) {
 		if (!empty($id)) {
@@ -2822,7 +2813,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param bool $cascade Set to true to delete records that depend on this record
  * @param bool $callbacks Run callbacks
  * @return bool True on success, false on failure
- * @link https://book.cakephp.org/2.0/en/models/deleting-data.html#deleteall
+ * @link http://book.cakephp.org/2.0/en/models/deleting-data.html#deleteall
  */
 	public function deleteAll($conditions, $cascade = true, $callbacks = false) {
 		if (empty($conditions)) {
@@ -2980,7 +2971,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * Behaviors and find types can also define custom finder keys which are passed into find().
  * See the documentation for custom find types
- * (https://book.cakephp.org/2.0/en/models/retrieving-your-data.html#creating-custom-find-types)
+ * (http://book.cakephp.org/2.0/en/models/retrieving-your-data.html#creating-custom-find-types)
  * for how to implement custom find types.
  *
  * Specifying 'fields' for notation 'list':
@@ -2998,7 +2989,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param string $type Type of find operation (all / first / count / neighbors / list / threaded)
  * @param array $query Option fields (conditions / fields / joins / limit / offset / order / page / group / callbacks)
  * @return array|null Array of records, or Null on failure.
- * @link https://book.cakephp.org/2.0/en/models/retrieving-your-data.html
+ * @link http://book.cakephp.org/2.0/en/models/retrieving-your-data.html
  */
 	public function find($type = 'first', $query = array()) {
 		$this->findQueryType = $type;
@@ -3085,11 +3076,7 @@ class Model extends CakeObject implements CakeEventListener {
 			$query['order'] = $this->order;
 		}
 
-		if (is_object($query['order'])) {
-			$query['order'] = array($query['order']);
-		} else {
-			$query['order'] = (array)$query['order'];
-		}
+		$query['order'] = (array)$query['order'];
 
 		if ($query['callbacks'] === true || $query['callbacks'] === 'before') {
 			$event = new CakeEvent('Model.beforeFind', $this, array($query));
@@ -3151,7 +3138,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param string $state Either "before" or "after"
  * @param array $query Query.
  * @param array $results Results.
- * @return int|false The number of records found, or false
+ * @return int The number of records found, or false
  * @see Model::find()
  */
 	protected function _findCount($state, $query, $results = array()) {
@@ -3459,19 +3446,12 @@ class Model extends CakeObject implements CakeEventListener {
  * - 3rd param: If 2nd argument is provided, a boolean flag for enabling/disabled
  *   query caching.
  *
- * If the query cache param as 2nd or 3rd argument is not given then the model's
- * default `$cacheQueries` value is used.
- *
  * @param string $sql SQL statement
  * @return mixed Resultset array or boolean indicating success / failure depending on the query executed
- * @link https://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-query
+ * @link http://book.cakephp.org/2.0/en/models/retrieving-your-data.html#model-query
  */
 	public function query($sql) {
 		$params = func_get_args();
-		// use $this->cacheQueries as default when argument not explicitly given already
-		if (count($params) === 1 || count($params) === 2 && !is_bool($params[1])) {
-			$params[] = $this->cacheQueries;
-		}
 		$db = $this->getDataSource();
 		return call_user_func_array(array(&$db, 'query'), $params);
 	}
@@ -3495,7 +3475,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Additionally it populates the validationErrors property of the model with the same array.
  *
  * @param array|string $options An optional array of custom options to be made available in the beforeValidate callback
- * @return array|bool Array of invalid fields and their error messages
+ * @return array Array of invalid fields and their error messages
  * @see Model::validates()
  */
 	public function invalidFields($options = array()) {
@@ -3767,7 +3747,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param array $query Data used to execute this query, i.e. conditions, order, etc.
  * @return mixed true if the operation should continue, false if it should abort; or, modified
  *  $query to continue with new $query
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#beforefind
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforefind
  */
 	public function beforeFind($query) {
 		return true;
@@ -3780,7 +3760,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param mixed $results The results of the find operation
  * @param bool $primary Whether this model is being queried directly (vs. being queried as an association)
  * @return mixed Result of the find operation
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#afterfind
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#afterfind
  */
 	public function afterFind($results, $primary = false) {
 		return $results;
@@ -3792,7 +3772,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param array $options Options passed from Model::save().
  * @return bool True if the operation should continue, false if it should abort
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#beforesave
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforesave
  * @see Model::save()
  */
 	public function beforeSave($options = array()) {
@@ -3805,7 +3785,7 @@ class Model extends CakeObject implements CakeEventListener {
  * @param bool $created True if this save created a new record
  * @param array $options Options passed from Model::save().
  * @return void
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
  * @see Model::save()
  */
 	public function afterSave($created, $options = array()) {
@@ -3816,7 +3796,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param bool $cascade If true records that depend on this record will also be deleted
  * @return bool True if the operation should continue, false if it should abort
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#beforedelete
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforedelete
  */
 	public function beforeDelete($cascade = true) {
 		return true;
@@ -3826,7 +3806,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Called after every deletion operation.
  *
  * @return void
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#afterdelete
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#afterdelete
  */
 	public function afterDelete() {
 	}
@@ -3837,7 +3817,7 @@ class Model extends CakeObject implements CakeEventListener {
  *
  * @param array $options Options passed from Model::save().
  * @return bool True if validate operation should continue, false to abort
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
@@ -3856,7 +3836,7 @@ class Model extends CakeObject implements CakeEventListener {
  * Called when a DataSource-level error occurs.
  *
  * @return void
- * @link https://book.cakephp.org/2.0/en/models/callback-methods.html#onerror
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#onerror
  */
 	public function onError() {
 	}

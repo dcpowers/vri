@@ -2,18 +2,18 @@
 /**
  * SessionHelperTest file
  *
- * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.View.Helper
  * @since         CakePHP(tm) v 1.2.0.4206
- * @license       https://opensource.org/licenses/mit-license.php MIT License
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Controller', 'Controller');
@@ -47,32 +47,24 @@ class SessionHelperTest extends CakeTestCase {
 			'test' => 'info',
 			'Message' => array(
 				'flash' => array(
-					array(
-						'element' => 'default',
-						'params' => array(),
-						'message' => 'This is a calling'
-					),
+					'element' => 'default',
+					'params' => array(),
+					'message' => 'This is a calling'
 				),
 				'notification' => array(
-					array(
-						'element' => 'session_helper',
-						'params' => array('title' => 'Notice!', 'name' => 'Alert!'),
-						'message' => 'This is a test of the emergency broadcasting system',
-					),
+					'element' => 'session_helper',
+					'params' => array('title' => 'Notice!', 'name' => 'Alert!'),
+					'message' => 'This is a test of the emergency broadcasting system',
 				),
 				'classy' => array(
-					array(
-						'element' => 'default',
-						'params' => array('class' => 'positive'),
-						'message' => 'Recorded'
-					),
+					'element' => 'default',
+					'params' => array('class' => 'positive'),
+					'message' => 'Recorded'
 				),
 				'bare' => array(
-					array(
-						'element' => null,
-						'message' => 'Bare message',
-						'params' => array(),
-					),
+					'element' => null,
+					'message' => 'Bare message',
+					'params' => array(),
 				),
 			),
 			'Deeply' => array('nested' => array('key' => 'value')),
@@ -87,7 +79,6 @@ class SessionHelperTest extends CakeTestCase {
 	public function tearDown() {
 		$_SESSION = array();
 		unset($this->View, $this->Session);
-		CakeSession::destroy();
 		CakePlugin::unload();
 		parent::tearDown();
 	}
@@ -113,7 +104,7 @@ class SessionHelperTest extends CakeTestCase {
 	public function testCheck() {
 		$this->assertTrue($this->Session->check('test'));
 
-		$this->assertTrue($this->Session->check('Message.flash.0.element'));
+		$this->assertTrue($this->Session->check('Message.flash.element'));
 
 		$this->assertFalse($this->Session->check('Does.not.exist'));
 
@@ -148,18 +139,6 @@ class SessionHelperTest extends CakeTestCase {
 		$expected = 'Bare message';
 		$this->assertEquals($expected, $result);
 		$this->assertFalse($this->Session->check('Message.bare'));
-	}
-
-/**
- * Test the flash method works without any params being passed
- *
- * @return void
- */
-	public function testFlashWithNoParams() {
-		$result = $this->Session->flash();
-		$expected = '<div id="flashMessage" class="message">This is a calling</div>';
-		$this->assertEquals($expected, $result);
-		$this->assertFalse($this->Session->check('Message.flash'));
 	}
 
 /**
