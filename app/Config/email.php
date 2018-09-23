@@ -45,6 +45,7 @@ class EmailConfig {
 
 	public $smtp = array(
 		'transport' => 'Smtp',
+		'className' => 'Mail',
 		'from' => array('administrator@vanguardresources.com' => 'VRI Support'),
 		'host' => 'smtp.office365.com',
 		'port' => 587,
@@ -52,7 +53,7 @@ class EmailConfig {
 		'username' => 'administrator@vanguardresources.com',
 		'password' => 'Vanguard1$',
 		'client' => null,
-		'log' => true,
+		'log' => null,
 		'tls' => true
 		//'charset' => 'utf-8',
 		//'headerCharset' => 'utf-8',
