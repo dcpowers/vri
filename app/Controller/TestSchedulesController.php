@@ -1063,8 +1063,11 @@ class TestSchedulesController extends AppController {
 
                 $this->set('user_email', $user_email);
                 $this->set('name', $name);
+                $this->set('username', $user_username);
+                
                 $email->viewVars(array('user_email' => $user_email));
                 $email->viewVars(array('name' => $name));
+                $email->viewVars(array('username' => $user_username));
 
                 $email->send();
             }
