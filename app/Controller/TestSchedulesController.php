@@ -1046,8 +1046,12 @@ class TestSchedulesController extends AppController {
 	public function sendMail($email_invite = null){
 		if(!is_null($email_invite)){
 			foreach($email_invite as $invite){
+				#pr($invite);
+				#exit;
         		$user_email = $invite['user_email']['User']['email'];
             	$user_name = $invite['user_email']['User']['name'];
+            	$user_username = $invite['user_email']['User']['username'];
+                
                 $name = $invite['name']['Test']['name'];
 
 				//Email Link To user
