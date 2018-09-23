@@ -44,7 +44,7 @@ class EmailConfig {
 	);
 
 	public $smtp = array(
-		'transport' => 'Smtp',
+		#'transport' => 'Smtp',
 		'className' => 'Mail',
 		'from' => array('administrator@vanguardresources.com' => 'VRI Support'),
 		'host' => 'smtp.office365.com',
