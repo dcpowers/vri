@@ -46,7 +46,7 @@ class EmailConfig {
 	public $smtp = array(
 		'transport' => 'Smtp',
 		'from' => array('administrator@vanguardresources.com' => 'VRI Support'),
-		'host' => 'tls://smtp.office365.com',
+		'host' => 'smtp.office365.com',
 		'port' => 587,
 		'timeout' => 30,
 		'username' => 'administrator@vanguardresources.com',
