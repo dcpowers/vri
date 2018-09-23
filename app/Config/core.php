@@ -18,7 +18,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  * 
  */
- #echo Configure::version();
+ echo Configure::version();
  #echo 'Current PHP version: ' . phpversion();
  
  if ( strstr( gethostname(), 'prod' ) ) {
