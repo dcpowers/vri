@@ -2,7 +2,7 @@
 <ol>
     <li>Go to <a href="http://www.vrifm.com">http://www.vrifm.com</a></li>
     <li>Login.</li>
-    <li>Your user name is: <?=$user_username?></li>
-    <li>Your password is one that you have set. If you need to reset it, simply click on the forgot password link beside the login.</li>
+    <li>Your user name is: <?=$username?></li>
+    <li>Your password is one that you have set. If you need to reset it, please see your site Manager.</li>
     <li>Participate in the item(s) that are assigned to you.</li>
 </ol>
