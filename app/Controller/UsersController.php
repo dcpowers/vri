@@ -48,6 +48,7 @@ class UsersController extends AppController {
         if($this->Session->check('Auth.User')){
             $this->redirect(array('controller'=>'Dashboard', 'action' => 'index'));
         }
+        
         if ($this->request->is('post')) {
             /**
             *   Need to update password. this is for users coming into the new system the first time.
@@ -62,9 +63,10 @@ class UsersController extends AppController {
                 'contain'=>array(),
 
             ));
-
+            #pr(md5($this->request->data['User']['password']));
+			#pr($this->request->data);
             #pr($checkuser);
-
+			#exit;
             if(!empty($checkuser)){
 
                 $this->request->data['User']['id'] = $checkuser['User']['id'];
@@ -465,11 +467,11 @@ class UsersController extends AppController {
             }
             
             //validate User
-            $this->request->data['User']['password'] = 'vanguard';
-            $this->request->data['User']['password_confirm'] = 'vanguard';
+            $this->request->data['User']['password'] = 'Vanguard';
+            $this->request->data['User']['password_confirm'] = 'Vanguard';
             
-            $this->User->validate = $this->User->validationSets['password_update']; 
             $this->User->set($this->request->data);
+            $this->User->validate = $this->User->validationSets['add']; 
             
             if(!$this->User->validates()){
                 $validationErrors['User'] = $this->User->validationErrors;
@@ -479,6 +481,13 @@ class UsersController extends AppController {
             if($error == false){
                 $this->User->create();
                 if ($this->User->saveAll($this->request->data)) {
+                	$response['status']='success';
+                    $response['message']='User has been added!';
+                    $response['data']=$this->data;
+                    echo json_encode($response);
+            		$this->layout = false;
+            		$this->render(false);
+            		/*	
                 	$this->Flash->alertBox(
 	                    'The user has been saved',
 	                    array(
@@ -486,23 +495,40 @@ class UsersController extends AppController {
 	                            'class'=>'alert-success'
 	                        )
 	                    )
-	                );
-                    return $this->redirect(array('action' => 'index'));
+	                );*/
+                    #return $this->redirect(array('action' => 'index'));
+				} else {
+					$response['status']='error';
+            		$response['message']='There was an issue. Please, try again.';
+            		echo json_encode($response);
+        			$this->layout = false;
+        			$this->render(false);
 				}
-            }
-            pr($validationErrors);
-            pr($this->request->data);
-            exit;
-            $this->Flash->alertBox(
-                'The user could not be saved. Please, try again.',
-                array(
-                    'params' => array(
-                        'class'=>'alert-danger'
-                    )
-                )
-            );
+            } else {
+            	
+            	$response['status']='error';
+                $response['message']='User could not be saved. Please, try again.';
+                $response['data']=compact('validationErrors');
+                #$this->set('response', compact($response) );
+                echo json_encode($response);
+                exit;	
+                /*
+                $this->Flash->alertBox(
+	                'The user could not be saved. Please, try again.',
+	                array(
+	                    'params' => array(
+	                        'class'=>'alert-danger'
+	                    )
+	                )
+	            );
+	            
+	            $this->set( compact( 'validationErrors' ) );
+	            */
+			}
+            #pr($validationErrors);
+            #pr($this->request->data);
+            #exit;
             
-            $this->set( compact( 'validationErrors' ) );
         }
 		
 		$account_id = (is_null($account_id)) ? Set::extract( AuthComponent::user(), '/AccountUser/account_id') : array($account_id);
@@ -1114,7 +1140,7 @@ class UsersController extends AppController {
             throw new NotFoundException(__('Invalid User'));
         }
         
-        $newPass = 'vanguard'. mt_rand(1,99999);
+        $newPass = 'Vanguard';
         
         $data = array(
         	'id' => $id, 
