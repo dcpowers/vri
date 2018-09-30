@@ -37,6 +37,7 @@
 </div>
 
 <div class="modal-body">
+	<div class="alert alert-danger alertdisplay" role="alert" style="display: none"></div>
     <div class="row">
     	<div class="col-md-3 headerContent">
         	<div class="form-group">
@@ -80,7 +81,6 @@
                         <?php
                         echo $this->Form->input('first_name', array (
                             'type'=>'text',
-                            'id'=> 'first_name',
                             'placeholder'=>'Firstname',
                         ));
                         ?>
@@ -92,7 +92,6 @@
                         <?php
                         echo $this->Form->input('last_name', array (
                             'type'=>'text',
-                            'id'=> 'last_name',
                             'placeholder'=>'Lastname',
                         ));
                         ?>
@@ -107,7 +106,6 @@
                         <?php
                         echo $this->Form->input('username', array (
                             'type'=>'text',
-                            'id'=> 'user_name',
                             'placeholder'=>'Username',
                         ));
                         ?>
@@ -120,7 +118,6 @@
                         <?php
                         echo $this->Form->input('email', array (
                             'type'=>'text',
-                            'id'=> 'email',
                             'placeholder'=>'E-Mail Address',
                         ));
                         ?>
@@ -144,7 +141,6 @@
                                 'class'=>'chzn-select form-control',
                                 'multiple'=>false,
                                 'value'=>$account,
-                                'id'=>'account_id',
                                 'between' => '<div class="input-group">',
                                 'after' => '<div class="input-group-addon"><i class="fa fa-exclamation text-danger"></i></div></div>',
                             ));
@@ -272,16 +268,16 @@
 
     echo $this->Form->button(
         '<i class="fa fa-save fa-fw"></i> Save',
-        array('type'=>'submit', 'class'=>'btn btn-primary pull-left')
+        array('type'=>'submit', 'class'=>'btn btn-primary pull-left', 'id'=>'save')
     );
     ?>
 </div>
 <?php echo $this->Form->end();?>
 <?php
-        $userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
-        $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
-    ?>
-
+	$userRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateSupervisorList'));
+    $groupRequest_url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'updateDeptList'));
+    $url = $this->Html->url(array('plugin'=>false, 'controller'=>'Users', 'action' => 'add'));
+?>
 <script type="text/javascript">
 	jQuery(document).ready( function($) {
     	$(".chzn-select").chosen({
@@ -347,5 +343,68 @@
                 },
             });
         });
+        
+        $('#UserAddForm').submit(function(e){
+            var formData = $(this).serializeArray();
+            e.preventDefault();
+            $.ajax({
+                type : 'POST',
+                url : '<?=$url?>',
+                data: formData,
+                beforeSend: function(xhr){
+                	//xhr.setRequestHeader('Content-type', 'application/json');
+                	$(".overlay").show();
+        
+                    $('#save').html('Saving...');
+                    $('#save').attr('disabled', true);
+                    $(".error-message").remove();
+                },
+                success : function(response) {
+                	var response1=jQuery.parseJSON(response);
+                    $('#save').attr('disabled', false);
+                    
+                    if(response1.status=='success'){
+                    	console.log(response1.data);
+                        $('#save').html('Saving...');
+                        window.location.href = '/Users/index';
+                        $('#myLgModal').modal('hide');
+                    }else if(response1.status=='error'){
+                        $('#save').attr('disabled', false);
+                        $('#save').html('Save');
+                        $('.alertdisplay').show();
+                        $(".alertdisplay").text(response1.message);
+                        
+                        console.log(response1.data);
+                        console.log(response1.data.validationErrors);
+                        
+                        $.each(response1.data.validationErrors, function(model, errors) {
+                            for (fieldName in this) {
+                                console.log(fieldName);
+                                var element = $("#" + camelcase(model + '_' + fieldName));
+                                console.log(element);
+                                $(element).parent('div').addClass('has-error has-feedback');
+                                /*$(element).closest('div').find('label').(':'+this[fieldName][0]);
+                                $(element).closest('div').find('label').append(':'+this[fieldName][0]);*/
+                                var create = $(document.createElement('div')).appendTo(element.parent('div'));
+                                create.addClass('controls help-block error-message').text(this[fieldName][0])
+                            }
+                        });
+            
+                    }
+                },
+                error : function() {
+                }
+            });
+        });
+        
+        function camelcase(inputstring) {
+            var a = inputstring.split('_'), i;
+            s = [];
+            for (i=0; i<a.length; i++){
+                s.push(a[i].charAt(0).toUpperCase() + a[i].substring(1));
+            }
+            s = s.join('');
+            return s;
+        }
     });
 </script>
