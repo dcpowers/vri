@@ -163,18 +163,10 @@ class User extends AppModel {
 	            ),
 	        ),
 	        'email' => array(
-	            'required' => array(
-	                'rule' => array('email', true),
-	                'message' => 'Please provide a valid email address.'
-	            ),
-	             'unique' => array(
+	            'unique' => array(
 	                'rule'    => array('isUniqueEmail'),
 	                'message' => 'This email is already in use',
 	            ),
-	            'between' => array(
-	                'rule' => array('between', 6, 60),
-	                'message' => 'Usernames must be between 6 to 60 characters'
-	            )
 	        ),
 	        'password' => array(
 	            'required' => array(
@@ -503,7 +495,7 @@ class User extends AppModel {
             'conditions'=>array(
                 $this->alias.'.id'=>$ids,
 				$this->alias.'.doh <=' => $endDate,
-				$this->alias.'.pay_status' => array(1,2,5),
+				$this->alias.'.pay_status' => array(1,2,4,5),
 			),
             'contain'=>array(
 				'DepartmentUser'=>array(),
@@ -655,7 +647,7 @@ class User extends AppModel {
             'conditions'=>array(
             	$this->alias.'.is_active' => 1,
                 $this->alias.'.doh <=' => $endDate,
-				$this->alias.'.pay_status' => array(1,2,5),
+				$this->alias.'.pay_status' => array(1,2,4,5),
 			),
             'contain'=>array(
 				'DepartmentUser'=>array(
